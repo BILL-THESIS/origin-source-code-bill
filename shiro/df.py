@@ -1,13 +1,52 @@
 import pandas as pd
 
+# Sample JSON data
 data = [
-    {'label': 'apache:1.11.x', 'ref': '1.11.x', 'sha': 'ffde5e8cb99ae70723b40b7e8ea70131773db333', 'user': {'login': 'apache', 'id': 47359, 'node_id': 'MDEyOk9yZ2FuaXphdGlvbjQ3MzU5', 'avatar_url': 'https://avatars.githubusercontent.com/u/47359?v=4', 'gravatar_id': '', 'url': 'https://api.github.com/users/apache'}},
-    {'label': 'apache:1.11.x', 'ref': '1.11.x', 'sha': 'b7e8ea70131773', 'user': {'login': 'apache', 'id': 47358, 'node_id': 'MDEQ3MzU5', 'avatar_url': 'https://avatars.githubusercontent.com/u/47358?v=4', 'gravatar_id': '', 'url': 'https://api.github.com/users/apache'}}
+    {
+        "state": "Florida",
+        "counties": [
+            {"name": "Dade", "population": 12345},
+            {"name": "Broward", "population": 40000},
+            {"name": "Palm Beach", "population": 60000},
+        ],
+    },
+    {
+        "state": "Ohio",
+        "counties": [
+            {"name": "Summit", "population": 1234},
+            {"name": "Cuyahoga", "population": 1337},
+        ],
+    },
+],
+[
+    {
+        "state": "bill",
+        "counties": [
+            {"name": "de", "population": 1245},
+            {"name": "Bro", "population": 4000},
+            {"name": "Beach", "population": 600},
+        ],
+    },
+    {
+        "state": "Ori",
+        "counties": [
+            {"name": "miter", "population": 8934},
+            {"name": "hogayu", "population": 3430},
+        ],
+    },
 ]
 
-df = pd.DataFrame(data)
+# # Normalize JSON data into a flat table
+# df = pd.json_normalize(data, 'counties', ['state'])
+#
+# # Print the flattened table
+# print(df)
+
+df = pd.DataFrame()
+
+for sublist in data:
+    for dictionary in sublist:
+        flattened_data = pd.json_normalize(dictionary, 'counties', ['state'])
+        df = df.append(flattened_data, ignore_index=True)
+
 print(df)
-
-login_values = df['user'].apply(lambda x: x['login'])
-print(login_values)
-

@@ -10,13 +10,14 @@ keyword_base_sha_10 = 'f61c0eb56fd5e09142149755a542e03704c257e8'
 filtered_sha_902 = df[df['base.sha'].str.contains(keyword_base_sha_902, case=False)]
 filtered_sha_10 = df[df['base.sha'].str.contains(keyword_base_sha_10, case=False)]
 
-merge_sha = df['merge_commit_sha']
-base_sha = df['base.sha']
+merge_draft_false = df_pull_all.loc[df_pull_all['merged'] == False]
+merge_draft_true = df_pull_all.loc[df_pull_all['merged'] == True]
+
+merge_sha = merge_draft_true['merge_commit_sha']
+base_sha = merge_draft_true['base.sha']
+
 base_sha_drop = base_sha.drop_duplicates()
 merge_sha_drop = merge_sha.drop_duplicates()
 
-# base_sha_drop.to_csv("shiro_base.txt" , index=False, header=None)
-# merge_sha_drop.to_csv("merge_base.txt" , index=False, header=None)
-
-merge_draft_false = df_pull_all.loc[df_pull_all['merged'] == False]
-merge_draft_true = df_pull_all.loc[df_pull_all['merged'] == True]
+base_sha_drop.to_csv("shiro_base.txt" , index=False, header=None)
+merge_sha_drop.to_csv("merge_base.txt" , index=False, header=None)

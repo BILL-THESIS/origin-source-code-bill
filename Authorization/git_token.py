@@ -1,6 +1,6 @@
 import requests
 
-token = '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'
+token = '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'
 url = "https://api.github.com/rate_limit"
 header = {'Authorization': 'Bearer ' + token}
 response = requests.get(url, headers=header)

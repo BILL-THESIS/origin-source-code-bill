@@ -19,11 +19,6 @@ def repo(data):
         api_pulls = "https://api.github.com/repos/" + repo_owner + "/" + repo_name + "/pulls?state=closed"
         print(api_pulls)
 
-
-api = repo(repo_data)
-print(api)
-
-
 obj = []
 df = pd.DataFrame(obj)
 

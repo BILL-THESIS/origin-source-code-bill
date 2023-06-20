@@ -2,12 +2,15 @@ import json
 from sonarqube import SonarQubeClient
 import pandas as pd
 import requests
+
+
 # SonarQubeClien
 
 def search_projects(page_number):
+    data_list = []
     # Set up the API request parameters
     params = {
-        'ps': 500,  # Number of projects per page
+        'ps': 100,  # Number of projects per page
         'p': page_number  # Page number
     }
     headers = {
@@ -24,21 +27,25 @@ def search_projects(page_number):
     data_dumps = json.dumps(response)
     data = json.loads(data_dumps)
 
-
     # Process the response
     if 'components' in data:
         projects = data['components']
         for project in projects:
-            df_json = json.dumps(project)
-            obj = json.loads(df_json)
-            obj_json_nor = pd.json_normalize(obj)
-            print(obj_json_nor)
-            obj_json_nor.to_csv("Sonar_all_projects.csv")
+            # Process each project as desired
+            project_key = project['key']
+            project_name = project['name']
+            p_qualifier = project['qualifier']
+            p_visibility = project['visibility']
+            p_lastAnalysisDate = project['lastAnalysisDate']
+            p_revision = project['revision']
+            # print(f"Project Key: {project_key}, Project Name: {project_name}")
 
         # Check if there are more pages and recursively call the function for the next page
         if 'paging' in data and 'pageIndex' in data['paging'] and data['paging']['pageIndex'] < data['paging']['total']:
             # print(page_number)
             search_projects(page_number + 1)
 
+
 # Start the search from the first page
 search_projects(1)
+df_all = pd.DataFrame()

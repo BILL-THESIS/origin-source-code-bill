@@ -2,9 +2,7 @@ import requests
 import pandas as pd
 from Authorization import git_token
 
-
 api_get = 'https://api.github.com/repos/apache/seatunnel/pulls?state=closed&per_page=300&page='
-
 
 def cell_api(api, fromPage=1, toPage=5, **page):
     data = page.get('page', [])

@@ -24,21 +24,35 @@ def search_projects(page_number):
     data_dumps = json.dumps(response)
     data = json.loads(data_dumps)
 
-
     # Process the response
     if 'components' in data:
         projects = data['components']
+        df_list = []
         for project in projects:
+
             df_json = json.dumps(project)
             obj = json.loads(df_json)
             obj_json_nor = pd.json_normalize(obj)
-            print(obj_json_nor)
-            obj_json_nor.to_csv("Sonar_all_projects.csv")
+            df = pd.DataFrame(obj_json_nor)
+            df_list.append(df)
+            print(df_list)
 
-        # Check if there are more pages and recursively call the function for the next page
-        if 'paging' in data and 'pageIndex' in data['paging'] and data['paging']['pageIndex'] < data['paging']['total']:
-            # print(page_number)
-            search_projects(page_number + 1)
+            df_result = pd.concat(df_list)
+            print(df_result)
 
-# Start the search from the first page
+
+            if 'paging' in data and 'pageIndex' in data['paging'] and data['paging']['pageIndex'] < data['paging']['total']:
+                search_projects(page_number + 1)
+                print("loading", page_number)
+
+            output_file = f"page_{page_number}.csv"
+            df_result.to_csv(output_file, index=False)
+
+            # if 'paging' in response:
+            #     total_pages = response['paging']['total']
+            #     current_page = response['paging']['pageIndex']
+            #     if current_page < total_pages:
+            #         search_projects(page_number + 1)
+            #         print("Loading page", page_number)
+
 search_projects(1)

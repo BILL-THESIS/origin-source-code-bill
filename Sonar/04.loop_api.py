@@ -20,8 +20,3 @@ response = sonar.projects.search_projects(param=params)
 
 data_dumps = json.dumps(response)
 data = json.loads(data_dumps)
-
-if 'paging' in data and 'pageIndex' in data['paging'] and data['paging']['pageIndex'] < data['paging']['total']:
-    params['p'] += 1
-    print("loading" ,params['p'])
-

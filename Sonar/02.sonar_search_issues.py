@@ -17,18 +17,19 @@ for project_key in project_keys['project_key']:
     params = {
         'componentKeys': project_key,
         'scopes': 'MAIN',
+        'languages': 'java' ,
         'types': 'CODE_SMELL',
         'ps': 500,
         'p': 1
     }
 
     print(project_key)
+
     while True:
         response = sonar.issues.search_issues(**params)
         issues = response['issues']
 
         all_issues.extend(issues)
-        # print(all_issues)
 
         if len(issues) < params['ps']:
             break
@@ -64,5 +65,5 @@ for project_key in project_keys['project_key']:
     set_index_df = grouped_data_dropna.set_index(['project', 'rule'])
     rule_counts = set_index_df.groupby(['project', 'rule']).size()
     rule_df = pd.DataFrame(rule_counts)
-    pivot_df = rule_df.pivot_table(index='project', columns='rule', aggfunc='size', fill_value=0)
-    pivot_df.to_csv("smells_all.csv")
+    pivot_df = rule_df.pivot_table(index='project', columns='rule', fill_value=0)
+    pivot_df.to_csv("smells_all.csv", index='project')

@@ -17,18 +17,19 @@ for project_key in project_keys['project_key']:
     params = {
         'componentKeys': project_key,
         'scopes': 'MAIN',
+        'languages': 'java' ,
         'types': 'CODE_SMELL',
         'ps': 500,
         'p': 1
     }
 
     print(project_key)
+
     while True:
         response = sonar.issues.search_issues(**params)
         issues = response['issues']
 
         all_issues.extend(issues)
-        # print(all_issues)
 
         if len(issues) < params['ps']:
             break
@@ -38,6 +39,8 @@ for project_key in project_keys['project_key']:
         if not issues:  # Check if the data page is empty
             break
 
+        all_issues_df = pd.DataFrame(all_issues)
+
         data_list = []
 
         for issue in all_issues:
@@ -45,13 +48,22 @@ for project_key in project_keys['project_key']:
             data = {
                 'key': issue['key'],
                 'type': issue['type'],
-                # Add more fields as needed
+                'rule': issue['rule'],
+                'project': issue['project'],
+                'effort': issue['effort'],
+                'debt': issue['debt']
             }
 
-            data_list.append(data)
-            # print(data_list)
+            data_list_append = data_list.append(data)
+            # print(data_list_append)
 
         # Concatenate the data_page with the previous data
-        data_list.extend(issues)
+        data_list_extend = data_list.extend(issues)
 
-    grouped_data = pd.DataFrame(data_list).groupby('key')
+    grouped_data = pd.DataFrame(data_list)
+    grouped_data_dropna = grouped_data.dropna(axis='columns')
+    set_index_df = grouped_data_dropna.set_index(['project', 'rule'])
+    rule_counts = set_index_df.groupby(['project', 'rule']).size()
+    rule_df = pd.DataFrame(rule_counts)
+    pivot_df = rule_df.pivot_table(index='project', columns='rule', fill_value=0)
+    pivot_df.to_csv("smells_all.csv", index='project')

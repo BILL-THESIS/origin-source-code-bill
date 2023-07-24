@@ -3,7 +3,7 @@ from datetime import timedelta
 
 git_df = pd.read_csv("../../Github/output/02.seatunnel_check_pull.csv")
 sonar_project_key = pd.read_csv("../output/all_projects_data.csv")
-sonar_smells = pd.read_csv("../seatunnel_smells_all.csv")
+sonar_smells = pd.read_csv("../output/seatunnel_smells_all.csv")
 
 git_ture = git_df.drop(git_df[git_df['merged'] == False].index)
 
@@ -48,3 +48,5 @@ merged_df = merged_df_begin.merge(merged_df_end, left_on='begin_url', right_on='
 begin = merged_df.merge(sonar_smells, left_on='key_x', right_on='rule')
 end = merged_df.merge(sonar_smells , left_on='key_y', right_on='rule')
 
+begin.to_parquet('../output/seatunnel_extract_begin.parquet', index=False)
+end.to_parquet('../output/seatunnel_extract_end.parquet', index=False)

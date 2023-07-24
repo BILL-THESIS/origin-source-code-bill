@@ -19,6 +19,9 @@ df_extract = pd.DataFrame({
 
 df_extract.set_index(['begin_sha', 'end_sha'])
 df_extract['total_time'] = pd.to_datetime(df_extract['open_time']) - pd.to_datetime(df_extract['closed_time'])
+
+
+
 # Get the column names as a list
 columns_begin = begin.columns.tolist()
 columns_end = end.columns.tolist()
@@ -32,35 +35,35 @@ begin.columns = columns_with_prefix_begin
 end.columns = columns_with_prefix_end
 
 # data Frames Extract GitHub with Begin
-# merged_df = df_extract.merge(begin, on='begin_sha')
-
-first_m = df_extract.merge(begin, on='begin_sha')
+first_m = df_extract.merge(begin, left_on=['begin_sha', 'end_sha'], right_on=['begin_begin_sha', 'begin_end_sha'])
 first_m.drop_duplicates()
-second_m = first_m.merge(end , on='end_sha')
+second_m = df_extract.merge(end , left_on=['begin_sha', 'end_sha'], right_on=['end_begin_sha', 'end_end_sha'])
 second_m.drop_duplicates()
+
+all_df = first_m.merge(second_m, on=['begin_sha', 'end_sha'])
 
 df = []
 df = pd.DataFrame({
-                    'begin_sha': second_m['begin_sha'],
-                    'end_sha': second_m['end_sha'],
-                    'commits': second_m['commits'],
-                    'additions': second_m['additions'],
-                    'deletions': second_m['deletions'],
-                    'changed_files': second_m['changed_files'],
-                    'open_time': second_m['open_time'],
-                    'closed_time': second_m['closed_time'],
-                    'total_time': second_m['total_time'],
-                    'begin_time': second_m['begin_time'],
-                    'end_time' : second_m['end_time'],
-                    'begin_Dispensables' : second_m['begin_Dispensables'],
-                    'begin_Bloaters' : second_m['begin_Change Preventers'],
-                    'begin_Change Preventers' : second_m['begin_Change Preventers'],
-                    'begin_Couplers' :  second_m['begin_Couplers'],
-                    'begin_Object-Orientation Abusers' : second_m['begin_Object-Orientation Abusers'],
-                    'end_Dispensables' : second_m['end_Dispensables'],
-                    'end_Bloaters' : second_m['end_Change Preventers'],
-                    'end_Change Preventers' : second_m['end_Change Preventers'],
-                    'end_Couplers' :  second_m['end_Couplers'],
-                    'end_Object-Orientation Abusers' : second_m['end_Object-Orientation Abusers'],
+                    'begin_sha': all_df['begin_sha'],
+                    'end_sha': all_df['end_sha'],
+                    'commits': all_df['commits_x'],
+                    'additions': all_df['additions_x'],
+                    'deletions': all_df['deletions_x'],
+                    'changed_files': all_df['changed_files_x'],
+                    # 'open_time': all_df['open_time_x'],
+                    # 'closed_time': all_df['closed_time_x'],
+                    'total_time': all_df['total_time_x'],
+                    'begin_time': all_df['begin_begin_time'],
+                    'end_time' : all_df['end_end_time'],
+                    'begin_Dispensables' : all_df['begin_Dispensables'],
+                    'begin_Bloaters' : all_df['begin_Change Preventers'],
+                    'begin_Change Preventers' : all_df['begin_Change Preventers'],
+                    'begin_Couplers' :  all_df['begin_Couplers'],
+                    'begin_Object-Orientation Abusers' : all_df['begin_Object-Orientation Abusers'],
+                    'end_Dispensables' : all_df['end_Dispensables'],
+                    'end_Bloaters' : all_df['end_Change Preventers'],
+                    'end_Change Preventers' : all_df['end_Change Preventers'],
+                    'end_Couplers' :  all_df['end_Couplers'],
+                    'end_Object-Orientation Abusers' : all_df['end_Object-Orientation Abusers'],
 
 })

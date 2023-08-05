@@ -20,8 +20,6 @@ df_extract = pd.DataFrame({
 df_extract.set_index(['begin_sha', 'end_sha'])
 df_extract['total_time'] = pd.to_datetime(df_extract['open_time']) - pd.to_datetime(df_extract['closed_time'])
 
-
-
 # Get the column names as a list
 columns_begin = begin.columns.tolist()
 columns_end = end.columns.tolist()

@@ -1,7 +1,6 @@
 import pandas as pd
 
 sonar_group_smells = pd.read_csv('../../Sonar/output/group_smells.csv')
-x= pd.read_csv('../../Sonar/output/group_smells.csv')
 # sonar_project_key = pd.read_csv("../Sonar/output/all_projects_data.csv")
 sonar_smells = pd.read_csv("../../Sonar/output/smell_test_data.csv")
 

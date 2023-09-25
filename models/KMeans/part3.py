@@ -13,6 +13,7 @@ print(csv_files)
 
 scores = []
 list_scores = []
+labels = []
 
 for csv_file in csv_files:
     file_path = os.path.join(directory_path, csv_file)
@@ -23,9 +24,14 @@ for csv_file in csv_files:
     print("DF ::" , df_scaled)
     scaled_col = df_scaled.columns
 
-    for n_clusters , scaled_col in range(2,10):
+    for n_clusters in range(2,5):
         km = KMeans(n_clusters = n_clusters)
         print("KM :::" ,km)
         km.fit(df_scaled)
         sil_avg = silhouette_score(df_scaled , km.labels_).round(4)
-        scores.append([sil_avg , n_clusters])
+        scores.append([df_scaled.columns.tolist(),sil_avg , n_clusters])
+
+        cluster_labels = km.fit_predict(df_scaled)
+        labels.append([df_scaled.columns.tolist(),n_clusters,cluster_labels])
+        pd.DataFrame(labels).to_csv("cluster_lables.csv" , index=False)
+

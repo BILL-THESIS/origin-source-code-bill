@@ -7,10 +7,18 @@ from itertools import chain, combinations, permutations
 import numpy as np
 import os
 
-df_original = pd.read_parquet('../../Sonar/seatunnel_all_information.parquet')
-X = df_original.loc[:, ~df_original.columns.isin(['begin_sha', 'end_sha', 'begin_time','end_time',
-                                'total_time',
-                                'time'
-                                ])]
 
-df = pd.read_csv("cluster_lables.csv")
+
+df_original = pd.read_parquet('../../Sonar/seatunnel_all_information.parquet')
+
+labels = pd.read_pickle('lable/labels_final.pkl')
+
+new_data = {}
+
+for i , row in labels.iterrows():
+    col_name = f'{row[0]}_{row[1]}'
+    new_data[col_name] = row[3]
+
+df_labels = pd.DataFrame(new_data)
+print(df_labels)
+# df_labels.to_pickle("labels_group.pkl")

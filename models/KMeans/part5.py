@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 from itertools import chain, combinations, permutations
+from itertools import product
 
 df_original = pd.read_parquet('../../Sonar/seatunnel_all_information.parquet')
 d1 = df_original.iloc[:, [5,9,10,11,12,13]]
@@ -8,32 +9,42 @@ labels = pd.read_pickle('lable/labels_final.pkl')
 group_lables = pd.read_pickle('lable/labels_group.pkl')
 directory_path = 'D:\origin-source-code-bill\models\KMeans\combia'
 
-columns = d1.columns
-list_com = []
-result_dfs = []
+df1_col = d1.columns
+df1_col = df1_col.tolist()
+group_lables_col = group_lables.columns
+group_lables_col = group_lables_col.tolist()
 
-for r in range(1, len(columns) + 1):
-    for column_combination in combinations(columns , r):
-        combined_df = d1[list(column_combination)]
-        list_com.append(combined_df)
-        print(list_com)
+# initialize list and tuple
+test_list = df1_col
+test_tup = group_lables_col
+
+# printing original list and tuple
+print("The original list : " + str(test_list))
+print("The original tuple : " + str(test_tup))
+
+# Construct Cartesian Product Tuple list
+# using itertools.product()
+res = list(product( test_list, test_tup))
+
+# printing result
+print("The Cartesian Product is : " + str(res))
+
+filter_res = []
+for x in res:
+    # print(x[0], ' vs ', x[1])
+    if x[0] in x[1]:
+        filter_res.append(x)
+print('filter res is : ' + str(filter_res))
+
+# result_list = []
+# for x in substrings:
+#     # append True/False for substring x
+#     result_list.append(x.lower() in string.lower())
+#
+# # call any() with boolean results list
+# print(any(result_list))
 
 
-for col in group_lables.columns:
-    per_list = []
-    col_perfix = col[:-2]
-    per_list.append(col_perfix)
-    # print(col_perfix)
-
-    for i in list_com:
-        df_list = pd.DataFrame(i)
-        # print(df_list)
-        df_list_col = df_list.columns
-
-    for i in per_list:
-        if i in df_list_col:
-            print("ok")
-            concat_df = pd.concat([df_list, group_lables[i]] , axis=1)
-            print("+++++++++++++++")
-            print(concat_df)
-            result_dfs.append(concat_df)
+# abc = '["changed_files", "begin_Dispensables", "begin_Bloaters"]_2'
+# abc_dat = re.split("_\d", abc)[0]
+# df_original[eval(abc_dat)]

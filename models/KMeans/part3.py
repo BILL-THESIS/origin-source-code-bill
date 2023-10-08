@@ -10,6 +10,8 @@ import os
 directory_path = 'D:\origin-source-code-bill\models\KMeans\scaled'
 directory_path_lables = 'D:\origin-source-code-bill\models\KMeans\lable'
 directory_path_scores = 'D:\origin-source-code-bill\models\KMeans\scores'
+
+
 pkl_files = [f for f in os.listdir(directory_path) if f.endswith('.pkl')]
 print(pkl_files)
 
@@ -39,9 +41,9 @@ for pkl_file in pkl_files:
         df_cluster_labels = pd.DataFrame(cluster_labels)
         print("CLUSTER :::" , cluster_labels)
 
-        labels.append([df_scaled.columns.tolist(), n_clusters, sil_avg,cluster_labels])
-        x_labels = pd.DataFrame(labels)
-        x_labels.to_pickle(f"{directory_path_lables}/labels_final_12.pkl")
+        # labels.append([df_scaled.columns.tolist(), n_clusters, sil_avg,cluster_labels])
+        # x_labels = pd.DataFrame(labels)
+        # x_labels.to_pickle(f"{directory_path_lables}/labels_final_12.pkl")
         # print("Labels :::", x_labels)
         # x_labels_explode = x_labels.explode(1)
         # print("Explode :::", x_labels_explode)

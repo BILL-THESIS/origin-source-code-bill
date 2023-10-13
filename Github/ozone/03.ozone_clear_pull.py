@@ -22,6 +22,6 @@ base_sha = merge_draft_true['base.sha']
 
 base_sha_drop = base_sha.drop_duplicates()
 merge_sha_drop = merge_sha.drop_duplicates()
-
 base_sha_drop.to_csv("ozone_base.txt" , index=False, header=None)
-merge_sha_drop.to_csv("ozone_merge.txt" , index=False, header=None)
+# merge_sha_drop.to
+# _csv("ozone_merge.txt" , index=False, header=None)

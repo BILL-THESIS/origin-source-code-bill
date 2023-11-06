@@ -8,14 +8,17 @@ import numpy as np
 import os
 
 df_original = pd.read_parquet('../../Sonar/seatunnel_all_information.parquet')
+
 X = df_original.loc[:, ~df_original.columns.isin(['begin_sha', 'end_sha', 'begin_time','end_time',
                                 'total_time',
-                                'time'
+                                'time',
+                                'commits',
+                                'additions' , 'deletions', 'changed_files'
                                 ])]
 
-X.iloc[:, [4,5,6,7,8]]
+# X.iloc[:, [4,5,6,7,8]]
 
-df = pd.DataFrame(X.iloc[:, [4,5,6,7,8]])
+df = pd.DataFrame(X)
 columns = X.columns
 
 directory_path_combia = 'D:\origin-source-code-bill\models\KMeans\combia'

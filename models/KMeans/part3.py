@@ -8,7 +8,6 @@ import numpy as np
 import os
 
 directory_path = 'D:\origin-source-code-bill\models\KMeans\scaled'
-directory_path_time = 'D:\origin-source-code-bill\models\KMeans\group_time'
 df_original = pd.read_parquet('../../Sonar/seatunnel_all_information.parquet')
 
 path2 = 'D:\origin-source-code-bill\models\KMeans\cluster2'
@@ -29,20 +28,19 @@ for pkl_file in pkl_files:
     print('\n')
 
     if df_col_combined['clusters'].values[0] == 2:
-        merged_df3 = pd.concat([df_original, df_col_combined] , axis=1).reindex(df_col_combined.index)
+        merged_df3 = pd.concat([df_original['total_time'], df_col_combined] , axis=1).reindex(df_col_combined.index)
         merged_df3.to_pickle(f'{path2}/{df_col_combined.columns[-3]}.pkl')
 
-
-    # if df_col_combined['clusters'].values[0] == 3:
-    #     merged_df2 = pd.concat([df_original, df_col_combined] , axis=1).reindex(df_col_combined.index)
-    #     merged_df2.to_pickle(f'{path3}/{df_col_combined.columns[-3]}.pkl')
+    if df_col_combined['clusters'].values[0] == 3:
+        merged_df2 = pd.concat([df_original['total_time'], df_col_combined] , axis=1).reindex(df_col_combined.index)
+        merged_df2.to_pickle(f'{path3}/{df_col_combined.columns[-3]}.pkl')
 
     if df_col_combined['clusters'].values[0] == 4:
-        merged_df3 = pd.concat([df_original, df_col_combined] , axis=1).reindex(df_col_combined.index)
+        merged_df3 = pd.concat([df_original['total_time'], df_col_combined] , axis=1).reindex(df_col_combined.index)
         merged_df3.to_pickle(f'{path4}/{df_col_combined.columns[-3]}.pkl')
 
     if df_col_combined['clusters'].values[0] == 5:
-        merged_df3 = pd.concat([df_original, df_col_combined] , axis=1).reindex(df_col_combined.index)
+        merged_df3 = pd.concat([df_original['total_time'], df_col_combined] , axis=1).reindex(df_col_combined.index)
         merged_df3.to_pickle(f'{path5}/{df_col_combined.columns[-3]}.pkl')
     else:
         print("non")

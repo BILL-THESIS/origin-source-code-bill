@@ -7,8 +7,8 @@ from itertools import chain, combinations, permutations
 import numpy as np
 import os
 
-directory_path = 'D:\origin-source-code-bill\models\KMeans\group_time'
-directory_path_cluster = '/models/KMeans/cluster3'
+directory_path = 'D:\origin-source-code-bill\models\KMeans\scaled'
+# directory_path_cluster = '/models/KMeans/cluster3'
 
 
 pkl_files = [f for f in os.listdir(directory_path) if f.endswith('.pkl')]
@@ -86,33 +86,33 @@ for pkl_file in pkl_files:
                 f'Maximum{cluster_value}': cluster_data['total_time'].max(),
                 f'Average{cluster_value}': cluster_data['total_time'].mean()
             }
-        # if cluster_value == 2:
-        #     results_dict_2 = {
-        #         'name_col' : col_srt ,
-        #         'scores' : cluster_data['scored'].values[1],
-        #         'cluster' : cluster_data['clusters'].values[1],
-        #         f'Minimum{cluster_value}': cluster_data['total_time'].min(),
-        #         f'Maximum{cluster_value}': cluster_data['total_time'].max(),
-        #         f'Average{cluster_value}': cluster_data['total_time'].mean()
-        #     }
-        # if cluster_value == 3 :
-        #     results_dict_3 = {
-        #         'name_col' : col_srt ,
-        #         'scores' : cluster_data['scored'].values[1],
-        #         'cluster' : cluster_data['clusters'].values[1],
-        #         f'Minimum{cluster_value}' : cluster_data['total_time'].min() ,
-        #         f'Maximum{cluster_value}': cluster_data['total_time'].max(),
-        #         f'Average{cluster_value}': cluster_data['total_time'].mean()
-        #     }
-        # if cluster_value == 4 :
-        #     results_dict_4 = {
-        #         'name_col' : col_srt ,
-        #         'scores' : cluster_data['scored'].values[1],
-        #         'cluster' : cluster_data['clusters'].values[1],
-        #         f'Minimum{cluster_value}' : cluster_data['total_time'].min() ,
-        #         f'Maximum{cluster_value}': cluster_data['total_time'].max(),
-        #         f'Average{cluster_value}': cluster_data['total_time'].mean()
-        #     }
+        if cluster_value == 2:
+            results_dict_2 = {
+                'name_col' : col_srt ,
+                'scores' : cluster_data['scored'].values[1],
+                'cluster' : cluster_data['clusters'].values[1],
+                f'Minimum{cluster_value}': cluster_data['total_time'].min(),
+                f'Maximum{cluster_value}': cluster_data['total_time'].max(),
+                f'Average{cluster_value}': cluster_data['total_time'].mean()
+            }
+        if cluster_value == 3 :
+            results_dict_3 = {
+                'name_col' : col_srt ,
+                'scores' : cluster_data['scored'].values[1],
+                'cluster' : cluster_data['clusters'].values[1],
+                f'Minimum{cluster_value}' : cluster_data['total_time'].min() ,
+                f'Maximum{cluster_value}': cluster_data['total_time'].max(),
+                f'Average{cluster_value}': cluster_data['total_time'].mean()
+            }
+        if cluster_value == 4 :
+            results_dict_4 = {
+                'name_col' : col_srt ,
+                'scores' : cluster_data['scored'].values[1],
+                'cluster' : cluster_data['clusters'].values[1],
+                f'Minimum{cluster_value}' : cluster_data['total_time'].min() ,
+                f'Maximum{cluster_value}': cluster_data['total_time'].max(),
+                f'Average{cluster_value}': cluster_data['total_time'].mean()
+            }
         # if cluster_value == 5 :
         #     results_dict_5 = {
         #         'name_col' : col_srt ,
@@ -122,50 +122,22 @@ for pkl_file in pkl_files:
         #         f'Maximum{cluster_value}': cluster_data['total_time'].max(),
         #         f'Average{cluster_value}': cluster_data['total_time'].mean()
         #     }
-        # if cluster_value == 6 :
+        # if cluster_value == 6:
         #     results_dict_6 = {
         #         'name_col' : col_srt ,
         #         'scores' : cluster_data['scored'].values[1],
         #         'cluster' : cluster_data['clusters'].values[1],
-        #         f'Minimum{cluster_value}' : cluster_data['total_time'].min() ,
+        #         f'Minimum{cluster_value}': cluster_data['total_time'].min() ,
         #         f'Maximum{cluster_value}': cluster_data['total_time'].max(),
         #         f'Average{cluster_value}': cluster_data['total_time'].mean()
         #     }
-        # if cluster_value == 7 :
-        #     results_dict_7 = {
-        #         'name_col' : col_srt ,
-        #         'scores' : cluster_data['scored'].values[1],
-        #         'cluster' : cluster_data['clusters'].values[1],
-        #         f'Minimum{cluster_value}' : cluster_data['total_time'].min() ,
-        #         f'Maximum{cluster_value}': cluster_data['total_time'].max(),
-        #         f'Average{cluster_value}': cluster_data['total_time'].mean()
-        #     }
-        # if cluster_value == 8 :
-        #     results_dict_8 = {
-        #         'name_col' : col_srt ,
-        #         'scores' : cluster_data['scored'].values[1],
-        #         'cluster' : cluster_data['clusters'].values[1],
-        #         f'Minimum{cluster_value}' : cluster_data['total_time'].min() ,
-        #         f'Maximum{cluster_value}': cluster_data['total_time'].max(),
-        #         f'Average{cluster_value}': cluster_data['total_time'].mean()
-        #     }
-        # if cluster_value == 9 :
-        #     results_dict_9 = {
-        #         'name_col' : col_srt ,
-        #         'scores' : cluster_data['scored'].values[1],
-        #         'cluster' : cluster_data['clusters'].values[1],
-        #         f'Minimum{cluster_value}' : cluster_data['total_time'].min() ,
-        #         f'Maximum{cluster_value}': cluster_data['total_time'].max(),
-        #         f'Average{cluster_value}': cluster_data['total_time'].mean()
-        #     }
-
 
 
     results_0.append(results_dict_0)
     results_1.append(results_dict_1)
-    # results_2.append(results_dict_2)
-    # results_3.append(results_dict_3)
-    # results_4.append(results_dict_4)
+    results_2.append(results_dict_2)
+    results_3.append(results_dict_3)
+    results_4.append(results_dict_4)
     # results_5.append(results_dict_5)
     # results_6.append(results_dict_6)
     # results_7.append(results_dict_7)
@@ -174,19 +146,16 @@ for pkl_file in pkl_files:
 
     results_df_0 = pd.DataFrame(results_0)
     results_df_0 = results_df_0.drop_duplicates()
-    # results_df_0.to_csv("results_df_0.csv")
     results_df_1 = pd.DataFrame(results_1)
     results_df_1 = results_df_1.drop_duplicates()
-    # results_df_1.to_csv("results_df_1.csv")
-    # results_df_2 = pd.DataFrame(results_2)
-    # results_df_2 = results_df_2.drop_duplicates()
-    # # results_df_2.to_csv("results_df_2.csv")
-    # results_df_3 = pd.DataFrame(results_3)
-    # results_df_3 = results_df_3.drop_duplicates()
-    # # results_df_3.to_csv("results_df_3.csv")
-    # results_df_4 = pd.DataFrame(results_4)
-    # results_df_4 = results_df_4.drop_duplicates()
-    # # results_df_4.to_csv("results_df_4.csv")
+    results_df_2 = pd.DataFrame(results_2)
+    results_df_2 = results_df_2.drop_duplicates()
+    results_df_3 = pd.DataFrame(results_3)
+    results_df_3 = results_df_3.drop_duplicates()
+    # results_df_3.to_csv("results_df_3.csv")
+    results_df_4 = pd.DataFrame(results_4)
+    results_df_4 = results_df_4.drop_duplicates()
+    # results_df_4.to_csv("results_df_4.csv")
     # results_df_5 = pd.DataFrame(results_5)
     # results_df_5 =results_df_5.drop_duplicates()
     # # results_df_5.to_csv("results_df_5.csv")
@@ -202,11 +171,12 @@ for pkl_file in pkl_files:
     # results_df_9 = pd.DataFrame(results_9)
     # results_df_9 = results_df_9.drop_duplicates()
     # results_df_9.to_csv("results_df_9.csv")
+
     results_df_0 = pd.DataFrame(results_0).set_index(['name_col', 'scores', 'cluster'])
     results_df_1 = pd.DataFrame(results_1).set_index(['name_col', 'scores', 'cluster'])
-    # results_df_2 = pd.DataFrame(results_2).set_index(['name_col', 'scores', 'cluster'])
-    # results_df_3 = pd.DataFrame(results_3).set_index(['name_col', 'scores', 'cluster'])
-    # results_df_4 = pd.DataFrame(results_4).set_index(['name_col', 'scores', 'cluster'])
+    results_df_2 = pd.DataFrame(results_2).set_index(['name_col', 'scores', 'cluster'])
+    results_df_3 = pd.DataFrame(results_3).set_index(['name_col', 'scores', 'cluster'])
+    results_df_4 = pd.DataFrame(results_4).set_index(['name_col', 'scores', 'cluster'])
     # results_df_5 = pd.DataFrame(results_5).set_index(['name_col', 'scores', 'cluster'])
     # results_df_6 = pd.DataFrame(results_6).set_index(['name_col', 'scores', 'cluster'])
     # results_df_7 = pd.DataFrame(results_7).set_index(['name_col', 'scores', 'cluster'])
@@ -215,10 +185,13 @@ for pkl_file in pkl_files:
 
     result3 = pd.merge(results_df_0, results_df_1, on=['name_col', 'scores', 'cluster'])
     result3 = result3.drop_duplicates()
-    # result4 = pd.merge(result3, results_df_2, how="left", on=['name_col', 'scores', 'cluster'])
-    # # result4 = result4.drop_duplicates()
+    result4 = pd.merge(result3, results_df_2, how="left", on=['name_col', 'scores', 'cluster'])
+    result4 = result4.drop_duplicates()
     # result5 = pd.merge(result4, results_df_3, how="left", on=['name_col', 'scores', 'cluster'])
+    # result5 = result5.drop_duplicates()
     # result6 = pd.merge(result5, results_df_4, how="left", on=['name_col', 'scores', 'cluster'])
+    # result6 = result6.drop_duplicates()
+    result4.to_csv("all_data_scores_clusters.csv")
     # result7 = pd.merge(result6, results_df_5, how="left", on=['name_col', 'scores', 'cluster'])
     # result8 = pd.merge(result7, results_df_6, how="left", on=['name_col', 'scores', 'cluster'])
     # result9 = pd.merge(result8, results_df_7, how="left", on=['name_col', 'scores', 'cluster'])

@@ -12,9 +12,21 @@ df_original = pd.read_parquet('../../Sonar/seatunnel_all_information.parquet')
 X = df_original.loc[:, ~df_original.columns.isin(['begin_sha', 'end_sha', 'begin_time','end_time',
                                 'total_time',
                                 'time',
-                                'commits',
-                                'additions' , 'deletions', 'changed_files'
+                                # 'commits',
+                                # 'additions' , 'deletions', 'changed_files'
                                 ])]
+
+X = X.rename(columns={"begin_Dispensables": "begin_D",
+                  "begin_Bloaters": "begin_B",
+                  "begin_Change Preventers": "begin_CP",
+                  "begin_Couplers": "begin_C",
+                  "begin_Object-Orientation Abusers": "begin_OOA",
+                  "end_Dispensables": "end_D",
+                  "end_Bloaters": "end_B",
+                  "end_Change Preventers": "end_CP",
+                  "end_Couplers": "end_C",
+                  "end_Object-Orientation Abusers": "end_OOA",
+                  })
 
 # X.iloc[:, [4,5,6,7,8]]
 
@@ -27,4 +39,5 @@ for r in range(1, len(columns) + 1):
     for column_combination in combinations(columns , r):
         combined_df = X[list(column_combination)]
         print(combined_df)
-        combined_df.to_pickle(f"{directory_path_combia}/{combined_df.columns.tolist()}.pkl")
+        combined_df.to_parquet(f"{directory_path_combia}/{combined_df.columns.tolist()}.parquet")
+        # combined_df.to_pickle(f"{directory_path_combia}/{combined_df.columns.tolist()}.pkl")

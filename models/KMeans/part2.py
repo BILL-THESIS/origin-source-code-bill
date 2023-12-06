@@ -10,8 +10,8 @@ import os
 directory_path = 'D:\origin-source-code-bill\models\KMeans\combia'
 directory_path_scaled = 'D:\origin-source-code-bill\models\KMeans\scaled'
 
-pkl_files = [f for f in os.listdir(directory_path) if f.endswith('.pkl')]
-print(pkl_files)
+parquet_files = [f for f in os.listdir(directory_path) if f.endswith('.parquet')]
+print(parquet_files)
 
 scaler = MinMaxScaler()
 scaled_dataframes = []
@@ -19,22 +19,23 @@ scores = []
 labels = []
 result_dfs = []
 
-for csv_file in pkl_files:
+for csv_file in parquet_files:
     file_path = os.path.join(directory_path, csv_file)
     print("file :::" , file_path)
     variable_name = os.path.splitext(csv_file)[0]
     print("Var ::" , variable_name)
-    df_col_combined = pd.read_pickle(file_path)
+    df_col_combined = pd.read_parquet(file_path)
     print("DF ::" , df_col_combined)
 
     scaled_data = scaler.fit_transform(df_col_combined)
     print("Scaled :::", scaled_data)
+
     scaled_df = pd.DataFrame(scaled_data, columns=df_col_combined.columns)
     print("scaled_df_T :::" , scaled_df)
     # scaled_df.to_pickle(f"{directory_path_scaled}/{scaled_df.columns.tolist()}_scaled.pkl")
     # scaled_dataframes.append(scaled_df)
 
-    for n_clusters in range(2,7): #11
+    for n_clusters in range(2,5): #11
         km = KMeans(n_clusters = n_clusters)
         print("KM :::" ,km)
         km.fit(scaled_df)

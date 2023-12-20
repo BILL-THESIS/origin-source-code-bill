@@ -1,3 +1,4 @@
+#!/usr/local/bin/python3
 import time
 from datetime import timedelta
 import pandas as pd
@@ -7,6 +8,9 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from itertools import chain, combinations, permutations
 import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import requests
 import os
 
 
@@ -41,6 +45,10 @@ def kmeans_cluster(df):
 
     result_dict = {}
 
+    url = 'https://notify-api.line.me/api/notify'
+    token_line = "dsIcr3W7g1oMFH5XurbULg2AWfE9xsLAAjchWfFrxnm"
+    headers = {'content-type': 'application/x-www-form-urlencoded', 'Authorization': 'Bearer ' + token_line}
+
     for n_clusters in range(2, 5):
         cluster_results = []
 
@@ -53,6 +61,8 @@ def kmeans_cluster(df):
             print("/n")
             clusters = silhouette_score(data_scaler, cluster_labels)
             print(clusters)
+            line = requests.post(url, headers=headers, data={'data combia': clusters})
+            print(line.text)
             value = {
                 'col_name': data_scaler.columns,
                 'cluster_labels': cluster_labels,
@@ -71,8 +81,6 @@ def kmeans_cluster(df):
     return result_dict
     # return result_dict['score2'], result_dict['score3'], result_dict['score4']
 
-def concat_df(df1 , df2 ):
-    
 # def kmeans_cluster(df):
 #     start_time = time.time()
 #     start_time_gmt = time.gmtime(start_time)

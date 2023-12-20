@@ -1,5 +1,8 @@
+#!/usr/local/bin/python3
+import time
 from datetime import timedelta
 import pandas as pd
+import requests
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
@@ -7,8 +10,8 @@ from itertools import chain, combinations, permutations
 import numpy as np
 import os
 
-directory_path = 'D:\origin-source-code-bill\models\KMeans\combia'
-directory_path_scaled = 'D:\origin-source-code-bill\models\KMeans\scaled'
+directory_path = '../../models/KMeans/combia2'
+directory_path_scaled = '../../models/scaleds'
 
 parquet_files = [f for f in os.listdir(directory_path) if f.endswith('.parquet')]
 print(parquet_files)
@@ -19,22 +22,31 @@ scores = []
 labels = []
 result_dfs = []
 
+url = 'https://notify-api.line.me/api/notify'
+token = "H5TmIeN7Sj7FviOgCJFK4HKE9jBw5h6kdoY6nmdSdpL"
+headers = {'content-type': 'application/x-www-form-urlencoded', 'Authorization': 'Bearer '+token}
+
+
 for csv_file in parquet_files:
     file_path = os.path.join(directory_path, csv_file)
-    print("file :::" , file_path)
+    # print("file :::" , file_path)
     variable_name = os.path.splitext(csv_file)[0]
-    print("Var ::" , variable_name)
+    # print("Var ::" , variable_name)
     df_col_combined = pd.read_parquet(file_path)
-    print("DF ::" , df_col_combined)
+    # print("DF ::" , df_col_combined)
 
     scaled_data = scaler.fit_transform(df_col_combined)
-    print("Scaled :::", scaled_data)
+    # print("Scaled :::", scaled_data)
+
+    line = requests.post(url, headers=headers, data={'data combia': df_col_combined.columns})
+    print(line.text)
+
 
     scaled_df = pd.DataFrame(scaled_data, columns=df_col_combined.columns)
-    print("scaled_df_T :::" , scaled_df)
-    # scaled_df.to_pickle(f"{directory_path_scaled}/{scaled_df.columns.tolist()}_scaled.pkl")
-    # scaled_dataframes.append(scaled_df)
 
+    start_time = time.time()
+    start_time_gmt = time.gmtime(start_time)
+    start_time_gmt = time.strftime("%Y-%m-%d %H:%M:%S", start_time_gmt)
     for n_clusters in range(2,5): #11
         km = KMeans(n_clusters = n_clusters)
         print("KM :::" ,km)
@@ -74,7 +86,14 @@ for csv_file in parquet_files:
             df1['scored'] = row[2]
             df1['clusters'] = row[3]
 
-            print(df1)
+            # print(df1)
             print('\n')
 
-            df1.to_pickle(f'{directory_path_scaled}/{df1.columns[-3]}.pkl')
+            # df1.to_parquet(f'{directory_path_scaled}/{df1.columns[-3]}.parquet')
+
+        end_time = time.time()
+        result_time = end_time - start_time
+        result_time_gmt = time.gmtime(result_time)
+        result_time_gmt = time.strftime("%H:%M:%S", result_time_gmt)
+        print("Time ::: " , result_time)
+        print("Time gmt :::" , result_time_gmt)

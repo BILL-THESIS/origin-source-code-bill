@@ -10,8 +10,8 @@ from itertools import chain, combinations, permutations
 import numpy as np
 import os
 
-directory_path = '../../models/KMeans/combia2'
-directory_path_scaled = '../../models/scaleds'
+directory_path = '../../models/KMeans/combia2-copy'
+directory_path_scaled = '../../models/KMeans/scaled'
 
 parquet_files = [f for f in os.listdir(directory_path) if f.endswith('.parquet')]
 print(parquet_files)
@@ -47,6 +47,7 @@ for csv_file in parquet_files:
     start_time = time.time()
     start_time_gmt = time.gmtime(start_time)
     start_time_gmt = time.strftime("%Y-%m-%d %H:%M:%S", start_time_gmt)
+
     for n_clusters in range(2,5): #11
         km = KMeans(n_clusters = n_clusters)
         print("KM :::" ,km)
@@ -89,11 +90,11 @@ for csv_file in parquet_files:
             # print(df1)
             print('\n')
 
-            # df1.to_parquet(f'{directory_path_scaled}/{df1.columns[-3]}.parquet')
+            df1.to_parquet(f'{directory_path_scaled}/{df1.columns[-3]}.parquet')
 
-        end_time = time.time()
-        result_time = end_time - start_time
-        result_time_gmt = time.gmtime(result_time)
-        result_time_gmt = time.strftime("%H:%M:%S", result_time_gmt)
-        print("Time ::: " , result_time)
-        print("Time gmt :::" , result_time_gmt)
+    end_time = time.time()
+    result_time = end_time - start_time
+    result_time_gmt = time.gmtime(result_time)
+    result_time_gmt = time.strftime("%H:%M:%S", result_time_gmt)
+    print("Time ::: " , result_time)
+    print("Time gmt :::" , result_time_gmt)

@@ -7,12 +7,8 @@ from itertools import chain, combinations, permutations
 import numpy as np
 import os
 
-directory_path = 'D:\origin-source-code-bill\models\KMeans\scaled'
+directory_path = '../../models/KMeans/cluster2'
 # directory_path_cluster = '/models/KMeans/cluster3'
-
-
-pkl_files = [f for f in os.listdir(directory_path) if f.endswith('.pkl')]
-print(pkl_files)
 
 results_0 = []
 results_1 = []
@@ -30,12 +26,16 @@ max_list = []
 min_list = []
 arg_list = []
 
-for pkl_file in pkl_files:
-    file_path = os.path.join(directory_path, pkl_file)
+parquet_files = [f for f in os.listdir(directory_path) if f.endswith('.parquet')]
+print(parquet_files)
+
+for parquet in parquet_files:
+    file_path = os.path.join(directory_path, parquet)
     # print("file :::" , file_path)
-    variable_name = os.path.splitext(pkl_file)[0]
+    variable_name = os.path.splitext(parquet)[0]
+
     # print("Var ::" , variable_name)
-    df_col_combined = pd.read_pickle(file_path)
+    df_col_combined = pd.read_parquet(file_path)
     # print("DF ::" , df_col_combined)
     print('\n')
 

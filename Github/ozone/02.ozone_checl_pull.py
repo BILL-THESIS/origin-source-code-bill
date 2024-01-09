@@ -14,4 +14,4 @@ for i in df['url']:
 
 df3 = pd.DataFrame(obj)
 print(df)
-df3.to_csv("ozone_check_pull_1.csv" , index=False)
+df3.to_csv("ozone_check_pull_24112023.csv" , index=False)

@@ -1,5 +1,8 @@
+#!/usr/local/bin/python3
+import time
 from datetime import timedelta
 import pandas as pd
+import requests
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
@@ -7,12 +10,11 @@ from itertools import chain, combinations, permutations
 import numpy as np
 import os
 
-directory_path = 'D:\origin-source-code-bill\models\KMeans\combia'
-directory_path_scaled = 'D:\origin-source-code-bill\models\KMeans\scaled'
-directory_path_lables = 'D:\origin-source-code-bill\models\KMeans\lable'
+directory_path = '../../models/KMeans/combia2-copy'
+directory_path_scaled = '../../models/KMeans/scaled'
 
-pkl_files = [f for f in os.listdir(directory_path) if f.endswith('.pkl')]
-print(pkl_files)
+parquet_files = [f for f in os.listdir(directory_path) if f.endswith('.parquet')]
+print(parquet_files)
 
 scaler = MinMaxScaler()
 scaled_dataframes = []
@@ -20,22 +22,33 @@ scores = []
 labels = []
 result_dfs = []
 
+url = 'https://notify-api.line.me/api/notify'
+token = "H5TmIeN7Sj7FviOgCJFK4HKE9jBw5h6kdoY6nmdSdpL"
+headers = {'content-type': 'application/x-www-form-urlencoded', 'Authorization': 'Bearer '+token}
 
-for csv_file in pkl_files:
+
+for csv_file in parquet_files:
     file_path = os.path.join(directory_path, csv_file)
-    print("file :::" , file_path)
+    # print("file :::" , file_path)
     variable_name = os.path.splitext(csv_file)[0]
-    print("Var ::" , variable_name)
-    df_col_combined = pd.read_pickle(file_path)
-    print("DF ::" , df_col_combined)
-    scaled_data = scaler.fit_transform(df_col_combined)
-    print("Scaled :::", scaled_data)
-    scaled_df = pd.DataFrame(scaled_data, columns=df_col_combined.columns)
-    print("scaled_df_T :::" , scaled_df)
-    # scaled_df.to_pickle(f"{directory_path_scaled}/{scaled_df.columns.tolist()}_scaled.pkl")
-    # scaled_dataframes.append(scaled_df)
+    # print("Var ::" , variable_name)
+    df_col_combined = pd.read_parquet(file_path)
+    # print("DF ::" , df_col_combined)
 
-    for n_clusters in range(2,11): #11
+    scaled_data = scaler.fit_transform(df_col_combined)
+    # print("Scaled :::", scaled_data)
+
+    line = requests.post(url, headers=headers, data={'data combia': df_col_combined.columns})
+    print(line.text)
+
+
+    scaled_df = pd.DataFrame(scaled_data, columns=df_col_combined.columns)
+
+    start_time = time.time()
+    start_time_gmt = time.gmtime(start_time)
+    start_time_gmt = time.strftime("%Y-%m-%d %H:%M:%S", start_time_gmt)
+
+    for n_clusters in range(2,5): #11
         km = KMeans(n_clusters = n_clusters)
         print("KM :::" ,km)
         km.fit(scaled_df)
@@ -49,7 +62,6 @@ for csv_file in pkl_files:
         labels.append([df_col_combined,df_cluster_labels,sil_avg,n_clusters])
         print(labels)
         df_lables = pd.DataFrame(labels)
-        # df_lables.to_pickle(f"{directory_path_lables}/List_df_labels.pkl")
 
         for i, row in df_lables.iterrows():
             print("I :::::::::::", i)
@@ -67,16 +79,22 @@ for csv_file in pkl_files:
             print("ROW 4 ", row[3])
             print('\n')
 
+
             df1 = pd.concat([row[0], row[1]], axis=1)
             print("==========================")
+
             df1 = df1.rename(columns={0: f'{row[0].columns.to_list()}_{row[3]}'})
-            print(df1)
+            df1['scored'] = row[2]
+            df1['clusters'] = row[3]
+
+            # print(df1)
             print('\n')
 
-            df_last_col = df_col_combined.columns[-1]
-            print("Last Columns ::", df_last_col)
-            print("\n")
+            df1.to_parquet(f'{directory_path_scaled}/{df1.columns[-3]}.parquet')
 
-            if df_col_combined.columns[0] in df_col_combined:
-                merged_df = pd.merge(df_original, df_col_combined, on=df_col_combined.columns[0])
-                print("Merged DF :::", merged_df)
+    end_time = time.time()
+    result_time = end_time - start_time
+    result_time_gmt = time.gmtime(result_time)
+    result_time_gmt = time.strftime("%H:%M:%S", result_time_gmt)
+    print("Time ::: " , result_time)
+    print("Time gmt :::" , result_time_gmt)

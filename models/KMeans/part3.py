@@ -1,5 +1,6 @@
 from datetime import timedelta
 import pandas as pd
+from pathlib import Path
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
@@ -7,53 +8,40 @@ from itertools import chain, combinations, permutations
 import numpy as np
 import os
 
-directory_path = 'D:\origin-source-code-bill\models\KMeans\scaled'
-directory_path_lables = 'D:\origin-source-code-bill\models\KMeans\lable'
-directory_path_scores = 'D:\origin-source-code-bill\models\KMeans\scores'
+directory_path = Path(os.path.abspath("../../models/KMeans/scaled"))
+df_original = pd.read_parquet('../../Sonar/seatunnel_all_information.parquet')
 
+path2 = Path(os.path.abspath("../../models/KMeans/cluster2"))
+path3 = Path(os.path.abspath("../../models/KMeans/cluster3"))
+path4 = Path(os.path.abspath("../../models/KMeans/cluster4"))
+path5 = Path(os.path.abspath("../../models/KMeans/cluster5"))
 
-pkl_files = [f for f in os.listdir(directory_path) if f.endswith('.pkl')]
-print(pkl_files)
+parquet_files = [f for f in os.listdir(directory_path) if f.endswith('.parquet')]
+print(parquet_files)
 
-scores = []
-explode_labels = []
-labels = []
-
-for pkl_file in pkl_files:
-    file_path = os.path.join(directory_path, pkl_file)
-    print("file :::" , file_path)
-    variable_name = os.path.splitext(pkl_file)[0]
+for parquet in parquet_files:
+    file_path = os.path.join(directory_path, parquet)
+    # print("file :::" , file_path)
+    variable_name = os.path.splitext(parquet)[0]
     print("Var ::" , variable_name)
-    df_scaled = pd.read_pickle(file_path)
-    print("DF ::" , df_scaled)
-    scaled_col = df_scaled.columns
+    df_col_combined = pd.read_parquet(file_path)
+    print("DF ::" , df_col_combined['clusters'].values[0])
+    print('\n')
 
-    for n_clusters in range(2,12):
-        km = KMeans(n_clusters = n_clusters)
-        print("KM :::" ,km)
-        km.fit(df_scaled)
-        sil_avg = silhouette_score(df_scaled , km.labels_).round(4)
-        scores.append([df_scaled.columns.tolist(),sil_avg , n_clusters])
-        print("SCORES :::", scores)
-        # pd.DataFrame(scores).to_pickle(f"{directory_path_scores}/{df_scaled.columns.tolist()}_scores.pkl")
+    if df_col_combined['clusters'].values[0] == 2:
+        merged_df3 = pd.concat([df_original['total_time'], df_col_combined] , axis=1).reindex(df_col_combined.index)
+        merged_df3.to_pickle(f'{path2}/{df_col_combined.columns[-3]}.parquet')
 
-        cluster_labels = km.fit_predict(df_scaled)
-        df_cluster_labels = pd.DataFrame(cluster_labels)
-        print("CLUSTER :::" , cluster_labels)
+    if df_col_combined['clusters'].values[0] == 3:
+        merged_df2 = pd.concat([df_original['total_time'], df_col_combined] , axis=1).reindex(df_col_combined.index)
+        merged_df2.to_pickle(f'{path3}/{df_col_combined.columns[-3]}.parquet')
 
-        # labels.append([df_scaled.columns.tolist(), n_clusters, sil_avg,cluster_labels])
-        # x_labels = pd.DataFrame(labels)
-        # x_labels.to_pickle(f"{directory_path_lables}/labels_final_12.pkl")
-        # print("Labels :::", x_labels)
-        # x_labels_explode = x_labels.explode(1)
-        # print("Explode :::", x_labels_explode)
-        print("---------------------------------")
-        # explode_labels.append([df_scaled.columns.tolist(), x_labels_explode])
-        # print("Explode Labels :::", explode_labels)
-        print("---------------------------------")
-        # explode_labels_df = pd.DataFrame(explode_labels)
-        # df_cluster_labels.to_pickle(f"{directory_path_lables}/{df_scaled.columns.tolist()}_labels.pkl")
+    if df_col_combined['clusters'].values[0] == 4:
+        merged_df3 = pd.concat([df_original['total_time'], df_col_combined] , axis=1).reindex(df_col_combined.index)
+        merged_df3.to_pickle(f'{path4}/{df_col_combined.columns[-3]}.parquet')
 
-
-        # labels.append([df_scaled.columns.tolist(), n_clusters, sil_avg, x_lables_explode])
-        # x_lables.to_pickle(f"{directory_path_lables}/lables_3.pkl")
+#     if df_col_combined['clusters'].values[0] == 5:
+#         merged_df3 = pd.concat([df_original['total_time'], df_col_combined] , axis=1).reindex(df_col_combined.index)
+#         merged_df3.to_pickle(f'{path5}/{df_col_combined.columns[-3]}.pkl')
+#     else:
+#         print("non")

@@ -94,3 +94,5 @@ def kmeans_cluster(df):
 
 
 df = kmeans_cluster(df_original)
+df = pd.DataFrame(df)
+print(df)

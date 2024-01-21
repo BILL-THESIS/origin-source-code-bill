@@ -504,5 +504,5 @@ dependencies:
       - cramjam==2.7.0
       - fastparquet==2023.7.0
       - python-sonarqube-api==2.0.4
-      - scikit-learn==1.2.2
+      - scikit-learn==1.3.2
 prefix: /Users/bill/anaconda3

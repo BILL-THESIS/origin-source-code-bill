@@ -71,8 +71,7 @@ def kmeans_cluster(df):
                         'df': i,
                         'cluster_labels': cluster_labels,
                         'cluster': kmeans,
-                        'score': clusters,
-                        # 'n_init': 'auto'
+                        'score': clusters
                     }
                     score2_list.append(value_2)
                     score2 = pd.DataFrame(score2_list)
@@ -84,7 +83,6 @@ def kmeans_cluster(df):
                         'cluster_labels': cluster_labels,
                         'cluster': kmeans,
                         'score': clusters,
-                        # 'n_init': 'auto'
                     }
                     score3_list.append(value_3)
                     score3 = pd.DataFrame(score3_list)
@@ -95,8 +93,7 @@ def kmeans_cluster(df):
                         'df': i,
                         'cluster_labels': cluster_labels,
                         'cluster': kmeans,
-                        'score': clusters,
-                        # 'n_init': 'auto'
+                        'score': clusters
                     }
                     score4_list.append(value_4)
                     score4 = pd.DataFrame(score4_list)
@@ -121,18 +118,16 @@ cpus = 2
 # parsed_description_split = np.array_split(list_df_list, cpus)
 parsed_description_split = [[list_df_list[0], list_df_list[2]]
                             , [list_df_list[1], list_df_list[3]]
-                            , [list_df_list[3], list_df_list[4]]
-                            , [list_df_list[5], list_df_list[6]]
-                            , [list_df_list[7], list_df_list[8]]
-                            # , [list_df_list[1],list_df_list[3]]
-                            # , [list_df_list[1],list_df_list[3]]
+                            , [list_df_list[1], list_df_list[3]]
+                            # , [list_df_list[5], list_df_list[6]]
+                            # , [list_df_list[7], list_df_list[8]]
                             ]
 print(f"Processing files in directory {list_df_list} using {cpus} CPU cores")
 # print("Number of cpus: ", cpus)
 print("Number of splits: ", len(parsed_description_split))
 
 
-def get_time(df):
+def get_df_cluster(df):
     start = time.time()
     get_cluster = kmeans_cluster(df)
     end = time.time()
@@ -143,10 +138,8 @@ def get_time(df):
 
 # with multiprocessing.Pool(cpus) as pool:
 with multiprocessing.pool.ThreadPool(cpus) as pool:
-    parsed_description_split = pool.map(get_time, parsed_description_split)
+    parsed_description_split = pool.map(get_df_cluster, parsed_description_split)
     print(parsed_description_split)
-    end = time.time()
 
-    print("Total time: ", get_time)
     # parsed_description = pd.concat(parsed_description_split)
     # print(parsed_description.head())

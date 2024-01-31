@@ -1,4 +1,6 @@
 import time
+import random
+
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.cluster import KMeans
@@ -29,16 +31,16 @@ X = X.loc[:, ~df_original.columns.isin(['begin_sha', 'end_sha', 'begin_time', 'e
                                         'commits', 'additions', 'deletions', 'changed_files'
                                         ])]
 
-X['begin_D'] = pd.to_numeric(X['begin_D'] , errors='coerce')
-X['begin_B'] = pd.to_numeric(X['begin_B'] , errors='coerce')
-X['begin_CP'] = pd.to_numeric(X['begin_CP'] , errors='coerce')
-X['begin_C'] = pd.to_numeric(X['begin_C'] , errors='coerce')
-X['begin_OOA'] = pd.to_numeric(X['begin_OOA'] , errors='coerce')
-X['end_D'] = pd.to_numeric(X['end_D'] , errors='coerce')
-X['end_B'] = pd.to_numeric(X['end_B'] , errors='coerce')
-X['end_CP'] = pd.to_numeric(X['end_CP'] , errors='coerce')
-X['end_C'] = pd.to_numeric(X['end_C'] , errors='coerce')
-X['end_OOA'] = pd.to_numeric(X['end_OOA'] , errors='coerce')
+X['begin_D'] = pd.to_numeric(X['begin_D'], errors='coerce')
+X['begin_B'] = pd.to_numeric(X['begin_B'], errors='coerce')
+X['begin_CP'] = pd.to_numeric(X['begin_CP'], errors='coerce')
+X['begin_C'] = pd.to_numeric(X['begin_C'], errors='coerce')
+X['begin_OOA'] = pd.to_numeric(X['begin_OOA'], errors='coerce')
+X['end_D'] = pd.to_numeric(X['end_D'], errors='coerce')
+X['end_B'] = pd.to_numeric(X['end_B'], errors='coerce')
+X['end_CP'] = pd.to_numeric(X['end_CP'], errors='coerce')
+X['end_C'] = pd.to_numeric(X['end_C'], errors='coerce')
+X['end_OOA'] = pd.to_numeric(X['end_OOA'], errors='coerce')
 
 X['D_change'] = X['begin_D'] - X['end_D']
 X['B_change'] = X['begin_B'] - X['end_B']
@@ -53,9 +55,6 @@ X['C_percent'] = (X['C_change'] / X['begin_C']) * 100
 X['OOA_percent'] = (X['OOA_change'] / X['begin_OOA']) * 100
 
 column = X.columns
-
-directory_path_combia = '../../models/KMeans/combia2'
-
 start_time = time.time()
 start_time_gmt = time.gmtime(start_time)
 start_time_gmt = time.strftime("%Y-%m-%d %H:%M:%S", start_time_gmt)
@@ -66,8 +65,10 @@ start_time_gmt = time.strftime("%Y-%m-%d %H:%M:%S", start_time_gmt)
 #     for column_combination in combinations(X.columns, r):
 #         combined_df = X[list(column_combination)]
 #         print(combined_df.columns)
-#         combined_df.to_parquet(f"{directory_path_combia}/{combined_df.columns.tolist()}.parquet")
-
+# combined_df.to_parquet(f"{directory_path_combia}/{combined_df.columns.tolist()}.parquet")
+# file_name = "_".join(combined_df.columns) + ".parquet"
+# file_part = os.path.join(directory_path_combia, file_name)
+# combined_df.to_parquet(file_part)
 
 end_time = time.time()
 result_time = end_time - start_time

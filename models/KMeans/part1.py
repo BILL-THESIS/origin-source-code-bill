@@ -60,6 +60,8 @@ start_time_gmt = time.gmtime(start_time)
 start_time_gmt = time.strftime("%Y-%m-%d %H:%M:%S", start_time_gmt)
 
 
+df_X = X
+
 # for r in range(1, len(X.columns) + 1):
 #     # uesd itertools import combinations to calculater
 #     for column_combination in combinations(X.columns, r):

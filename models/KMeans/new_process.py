@@ -8,41 +8,87 @@ from sklearn.metrics import silhouette_score
 import multiprocessing
 import os
 from concurrent.futures import ThreadPoolExecutor
+import itertools
+import numpy as np
+from part1 import X
 
 df_original = pd.read_parquet('../../Sonar/seatunnel_all_information.parquet')
 path2 = os.path.join(os.path.abspath('../../output'), 'cluster2')
 path3 = os.path.join(os.path.abspath('../../output'), 'cluster3')
 path4 = os.path.join(os.path.abspath('../../output'), 'cluster4')
 
-directory_path = os.path.abspath('../../models/KMeans/combia2')
+# df import X from part1
+df = X
 
-def read_parquet():
-    parquet_files = [f for f in os.listdir(directory_path) if f.endswith('.parquet')]
+# columns of
+col_names = df.columns
 
-    global df_list
-    df_list = []
+# combinations of columns
+all_combinations_list_col = [list(itertools.combinations(col_names, r)) for r in range(2, len(col_names))]
 
-    for parquet_file in parquet_files:
-        file_path = os.path.join(directory_path, parquet_file)
-        df = pd.read_parquet(file_path)
-        df_list.append(df)
-        # print("DF List ::", df_list)
-    return df_list
+# num workers
+num_workers = 8
+
+all_combianations_col = [itertools.combinations(col_names, r) for r in range(1, len(col_names))]
+
+all_combinations = list(itertools.chain(*all_combinations_list_col))
+
+# all_combinations[-1]
+
+list(itertools.chain(*all_combinations))
+list(itertools.chain(all_combinations))
+
+all_combinations_divide = [a for a in all_combinations if len(a) > 0]
 
 
-df_combaination = read_parquet()
+def chunkify(lst, chunk_size):
+    return [lst[i:i + chunk_size] for i in range(0, len(lst), chunk_size)]
 
 
-def scale_data(df):
+all_sub_combinations = chunkify(all_combinations_divide, num_workers)
+
+# get colunms of combinations
+df_combibation = df[list(all_sub_combinations[0][0])]
+df_combibation_list = [df[list(combination)] for combination in all_sub_combinations[0]]
+
+
+# df_combibation = all_sub_combinations[0]
+
+class KMeansCluster:
+    def __init__(self, df):
+        self.df = df
+        self.df_combibation = df[list(all_sub_combinations[0][0])]
+
+
+def get_object_df_combination(df, combinations):
+    for chunk_combinations in all_sub_combinations:
+        # Iterate over each combination in the chunk
+        for combinations in chunk_combinations:
+            # Accessing the columns in the DataFrame using the combination
+            df_combi = df[list(combinations)]
+
+            # x_scaler = MinMaxScaler().fit_transform(df_combi)
+            # scaled = pd.DataFrame(x_scaler, columns=df_combi.columns)
+            # del scaled, x_scaler
+
+    return df_combi
+
+
+df_combibation_one_by_one = get_object_df_combination(df, df_combibation)
+print("df_combibation_one_by_one: ", df_combibation_one_by_one)
+
+
+def scale_data(df_combi):
     scaler_list = []
     scaler = MinMaxScaler()
-    for data_scaler in df:
-        x_scaler = scaler.fit_transform(data_scaler)
-        scaled = pd.DataFrame(x_scaler, columns=data_scaler.columns)
+    for df_combi in scaler:
+        x_scaler = scaler.fit_transform(df_combi)
+        scaled = pd.DataFrame(x_scaler, columns=df_combi.columns)
         scaler_list.append(scaled)
         del scaled, x_scaler
     return scaler_list
 
+df_scaled = scale_data(df_combibation_one_by_one)
 
 def kmeans_cluster(df):
     start_time = time.time()
@@ -53,12 +99,13 @@ def kmeans_cluster(df):
     list_label = []
 
     for data_scaler in scale_data(df):
-        for i in df_list:
+        for i in df:
             for n_clusters in range(2, 5):
                 kmeans = KMeans(n_clusters=n_clusters, n_init=10)
                 cluster_labels = kmeans.fit_predict(data_scaler)
                 df_cluster_labels = pd.DataFrame(cluster_labels)
                 clusters = silhouette_score(data_scaler, kmeans.labels_).__round__(4)
+
                 list_label.append([i, df_cluster_labels, clusters, n_clusters])
                 df_lables = pd.DataFrame(list_label)
 
@@ -92,11 +139,11 @@ def kmeans_cluster(df):
     result_time_gmt = time.gmtime(result_time)
     result_time = time.strftime("%H:%M:%S", result_time_gmt)
     print(f"Total time : {result_time}")
-    return (merged_df_original2, merged_df_original3, merged_df_original4)
+    return merged_df_original2, merged_df_original3, merged_df_original4
 
 
 # Limit to just 120000 rows
-list_df_list = df_list[:2]
+list_df_list = df_combibation_one_by_one[:120000]
 
 # multiprocessing part
 cpus = 2
@@ -115,7 +162,6 @@ def get_df_cluster(df):
     get_time = end - start
     print("Total time get cluster: ", get_time)
     return get_cluster
-
 
 # with multiprocessing.Pool(cpus) as pool:
 # with multiprocessing.pool.ThreadPool(cpus) as pool:

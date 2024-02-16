@@ -60,114 +60,74 @@ class KMeansCluster:
         self.df_combibation = df[list(all_sub_combinations[0][0])]
 
 
-def get_object_df_combination(df, combinations):
-    for chunk_combinations in all_sub_combinations:
-        # Iterate over each combination in the chunk
-        for combinations in chunk_combinations:
-            # Accessing the columns in the DataFrame using the combination
-            df_combi = df[list(combinations)]
-
-            # x_scaler = MinMaxScaler().fit_transform(df_combi)
-            # scaled = pd.DataFrame(x_scaler, columns=df_combi.columns)
-            # del scaled, x_scaler
-
-    return df_combi
-
-
-df_combibation_one_by_one = get_object_df_combination(df, df_combibation)
-print("df_combibation_one_by_one: ", df_combibation_one_by_one)
-
-
-def scale_data(df_combi):
-    scaler_list = []
-    scaler = MinMaxScaler()
-    for df_combi in scaler:
-        x_scaler = scaler.fit_transform(df_combi)
-        scaled = pd.DataFrame(x_scaler, columns=df_combi.columns)
-        scaler_list.append(scaled)
-        del scaled, x_scaler
-    return scaler_list
-
-df_scaled = scale_data(df_combibation_one_by_one)
-
-def kmeans_cluster(df):
-    start_time = time.time()
-    start_time_gmt = time.gmtime(start_time)
-    start_time_gmt = time.strftime("%Y-%m-%d %H:%M:%S", start_time_gmt)
-    print(f"start to normalize cluster at: {start_time_gmt}")
-
-    list_label = []
-
-    for data_scaler in scale_data(df):
-        for i in df:
-            for n_clusters in range(2, 5):
-                kmeans = KMeans(n_clusters=n_clusters, n_init=10)
-                cluster_labels = kmeans.fit_predict(data_scaler)
-                df_cluster_labels = pd.DataFrame(cluster_labels)
-                clusters = silhouette_score(data_scaler, kmeans.labels_).__round__(4)
-
-                list_label.append([i, df_cluster_labels, clusters, n_clusters])
-                df_lables = pd.DataFrame(list_label)
-
-                for j, row in df_lables.iterrows():
-
-                    df_concat_col = pd.DataFrame(row[0])
-                    df_concat_col['cluster_labels'] = row[1]
-                    df_concat_col['score'] = row[2]
-                    df_concat_col['clusters'] = row[3]
-
-                    if df_concat_col['clusters'].values[0] == 2:
-                        merged_df_original2 = pd.concat([df_original['total_time'], df_concat_col], axis=1).reindex(
-                            df_concat_col.index)
-                        merged_df_original2.drop_duplicates()
-                        merged_df_original2.to_parquet(path2 + f'/{row[0].columns.to_list}_{row[3]}.parquet')
-
-                    if df_concat_col['clusters'].values[0] == 3:
-                        merged_df_original3 = pd.concat([df_original['total_time'], df_concat_col], axis=1).reindex(
-                            df_concat_col.index)
-                        merged_df_original3.drop_duplicates()
-                        merged_df_original3.to_parquet(path3 + f'/{row[0].columns.to_list}_{row[3]}.parquet')
-
-                    if df_concat_col['clusters'].values[0] == 4:
-                        merged_df_original4 = pd.concat([df_original['total_time'], df_concat_col], axis=1).reindex(
-                            df_concat_col.index)
-                        merged_df_original4.drop_duplicates()
-                        merged_df_original4.to_parquet(path4 + f'/{row[0].columns.to_list}_{row[3]}.parquet')
-
-    end_time = time.time()
-    result_time = end_time - start_time
-    result_time_gmt = time.gmtime(result_time)
-    result_time = time.strftime("%H:%M:%S", result_time_gmt)
-    print(f"Total time : {result_time}")
-    return merged_df_original2, merged_df_original3, merged_df_original4
-
-
-# Limit to just 120000 rows
-list_df_list = df_combibation_one_by_one[:120000]
-
-# multiprocessing part
-cpus = 2
-parsed_description_split = [[list_df_list[0], list_df_list[1]]
-                            # , [list_df_list[1], list_df_list[3]]
-                            ]
-print(f"Processing files in directory {list_df_list} using {cpus} CPU cores")
-# print("Number of cpus: ", cpus)
-print("Number of splits: ", len(parsed_description_split))
-
-
-def get_df_cluster(df):
-    start = time.time()
-    get_cluster = kmeans_cluster(df)
-    end = time.time()
-    get_time = end - start
-    print("Total time get cluster: ", get_time)
-    return get_cluster
-
-# with multiprocessing.Pool(cpus) as pool:
-# with multiprocessing.pool.ThreadPool(cpus) as pool:
-#     parsed_description_split = pool.map(get_df_cluster, parsed_description_split)
+# def get_object_df(df, combinations):
+#     start_time = time.time()
+#     start_time_gmt = time.gmtime(start_time)
+#     start_time_gmt = time.strftime("%Y-%m-%d %H:%M:%S", start_time_gmt)
+#     print(f"start to normalize cluster at: {start_time_gmt}")
+#
+#     df_combi_list = []
+#     scaler_list = []
+#     labal_list = []
+#     df_cluster_list = []
+#
+#     for chunk_combinations in all_sub_combinations:
+#         # Iterate over each combination in the chunk
+#         for combinations in chunk_combinations:
+#             # Accessing the columns in the DataFrame using the combination
+#             df_combi = df[list(combinations)]
+#             df_combi_list.append(df_combi)
+#
+#             x_scaler = MinMaxScaler().fit_transform(df_combi)
+#             scaled = pd.DataFrame(x_scaler, columns=df_combi.columns)
+#             scaler_list.append(scaled)
+#             print(("\n"))
+#             del scaled, x_scaler
+#
+#             for i in scaler_list:
+#                 for n in range(2, 5):
+#                     kmeans = KMeans(n_clusters=n, n_init=10)
+#                     cluster_labels = kmeans.fit_predict(i)
+#                     df_cluster_labels = pd.DataFrame(cluster_labels)
+#                     clusters = silhouette_score(i, kmeans.labels_).__round__(4)
+#
+#                     labal_list.append([df_combi, df_cluster_labels, clusters, n])
+#                     df_lables = pd.DataFrame(labal_list)
+#
+#                     for j, row in df_lables.iterrows():
+#                         df_concat_col = pd.DataFrame(row[0])
+#                         df_concat_col['total_time'] = df_original['total_time']
+#                         df_concat_col['cluster_labels'] = row[1]
+#                         df_concat_col['score'] = row[2]
+#                         df_concat_col['clusters'] = row[3]
+#                         df_cluster_list.append(df_concat_col)
+#                         print(df_cluster_list)
+#
+#     end_time = time.time()
+#     result_time = end_time - start_time
+#     result_time_gmt = time.gmtime(result_time)
+#     result_time = time.strftime("%H:%M:%S", result_time_gmt)
+#     print(f"Total time : {result_time}")
+#
+#     return df_cluster_list
+#
+#
+# # df_combibation_one_by_one = get_object_df(df, df_combibation)
+# # print("df_combibation_one_by_one: ", df_combibation_one_by_one)
+#
+#
+# # Limit to just 120000 rows
+# # list_df_list = df_combibation_one_by_one[:120000]
+#
+# # multiprocessing part
+# cpus = 2
+# parsed_description_split = [[list_df_list[0], list_df_list[1]],
+#                             [list_df_list[2], list_df_list[3]]
+#                             ]
+# print(f"Processing files in directory {list_df_list} using {cpus} CPU cores")
+# # print("Number of cpus: ", cpus)
+# print("Number of splits: ", len(parsed_description_split))
+#
+# with ThreadPoolExecutor(max_workers=cpus) as executor:
+#     parsed_description_split = list(executor.map(get_object_df, parsed_description_split))
 #     print(parsed_description_split)
-
-with ThreadPoolExecutor(max_workers=cpus) as executor:
-    parsed_description_split = list(executor.map(get_df_cluster, parsed_description_split))
-    print(parsed_description_split)

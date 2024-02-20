@@ -1,4 +1,7 @@
+import multiprocessing
 import random
+import time
+from concurrent.futures.thread import ThreadPoolExecutor
 
 import numpy as np
 import pandas as pd
@@ -7,119 +10,116 @@ import itertools
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import MinMaxScaler
-from random import shuffle
-
-
-def divide_chunks(l, n):
-    # looping till length l
-    for i in range(0, len(l), n):
-        yield l[i:i + n]
-
-    # step 1
 
 
 # input: Dataframe X = Original 20 columns
 # output: Combination of DataFrame columns
 class KMeansCluster:
 
-    def __init__(self, df_original_20_col: pd.DataFrame, chunk_size: int, combi_column_list: list, scarler):
+    def __init__(self, df_original_20_col: pd.DataFrame, scarler ):
         self.df = df_original_20_col
         self.scarler = scarler
-        self.all_combinations = combi_column_list
-        self.only_twenty = combi_column_list[:40]
-        self.all_sub_combinations_col = [combi_column_list[i:i + chunk_size] for i in
-                                         range(0, len(combi_column_list), chunk_size)]
-        self.all_sub_combinations_new = list(divide_chunks(combi_column_list, chunk_size))
-        self.something(chunk_size)
-
-        # one obj of sub_combinations_col
-        self.data_from_combi = [self.df[list(i)] for i in self.all_sub_combinations_col[0]]
-        self.data_frames = list(map(lambda subset: self.df[list(subset)], self.all_sub_combinations_col[0]))
-        # print(data_frames)
+        self.all_combinations_list_col = [list(itertools.combinations(self.df.columns, r)) for r in
+                                          range(2, len(self.df.columns) + 1)]
+        self.a = list(itertools.chain(*self.all_combinations_list_col))
+        self.all_combinations = [a for a in self.a if len(a) > 0]
 
     @staticmethod
-    def chunks_r(l, n, is_shuffle=False):
+    def chunks(list_combi, n, is_shuffle=False):
         if is_shuffle:
-            random.shuffle(l)
+            random.shuffle(list_combi)
         binning = [None] * n
         for i in range(n):
             binning[i] = []
-        for i, s in enumerate(l):
+        for i, s in enumerate(list_combi):
             binning[i % n].append(s)
         return binning
-
-    def something(self, chunk_size):
-        self.all_sub_combinations_check = [self.only_twenty[i:i + chunk_size] for i in
-                                           range(0, len(self.only_twenty), chunk_size)]
-
-    # functions to divide the combinations of columns in the dataframe df_original_20_col into 8 parts
-    # def chunkify(lst, chunk_size):
-    #     return [lst[i:i + chunk_size] for i in range(0, len(lst), chunk_size)]
-
-    # def all_sub_combinations(self):
-    #     return KMeansCluster.chunkify(self.combinations_list, 8)
 
     # step 2
     # input: Combination of DataFrame 20 columns to 1 million data sets
     #  output:  MinMax scaler
 
-    def fit_scaler(self):
-        for i in self.data_from_combi:
-            scaled = self.scarler.fit_transform(i)
-            scaled_df = pd.DataFrame(scaled, columns=i.columns)
+    def fit_scaler(self, df):
+        scaled = self.scarler.fit_transform(df)
+        scaled_df = pd.DataFrame(scaled, columns=df.columns)
         return scaled_df
 
     # step 3
     # input: data frame Minmax scaler
     # output:  Kmeans cluster (score cluster, labels cluster, number cluster)
 
-    def kmeans_cluster(scaled_df):
-        kmeans_list = []
+    def kmeans_cluster(self, scaled_df_fit_transform):
+        results = []
         for n in range(2, 5):
             kmeans = KMeans(n_clusters=n, n_init=10)
-            kmeans.fit_transform(scaled_df)
-            # kmeans.fit(scaled_df)
-            score = silhouette_score(scaled_df, kmeans.labels_)
-            kmeans_list.append([score, kmeans.labels_, kmeans.n_clusters])
-        return kmeans_list
+            kmeans.fit_transform(scaled_df_fit_transform)
+            score = silhouette_score(scaled_df_fit_transform, kmeans.labels_)
+            results.append((n, score, kmeans.labels_))
+        return results
 
-    # def fit_scaler(self, data):
-    #     scaled = self.scarler.fit_transform(data)
-    #     scaled_df = pd.DataFrame(scaled, columns=data.columns)
-    #     return scaled_df
 
 
 if __name__ == '__main__':
+    start = time.time()
+    print("start time ::", start)
 
     minmax_scaler = MinMaxScaler()
+    cpus = 4
 
     # prepare the data frame
     df_original_20_col = pd.read_parquet('seatunnal_20col.parquet')
     df_original_all_col = pd.read_parquet('../../Sonar/seatunnel_all_information.parquet')
     col_names = df_original_20_col.columns
 
-    # list all combinations of columns in the dataframe X
-    all_combinations_list_col = [list(itertools.combinations(col_names, r)) for r in range(2, len(col_names)+1)]
+    bill = KMeansCluster(df_original_20_col, minmax_scaler)
 
-    # amout of columns in the dataframe X
-    # all_combianations_col = [itertools.combinations(col_names, r) for r in range(1, len(col_names))]
-
-    # all amout of combinations of columns in the dataframe X 1048554
-    all_combinations = list(itertools.chain(*all_combinations_list_col))
-    all_combinations = [a for a in all_combinations if len(a) > 0]
-
-
-
-    bill = KMeansCluster(df_original_20_col, 8, all_combinations, minmax_scaler)
-    c1 = KMeansCluster.chunks_r(all_combinations, 8, False)
+    c1 = bill.chunks(bill.all_combinations, 8, False)
 
     sub_c1 = [c[:10] for c in c1]
     sub_c2 = [c[-10:] for c in c1]
 
-    # loop sub_combinations
-    loop_check_sub_combi = [x for sub1 in bill.all_sub_combinations_col for x in sub1]
 
-    s1 = bill.fit_scaler()
+    def k2(sub_list):
+        results = []
+        for i in sub_list:
+            for j in i:
+                s = bill.fit_scaler(df_original_20_col[list(j)])
+                k = bill.kmeans_cluster(s)
+                k_list = ({
+                    'df': j,
+                    '2': k[0],
+                    '3': k[1],
+                    '4': k[2]})
+                results.append(k_list)
+        return results
 
-    # fit_scaler = bill.fit_scaler()
-    # kmeans_results = bill.kmeans_cluster(fit_scaler)
+    do = k2(sub_c2)
+    do_chunks = bill.chunks(do, 8, False)
+    # do_list = list(do.items() for do in do)
+
+
+    parsed_description_split = [
+        [list(sub_c2[0]), list(sub_c2[1])],
+        [list(sub_c2[2]), list(sub_c2[3])],
+        [list(sub_c2[4]), list(sub_c2[5])],
+        [list(sub_c2[6]), list(sub_c2[7])]
+    ]
+
+    # with multiprocessing.pool.ThreadPool(cpus) as pool:
+        # obj is not callable
+        # type object 'KMeansCluster' has no attribute 'k2'
+        # parsed_data = pool.starmap(k2, sub_c2)
+        # parsed_data = pool.starmap(do, parsed_description_split)
+        # print(f"Thread Pool of parsed_data ::", parsed_data)
+
+    with ThreadPoolExecutor(max_workers=cpus) as executor:
+        parsed_description_split = list(executor.map(k2, parsed_description_split))
+        print("Thread Pool of parsed_data ::", parsed_description_split)
+
+    end = time.time()
+    total_time = end - start
+    time_minutes = total_time / 60
+    time_hours = total_time / 3600
+
+    print("total_time {:.2f} minutes".format(time_minutes))
+    print("Total time {:.2f} hours".format(time_hours))

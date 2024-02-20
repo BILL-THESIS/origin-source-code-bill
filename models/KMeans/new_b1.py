@@ -1,18 +1,35 @@
-from sklearn.feature_extraction.text import TfidfVectorizer
+import time
+import pandas as pd
+import itertools
 from sklearn.cluster import KMeans
-import numpy as np
+from sklearn.metrics import silhouette_score
+from sklearn.preprocessing import MinMaxScaler
 
-# Assuming you already have 'corpus' and 'text_df' prepared
-tfidf_v = TfidfVectorizer(max_df=0.5, max_features=13000, min_df=5, stop_words='english', use_idf=True, norm='l2', smooth_idf=True)
-X = tfidf_v.fit_transform(corpus)  # Removed .toarray() - not needed for KMeans
-y = text_df.iloc[:, 1].values
+class KMeansCluster:
+    def __init__(self, df_original_20_col: pd.DataFrame, scarler):
+        self.df = df_original_20_col
+        self.scarler = scarler
+        self.all_combinations = [a for a in itertools.combinations(self.df.columns, r) for r in range(2, len(self.df.columns) + 1) if len(a) > 0]
 
-# Initialize KMeans with 7 clusters
-km = KMeans(n_clusters=7, random_state=42)
-model = km.fit(X)
-result = model.predict(X)
+    def fit_scaler(self, df):
+        scaled = self.scarler.fit_transform(df)
+        return pd.DataFrame(scaled, columns=df.columns)
 
-# Print some random predictions
-for _ in range(20):
-    j = np.random.randint(low=0, high=13833, size=1)[0]
-    print(f"Author {y[j]} wrote {X[j]} and was put in cluster {result[j]}")
+    def kmeans_cluster(self, scaled_df):
+        return [[silhouette_score(scaled_df, KMeans(n_clusters=n, n_init=10).fit_transform(scaled_df).labels_), n] for n in range(2, 5)]
+
+if __name__ == '__main__':
+    start = time.time()
+
+    minmax_scaler = MinMaxScaler()
+    df_original_20_col = pd.read_parquet('seatunnal_20col.parquet')
+
+    bill = KMeansCluster(df_original_20_col, minmax_scaler)
+
+    sub_c2 = bill.all_combinations[-10:]
+
+    asd = [bill.fit_scaler(df_original_20_col[list(i[0])]) for i in sub_c2]
+
+
+
+    print("Total time {:.2f} hours".format((time.time() - start) / 3600))

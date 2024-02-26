@@ -12,6 +12,10 @@ import itertools
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import MinMaxScaler
+import joblib
+import threadpoolctl
+
+from joblib import Parallel, delayed
 
 
 # input: Dataframe X = Original 20 columns
@@ -57,12 +61,31 @@ class KMeansCluster:
     # output:  Kmeans cluster (score cluster, labels cluster, number cluster)
 
     def kmeans_cluster(self, scaled_df_fit_transform):
+
+        """
+            Performs K-means clustering with silhouette score evaluation,
+            using joblib's Loky backend for potential parallelism with OpenMP.
+        """
         results = []
+
+        # Set start method for multiprocessing
+        if multiprocessing.get_start_method() != 'spawn':
+            multiprocessing.set_start_method('spawn')
+
+        try:
+            # Control OpenMP threads using threadpoolctl (if available)
+            threadpoolctl.threadpool_limits(limits=1)
+            # Adjust thread limit as needed
+        except ImportError:
+            pass  # If threadpoolctl is not available, rely on environment variables
+
         for n in range(2, 5):
-            kmeans = KMeans(n_clusters=n, n_init=10, max_iter=100, random_state=42)
-            kmeans.fit_transform(scaled_df_fit_transform)
-            score = silhouette_score(scaled_df_fit_transform, kmeans.labels_)
-            results.append((n, score, kmeans.labels_))
+            kmeans = KMeans(n_clusters=n, n_init=10)
+            # Parallel(n_job=3)(delayed(kmeans.fit_transform(scaled_df_fit_transform)))
+            with joblib.parallel_backend('loky'):  # Use Loky backend for potential OpenMP
+                kmeans.fit(scaled_df_fit_transform)
+                score = silhouette_score(scaled_df_fit_transform, kmeans.labels_)
+                results.append((n, score, kmeans.labels_))
         return results
 
     def loop_cluster(self, sub_list):
@@ -81,7 +104,7 @@ class KMeansCluster:
                     '3': k[1],
                     '4': k[2]})
                 results.append(k_list)
-                print("K ::", k_list)
+                # print("K ::", k_list)
                 print("Results ::", len(results))
         return results
 
@@ -93,7 +116,7 @@ if __name__ == '__main__':
     print(f"start to normalize cluster at: {start_time_gmt}")
 
     minmax_scaler = MinMaxScaler()
-    cpus = 4
+    cpus = 3
 
     # prepare the data frame
     df_original_20_col = pd.read_parquet('seatunnal_20col.parquet')
@@ -107,14 +130,10 @@ if __name__ == '__main__':
     all_combinations = [a for a in a1 if len(a) > 0]
 
     check = KMeansCluster.chunks(all_combinations, 8, False)
-
     sub_c1 = [c[:10] for c in check]
     sub_c2 = [c[-10:] for c in check]
 
     bill = KMeansCluster(df_original_20_col, minmax_scaler, sub_c1)
-
-    # sub = bill.chunks(bill.all_combinations, 8, False)
-    # sub_c2 = [c[-10:] for c in sub]
 
     k = bill.loop_cluster(sub_c2)
     k_c = bill.chunks(k, 8, False)
@@ -129,8 +148,10 @@ if __name__ == '__main__':
     elif platform.system() == 'Darwin':
         # Code to execute if running on macOS (Darwin is the underlying OS for macOS)
         print("Running on macOS")
-        with multiprocessing.pool.ThreadPool(cpus) as pool:
-            parsed_description_split = pool.map(bill.kmeans_cluster, list(sub_c2), 3)
+        with multiprocessing.pool.Pool(cpus) as pool:
+            r = pool.apply_async(bill.loop_cluster, (sub_c2, 3))
+            # print("Thread Pool of parsed_data ::", pool.starmap_async(bill.loop_cluster, sub_c2, 3))
+            parsed_description_split = pool.starmap_async(bill.loop_cluster, sub_c2, 3)
             print("Thread Pool of parsed_data ::", parsed_description_split)
 
     else:

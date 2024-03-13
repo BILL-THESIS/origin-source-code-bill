@@ -1,15 +1,5 @@
 import time
-import random
-
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
-from itertools import chain, combinations, permutations
-import numpy as np
-import os
-
-from sqlalchemy.dialects.mssql.information_schema import columns
 
 df_original = pd.read_parquet('../../Sonar/seatunnel_all_information.parquet')
 
@@ -61,16 +51,6 @@ start_time_gmt = time.strftime("%Y-%m-%d %H:%M:%S", start_time_gmt)
 
 
 df_X = X
-
-# for r in range(1, len(X.columns) + 1):
-#     # uesd itertools import combinations to calculater
-#     for column_combination in combinations(X.columns, r):
-#         combined_df = X[list(column_combination)]
-#         print(combined_df.columns)
-# combined_df.to_parquet(f"{directory_path_combia}/{combined_df.columns.tolist()}.parquet")
-# file_name = "_".join(combined_df.columns) + ".parquet"
-# file_part = os.path.join(directory_path_combia, file_name)
-# combined_df.to_parquet(file_part)
 
 end_time = time.time()
 result_time = end_time - start_time

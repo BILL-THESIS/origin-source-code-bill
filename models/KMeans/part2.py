@@ -13,7 +13,6 @@ import numpy as np
 import os
 
 directory_path = '../../models/KMeans/combia2-copy'
-# directory_path_scaled = '../../models/KMeans/scaled'
 path2 = Path(os.path.abspath("../../models/KMeans/cluster2"))
 df_original = pd.read_parquet('../../Sonar/seatunnel_all_information.parquet')
 
@@ -94,23 +93,3 @@ result_time_gmt = time.gmtime(result_time)
 result_time_gmt = time.strftime("%H:%M:%S", result_time_gmt)
 print(f"Total time: {result_time}")
 print("Time gmt :::", result_time_gmt)
-
-                # merged_df3.to_pickle(f'{path2}/{df1.columns[-3]}.parquet')
-
-                # data = merged_df3['total_time'].values
-                # print("Data :::", data)
-                #
-                # check_size = 500
-                #
-                # for i in range(0, len(data)):
-                #     current_chunk = data[i:i + check_size]
-                #
-                #     for item in current_chunk:
-                #         secounds = item / 1000000000
-                #         print(secounds)
-
-                # data_range = range(0, len(data), check_size)
-                # print("Data Range :::", data_range)
-                #
-                # processing_time = timeit.timeit(lambda: (item * 2 for item in data), number=1)
-                # print(f"Processing {len(data)} items took {processing_time:.6f} seconds.")

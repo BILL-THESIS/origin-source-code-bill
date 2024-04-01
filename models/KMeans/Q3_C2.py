@@ -6,8 +6,9 @@ import numpy as np
 
 
 def load_data(file_names):
-    with open(os.path.join(file_names), 'rb') as f:
-        results = joblib.load(f)
+    for file_name in file_names:
+        with open(os.path.join(file_name), 'rb') as f:
+            results = joblib.load(f)
     return results
 
 
@@ -42,9 +43,7 @@ def qurtile_data(cluster_data):
             quartile_data[f'cluter{cluster_value}_q3'] = [q3]
             quartile_data[f'shape_c{cluster_value}'] = [equal_q3.shape]
             quartile_data[f'cv_q3_c{cluster_value}'] = [coefficient_of_variation(equal_q3['hours'])]
-            quartile_data[f'label'] = df_col_combined['label'].tolist()
-            quartile_data[f'median'] = median
-            quartile_data[f'mean_q3'] = q3.mean()
+            quartile_data[f'label'] = [df_col_combined['label'].tolist()]
         cluster_list.append(quartile_data)
 
     return cluster_list
@@ -59,14 +58,14 @@ if __name__ == '__main__':
     time_str = str(start_time_gmt)
 
     file_names = (
-        'output/3/results_all3_2024-03-17 13:50:14.parquet.gz'
-        # 'output/3/results_all3_2024-03-17 14:05:40.parquet.gz'
-        # 'output/3/results_all3_2024-03-17 14:12:44.parquet.gz'
-        # 'output/3/results_all3_2024-03-17 14:19:27.parquet.gz'
-        # 'output/3/results_all3_2024-03-17 14:27:06.parquet.gz'
-        # 'output/3/results_all3_2024-03-17 14:34:44.parquet.gz'
-        # 'output/3/results_all3_2024-03-17 14:48:36.parquet.gz'
-        # 'output/3/results_all3_2024-03-17 14:58:55.parquet.gz'
+        'output/2/results_all2_2024-03-17 15:06:58.parquet.gz',
+        # 'output/2/results_all2_2024-03-17 15:14:06.parquet.gz',
+        # 'output/2/results_all2_2024-03-17 15:25:48.parquet.gz',
+        # 'output/2/results_all2_2024-03-17 15:32:41.parquet.gz',
+        # 'output/2/results_all2_2024-03-17 15:40:12.parquet.gz',
+        # 'output/2/results_all2_2024-03-17 15:50:00.parquet.gz',
+        # 'output/2/results_all2_2024-03-17 16:02:37.parquet.gz',
+        # 'output/2/results_all2_2024-03-17 16:10:28.parquet.gz',
     )
 
     results = load_data(file_names)
@@ -74,22 +73,18 @@ if __name__ == '__main__':
     df = pd.DataFrame(data_quartile)
     print("df q3 :: ", df.columns.to_list())
 
-    df['Q3'] = df.apply(lambda row: (abs(row['cluter0_q3'][0] - row['cluter1_q3'][0]) +
-                                     abs(row['cluter0_q3'][0] - row['cluter2_q3'][0]) +
-                                     abs(row['cluter1_q3'][0] - row['cluter0_q3'][0]) +
-                                     abs(row['cluter1_q3'][0] - row['cluter2_q3'][0]) +
-                                     abs(row['cluter2_q3'][0] - row['cluter0_q3'][0]) +
-                                     abs(row['cluter2_q3'][0] - row['cluter1_q3'][0])
-                                     ) / 3, axis=1)
+    df['Q3'] = df.apply(lambda row: (abs(row['cluter0_q3'][0] - row['cluter1_q3'][0]) + abs(
+        row['cluter1_q3'][0] - row['cluter0_q3'][0])) / 3, axis=1)
 
-    # df_sort = df.sort_values(by='Q3')[::-1].head(10)
-    df_sort =df.sort_values(by='Q3', ascending=True)
-    print("Mean Q3::", df_sort['Q3'].mean())
-    print("Median  Q3::", df_sort['Q3'].median)
+    df_sort = df.sort_values(by='Q3')[::-1].head(10)
+    print("normal df:: ", df.sort_values(by='Q3').head(10))
+    print("top 10 ::", df_sort)
 
-    print("all df sort ::", df_sort.to_markdown())
-    print("top 1 ::", df_sort.iloc[0])
-    df_sort.to_parquet(f'output/q3_c3/q3_c3_{time_str}.parquet')
+    df_sort.to_parquet(f'output/q3_c2/q3_c2_{time_str}.parquet')
+
+    # with open(f'output/2/results_all2_{time_str}.parquet.gz', 'wb') as f:
+    #     joblib.dump(results_all2, f, compress=('gzip'))
+    #     print("svae file cluster 2  Done!!")
 
     end = time.time()
     total_time = end - start_time

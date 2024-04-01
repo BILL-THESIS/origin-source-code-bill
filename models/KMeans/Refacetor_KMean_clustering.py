@@ -8,8 +8,10 @@ import platform
 import numpy as np
 import pandas as pd
 import itertools
-
+from sklearn.datasets import make_blobs
 from sklearn.cluster import KMeans
+from threadpoolctl import threadpool_limits
+
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import MinMaxScaler
 import joblib
@@ -22,7 +24,7 @@ from joblib import Parallel, delayed
 # output: Combination of DataFrame columns
 class KMeansCluster:
 
-    def __init__(self, df_original_20_col: pd.DataFrame, scarler, sub_combination):
+    def __init__(self, df_original_20_col: pd.DataFrame, scarler, sub_combination , thread_limit):
         self.df = df_original_20_col
         self.scarler = scarler
         self.all_combinations_list_col = [list(itertools.combinations(self.df.columns, r)) for r in
@@ -31,6 +33,7 @@ class KMeansCluster:
         self.all_combinations = [a for a in self.a if len(a) > 0]
 
         self.sub_combinations = sub_combination
+        self.thread_limits = thread_limit
 
         # self.scarler_fit_transform = self.scarler.fit_transform(self.df)
         # self.scaled_df = pd.DataFrame(self.scarler_fit_transform, columns=self.df.columns)
@@ -74,14 +77,13 @@ class KMeansCluster:
 
         try:
             # Control OpenMP threads using threadpoolctl (if available)
-            threadpoolctl.threadpool_limits(limits=1)
+            threadpoolctl.threadpool_limits(limits=self.thread_limits)
             # Adjust thread limit as needed
         except ImportError:
             pass  # If threadpoolctl is not available, rely on environment variables
 
         for n in range(2, 5):
             kmeans = KMeans(n_clusters=n, n_init=10)
-            # Parallel(n_job=3)(delayed(kmeans.fit_transform(scaled_df_fit_transform)))
             with joblib.parallel_backend('loky'):  # Use Loky backend for potential OpenMP
                 kmeans.fit(scaled_df_fit_transform)
                 score = silhouette_score(scaled_df_fit_transform, kmeans.labels_)
@@ -90,10 +92,11 @@ class KMeansCluster:
 
     def loop_cluster(self, sub_list):
         results = []
+        count = 0
         for i in sub_list:
-            print("I ::", i)
+            # print("I ::", i)
             for j in i:
-                print("J ::", j)
+                # print("J ::", j)
                 # fit = self.fit_scaler(self.df[list(j)])
                 fit = self.fit_scaler(self.df[list(j)])
                 # print("FIT ::", fit)
@@ -106,6 +109,7 @@ class KMeansCluster:
                 results.append(k_list)
                 # print("K ::", k_list)
                 print("Results ::", len(results))
+
         return results
 
 
@@ -119,7 +123,7 @@ if __name__ == '__main__':
     cpus = 3
 
     # prepare the data frame
-    df_original_20_col = pd.read_parquet('seatunnal_20col.parquet')
+    df_original_20_col = pd.read_parquet('output/seatunnal_20col.parquet')
     df_original_all_col = pd.read_parquet('../../Sonar/seatunnel_all_information.parquet')
     col_names = df_original_20_col.columns
 
@@ -133,10 +137,8 @@ if __name__ == '__main__':
     sub_c1 = [c[:10] for c in check]
     sub_c2 = [c[-10:] for c in check]
 
-    bill = KMeansCluster(df_original_20_col, minmax_scaler, sub_c1)
-
-    k = bill.loop_cluster(sub_c2)
-    k_c = bill.chunks(k, 8, False)
+    bill = KMeansCluster(df_original_20_col, minmax_scaler, check, cpus)
+    k = bill.loop_cluster(check)
 
     if platform.system() == 'Linux':
         # Code to execute if running on Linux
@@ -149,9 +151,9 @@ if __name__ == '__main__':
         # Code to execute if running on macOS (Darwin is the underlying OS for macOS)
         print("Running on macOS")
         with multiprocessing.pool.Pool(cpus) as pool:
-            r = pool.apply_async(bill.loop_cluster, (sub_c2, 3))
+            # r = pool.apply_async(bill.loop_cluster, (sub_c2, 3))
             # print("Thread Pool of parsed_data ::", pool.starmap_async(bill.loop_cluster, sub_c2, 3))
-            parsed_description_split = pool.starmap_async(bill.loop_cluster, sub_c2, 3)
+            parsed_description_split = pool.starmap_async(bill.loop_cluster, check)
             print("Thread Pool of parsed_data ::", parsed_description_split)
 
     else:

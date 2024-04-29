@@ -28,25 +28,33 @@ if __name__ == '__main__':
     time_str = str(start_time_gmt)
 
     file_names = (
-        'output/q3_c3/q3_c3_2024-03-28 06:00:11.parquet',
-        'output/q3_c3/q3_c3_2024-03-28 06:14:04.parquet',
-        'output/q3_c3/q3_c3_2024-03-28 06:28:03.parquet',
-        'output/q3_c3/q3_c3_2024-03-28 06:42:11.parquet',
-        'output/q3_c3/q3_c3_2024-03-28 06:55:51.parquet',
-        'output/q3_c3/q3_c3_2024-03-28 07:09:59.parquet',
-        'output/q3_c3/q3_c3_2024-03-28 07:24:15.parquet',
-        'output/q3_c3/q3_c3_2024-03-28 07:37:25.parquet',
+        # 'output/q3_c3/q3_c3_2024-03-28 06:00:11.parquet',
+        # 'output/q3_c3/q3_c3_2024-03-28 06:14:04.parquet',
+        # 'output/q3_c3/q3_c3_2024-03-28 06:28:03.parquet',
+        # 'output/q3_c3/q3_c3_2024-03-28 06:42:11.parquet',
+        # 'output/q3_c3/q3_c3_2024-03-28 06:55:51.parquet',
+        # 'output/q3_c3/q3_c3_2024-03-28 07:09:59.parquet',
+        # 'output/q3_c3/q3_c3_2024-03-28 07:24:15.parquet',
+        # 'output/q3_c3/q3_c3_2024-03-28 07:37:25.parquet',
+        'output/q3_c3/q3_c3_otliers2024-04-28 08:59:56.parquet',
+        'output/q3_c3/q3_c3_otliers2024-04-28 09:15:24.parquet',
+        'output/q3_c3/q3_c3_otliers2024-04-28 09:34:58.parquet',
+        'output/q3_c3/q3_c3_otliers2024-04-28 09:51:22.parquet',
+        'output/q3_c3/q3_c3_otliers2024-04-28 10:06:08.parquet',
+        'output/q3_c3/q3_c3_otliers2024-04-28 10:20:41.parquet',
+        'output/q3_c3/q3_c3_otliers2024-04-28 10:36:13.parquet',
+        'output/q3_c3/q3_c3_otliers2024-04-28 10:50:39.parquet',
     )
 
     data = load_data(file_names)
     df = concat_df_list(data)
     df_sort_max = df.sort_values(by='Q3', ascending=False).head(10)
-    df_sort_min = df.sort_values(by='Q1', ascending=True).head(10)
-    print("DF", df_sort_max['Q3'])
-    print("========")
-    print("DF Min ::", df_sort_min['Q1'])
+    # df_sort_min = df.sort_values(by='Q1', ascending=True).head(10)
+    # print("DF", df_sort_max['Q3'])
+    # print("========")
+    # print("DF Min ::", df_sort_min['Q1'])
 
-    # df_sort.to_parquet(f'output/q3_c3/q3_c3_top_10_{time_str}.parquet')
+    df_sort_max.to_parquet(f'output/q3_c3/q3_c3_top_10_outliers{time_str}.parquet')
 
     end = time.time()
     total_time = end - start_time

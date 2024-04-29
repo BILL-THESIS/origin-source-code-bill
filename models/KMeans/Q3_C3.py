@@ -72,7 +72,7 @@ if __name__ == '__main__':
     results = load_data(file_names)
     data_quartile = qurtile_data(results)
     df = pd.DataFrame(data_quartile)
-    print("df q3 :: ", df.columns.to_list())
+    # print("df q3 :: ", df.columns.to_list())
 
     df['Q3'] = df.apply(lambda row: (abs(row['cluter0_q3'][0] - row['cluter1_q3'][0]) +
                                      abs(row['cluter0_q3'][0] - row['cluter2_q3'][0]) +
@@ -84,11 +84,12 @@ if __name__ == '__main__':
 
     # df_sort = df.sort_values(by='Q3')[::-1].head(10)
     df_sort =df.sort_values(by='Q3', ascending=True)
-    print("Mean Q3::", df_sort['Q3'].mean())
-    print("Median  Q3::", df_sort['Q3'].median)
 
-    print("all df sort ::", df_sort.to_markdown())
-    print("top 1 ::", df_sort.iloc[0])
+    # print("Mean Q3::", df_sort['Q3'].mean())
+    # print("Median  Q3::", df_sort['Q3'].median)
+    #
+    # print("all df sort ::", df_sort.to_markdown())
+    # print("top 1 ::", df_sort.iloc[0])
     df_sort.to_parquet(f'output/q3_c3/q3_c3_{time_str}.parquet')
 
     end = time.time()

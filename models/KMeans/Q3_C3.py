@@ -42,9 +42,12 @@ def qurtile_data(cluster_data):
             quartile_data[f'cluter{cluster_value}_q3'] = [q3]
             quartile_data[f'shape_c{cluster_value}'] = [equal_q3.shape]
             quartile_data[f'cv_q3_c{cluster_value}'] = [coefficient_of_variation(equal_q3['hours'])]
+<<<<<<< HEAD
             quartile_data[f'label'] = df_col_combined['label'].tolist()
             quartile_data[f'median'] = median
             quartile_data[f'mean_q3'] = q3.mean()
+=======
+>>>>>>> 4c815474 (new version)
         cluster_list.append(quartile_data)
 
     return cluster_list
@@ -59,14 +62,22 @@ if __name__ == '__main__':
     time_str = str(start_time_gmt)
 
     file_names = (
+<<<<<<< HEAD
         'output/3/results_all3_2024-03-17 13:50:14.parquet.gz'
+=======
+        # 'output/3/results_all3_2024-03-17 13:50:14.parquet.gz'
+>>>>>>> 4c815474 (new version)
         # 'output/3/results_all3_2024-03-17 14:05:40.parquet.gz'
         # 'output/3/results_all3_2024-03-17 14:12:44.parquet.gz'
         # 'output/3/results_all3_2024-03-17 14:19:27.parquet.gz'
         # 'output/3/results_all3_2024-03-17 14:27:06.parquet.gz'
         # 'output/3/results_all3_2024-03-17 14:34:44.parquet.gz'
         # 'output/3/results_all3_2024-03-17 14:48:36.parquet.gz'
+<<<<<<< HEAD
         # 'output/3/results_all3_2024-03-17 14:58:55.parquet.gz'
+=======
+        'output/3/results_all3_2024-03-17 14:58:55.parquet.gz'
+>>>>>>> 4c815474 (new version)
     )
 
     results = load_data(file_names)
@@ -74,6 +85,7 @@ if __name__ == '__main__':
     df = pd.DataFrame(data_quartile)
     print("df q3 :: ", df.columns.to_list())
 
+<<<<<<< HEAD
     df['Q3'] = df.apply(lambda row: (abs(row['cluter0_q3'][0] - row['cluter1_q3'][0]) +
                                      abs(row['cluter0_q3'][0] - row['cluter2_q3'][0]) +
                                      abs(row['cluter1_q3'][0] - row['cluter0_q3'][0]) +
@@ -89,6 +101,12 @@ if __name__ == '__main__':
 
     print("all df sort ::", df_sort.to_markdown())
     print("top 1 ::", df_sort.iloc[0])
+=======
+    df['Q3'] = df.apply(lambda row: (abs(row['cluter0_q3'][0] - row['cluter1_q3'][0]) + abs(
+        row['cluter0_q3'][0] - row['cluter2_q3'][0]) + abs(row['cluter2_q3'][0] - row['cluter1_q3'][0])) / 3, axis=1)
+
+    df_sort = df.sort_values(by='Q3')[::-1].head(10)
+>>>>>>> 4c815474 (new version)
     df_sort.to_parquet(f'output/q3_c3/q3_c3_{time_str}.parquet')
 
     end = time.time()

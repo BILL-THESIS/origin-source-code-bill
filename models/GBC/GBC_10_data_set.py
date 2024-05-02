@@ -145,7 +145,7 @@ def train_model(X_list, y_list, X_train_list, y_train_list, n_estimators=100, le
 
     return (sore_list, precision_list, recall_score_list, f1_score_list, col_list,
             precision_macro_list, recall_score_list_macro, f1_score_list_macro,
-            precision_micro_list, recall_score_list_micro, f1_score_list_micro)
+            precision_micro_list, recall_score_list_micro, f1_score_list_micro, y_pred)
 
 
 if __name__ == '__main__':
@@ -164,13 +164,15 @@ if __name__ == '__main__':
 
     new_df = pd.DataFrame({
         'col_name': col_name,
-        'sores_list': sores_list,
+
         'precision_weighted': precision_score,
         'recall_weighted': recall_score,
         'f1_weighted': f1_score,
+
         'precision_macro': pre_macro,
         'recall_macro': recall_macro,
         'f1_macro': f1_macro,
+
         'precision_micro': pre_micro,
         'recall_micro': recall_micro,
         'f1_micro': f1_micro

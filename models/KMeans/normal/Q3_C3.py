@@ -15,6 +15,7 @@ def process_cluster(cluster_data):
     hours = cluster_data['hours']
     q1 = np.percentile(hours, 25)
     q3 = np.percentile(hours, 75)
+    q3_max = q3.max()
     median = np.median(hours)
     equal_q3 = cluster_data[cluster_data['hours'] >= q3]
     equal_q1 = cluster_data[cluster_data['hours'] <= q1]

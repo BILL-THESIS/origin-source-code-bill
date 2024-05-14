@@ -22,7 +22,7 @@ def process_cluster(cluster_data):
     median = np.median(hours)
     equal_q3 = cluster_data[cluster_data['hours'] >= q3]
     equal_q1 = cluster_data[cluster_data['hours'] <= q1]
-    return q1, q3, median, equal_q3, equal_q1, outliers
+    return q1, q3, median, equal_q3, equal_q1, outliers, IQR, ul, ll
 
 
 def coefficient_of_variation(data):
@@ -43,9 +43,14 @@ def qurtile_data(cluster_data):
         # clustr values is cluster number 0, 1, 2
         for cluster_value in df_col_combined['label'].unique():
             cluster_data = df_col_combined[df_col_combined['label'] == cluster_value]
-            q1, q3, median, equal_q3, equal_q1, outliers = process_cluster(cluster_data)
+            q1, q3, median, equal_q3, equal_q1, outliers, IQR, ul, ll = process_cluster(cluster_data)
             quartile_data[f'cluter{cluster_value}_q3'] = [q3]
             quartile_data[f'cluter{cluster_value}_q1'] = [q1]
+            quartile_data['outliers'] = [outliers]
+            quartile_data['IQR'] = [IQR]
+            quartile_data['ul'] = [ul]
+            quartile_data['ll'] = [ll]
+            quartile_data[f'outliers_c{cluster_value}'] = [outliers.shape]
             quartile_data[f'shape_c{cluster_value}_q3'] = [equal_q3.shape]
             quartile_data[f'shape_c{cluster_value}_q1'] = [equal_q1.shape]
             quartile_data[f'cv_q3_c{cluster_value}'] = [coefficient_of_variation(equal_q3['hours'])]

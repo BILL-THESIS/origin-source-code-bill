@@ -48,14 +48,14 @@ if __name__ == '__main__':
 
     data = load_data(file_names)
     df = concat_df_list(data)
-    df_sort_max = df.sort_values(by='Q3', ascending=False).head(5000)
-    # df_sort_min = df.sort_values(by='Q1', ascending=True).head(10)
+    df_sort_max = df.sort_values(by='Q3', ascending=False).head(10)
+    df_sort_min = df.sort_values(by='Q1', ascending=True).head(10)
     # print("DF", df_sort_max['Q3'])
     # print("========")
     # print("DF Min ::", df_sort_min['Q1'])
 
     # df_sort_max.to_parquet(f'../output/q3_c3/q3_c3_top_10_outliers{time_str}.parquet')
-    df_sort_max.to_parquet(f'../output/q3_c3/q3_c3_5000_normal{time_str}.parquet')
+    # df.to_parquet(f'../output/q3_c3/q3_c3_not_sort_{time_str}.parquet')
 
 
     end = time.time()

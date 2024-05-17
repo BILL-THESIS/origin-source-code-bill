@@ -318,7 +318,7 @@ if __name__ == '__main__':
                                                                                                   X_train_list,
                                                                                                   y_train_list)
 
-    new_df_normal_gbc = pd.DataFrame({
+    new_df_normal_gbc_version1 = pd.DataFrame({
         'col_name': col_list,
 
         'precision_weighted': precision_weighted_normal_list,
@@ -330,11 +330,11 @@ if __name__ == '__main__':
         'f1_weighted_tune': f1_weighted_tune_list,
 
         'precision_macro': precision_macro_list,
-        'recall_macro': precision_macro_tune_list,
+        'recall_macro': precision_macro_list,
         'f1_macro': f1_macro_list,
 
         'precision_macro_tune': precision_macro_tune_list,
-        'recall_macro_tune': recall_macro_list,
+        'recall_macro_tune': recall_macro_tune_list,
         'f1_macro_tune': f1_macro_tune_list,
 
         'precision_micro': precision_micro_list,
@@ -345,6 +345,8 @@ if __name__ == '__main__':
         'recall_micro_tune': recall_micro_tune_list,
         'f1_micro_tune': f1_micro_tune_list
     })
+
+    # new_df_normal_gbc.to_parquet("over_all_GBC_matrix1.parquet")
 
     end = time.time()
     total_time = end - start_time

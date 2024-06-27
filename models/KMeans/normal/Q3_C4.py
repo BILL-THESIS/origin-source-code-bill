@@ -62,22 +62,14 @@ if __name__ == '__main__':
     time_str = str(start_time_gmt)
 
     file_names = (
-<<<<<<< HEAD
         'output/4/results_all4_2024-03-17 11:20:21.parquet.gz'
-=======
-        # 'output/4/results_all4_2024-03-17 11:20:21.parquet.gz'
->>>>>>> 4c815474 (new version)
         # 'output/4/results_all4_2024-03-17 11:27:07.parquet.gz'
         # 'output/4/results_all4_2024-03-17 11:34:23.parquet.gz'
         # 'output/4/results_all4_2024-03-17 11:50:04.parquet.gz'
         # 'output/4/results_all4_2024-03-17 11:57:01.parquet.gz'
         # 'output/4/results_all4_2024-03-17 13:23:39.parquet.gz'
         # 'output/4/results_all4_2024-03-17 13:32:04.parquet.gz'
-<<<<<<< HEAD
         # 'output/4/results_all4_2024-03-17 13:40:21.parquet.gz'
-=======
-        'output/4/results_all4_2024-03-17 13:40:21.parquet.gz'
->>>>>>> 4c815474 (new version)
     )
 
     results = load_data(file_names)
@@ -85,7 +77,6 @@ if __name__ == '__main__':
     df = pd.DataFrame(data_quartile)
     print("df q3 :: ", df.columns.to_list())
 
-<<<<<<< HEAD
     equation_q3 = lambda row: (abs(row['cluter0_q3'][0] - row['cluter1_q3'][0]) +
                                abs(row['cluter0_q3'][0] - row['cluter2_q3'][0]) +
                                abs(row['cluter0_q3'][0] - row['cluter3_q3'][0]) +
@@ -124,19 +115,6 @@ if __name__ == '__main__':
     print(df.head(2).to_markdown())
 
     df.to_parquet(f'output/q3_c4/q3_c4_{time_str}.parquet')
-=======
-    df['Q3'] = df.apply(lambda row: (
-                                            abs(row['cluter0_q3'][0] - row['cluter1_q3'][0]) +
-                                            abs(row['cluter0_q3'][0] - row['cluter2_q3'][0]) +
-                                            abs(row['cluter2_q3'][0] - row['cluter1_q3'][0]) +
-                                            abs(row['cluter0_q3'][0] - row['cluter3_q3'][0]) +
-                                            abs(row['cluter3_q3'][0] - row['cluter2_q3'][0]) +
-                                            abs(row['cluter3_q3'][0] - row['cluter1_q3'][0])
-                                    ) / 4, axis=1)
-
-    df_sort = df.sort_values(by='Q3')[::-1].head(10)
-    df_sort.to_parquet(f'output/q3_c4/q3_c4_{time_str}.parquet')
->>>>>>> 4c815474 (new version)
 
     end = time.time()
     total_time = end - start_time

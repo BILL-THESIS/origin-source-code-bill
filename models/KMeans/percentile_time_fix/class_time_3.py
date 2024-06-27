@@ -183,10 +183,6 @@ def split_data_x_y(df, random_state=3, test_size=0.3):
     recall_macro_list = []
     f1_macro_list = []
 
-    precision_micro_list = []
-    recall_micro_list = []
-    f1_micro_list = []
-
     acc_normal_list = []
 
     y_original_list = []
@@ -223,12 +219,7 @@ def split_data_x_y(df, random_state=3, test_size=0.3):
         recall_macro_list.append(recall_score(y_train, y_pred, average='macro'))
         f1_macro_list.append(f1_score(y_train, y_pred, average='macro'))
 
-        precision_micro_list.append(precision_score(y_train, y_pred, average='micro'))
-        recall_micro_list.append(recall_score(y_train, y_pred, average='micro'))
-        f1_micro_list.append(f1_score(y_train, y_pred, average='micro'))
-
         acc_normal_list.append(acc_normal)
-
         y_original_list.append(Counter(y))
         y_train_list.append(Counter(y_train))
 
@@ -238,7 +229,6 @@ def split_data_x_y(df, random_state=3, test_size=0.3):
         list_time12.append(time12)
 
     return (precision_macro_list, recall_macro_list, f1_macro_list,
-            precision_micro_list, recall_micro_list, f1_micro_list,
             acc_normal_list, y_original_list, y_resampled_list, y_train_list,
             list_indx_time01, list_indx_time12, list_time01, list_time12)
 
@@ -267,21 +257,14 @@ if __name__ == '__main__':
     g, b = check_amount_time_class(class_3)
 
     (precision_macro_list, recall_macro_list, f1_macro_list,
-     precision_micro_list, recall_micro_list, f1_micro_list,
      acc_normal_list, y_original_list, y_resampled_list, y_train_list,
      list_indx_time01, list_indx_time12, list_time01, list_time12) = split_data_x_y(g)
-
-    # a = {'Links': lines, 'Titles': titles, 'Singers': finalsingers, 'Albums': finalalbums, 'Years': years}
-    # df = pd.DataFrame.from_dict(a, orient='index')
 
     df_time_class3 = {
         'accuracy': acc_normal_list,
         'precision_macro': precision_macro_list,
         'recall_macro': recall_macro_list,
         'f1_macro': f1_macro_list,
-        'precision_micro': precision_micro_list,
-        'recall_micro': recall_micro_list,
-        'f1_micro': f1_micro_list,
         'y_original': y_original_list,
         'y_resample': y_resampled_list,
         'y_train': y_train_list,
@@ -295,7 +278,7 @@ if __name__ == '__main__':
     df_time_class3 = df_time_class3.T
 
     with open('../../../models/KMeans/output/class_time_3_normal.parquet', 'wb') as f:
-        df_time_class3.to_parquet(f)
+        joblib.dump(df_time_class3, f)
         print("save file Done!")
 
     end = time.time()

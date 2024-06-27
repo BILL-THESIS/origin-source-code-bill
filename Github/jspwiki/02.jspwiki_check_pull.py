@@ -5,6 +5,16 @@ from Authorization import git_token
 df = pd.read_csv("../output/jspwiki.csv")
 data_list = []
 
+# for i in df['url']:
+#     data = requests.get(i, headers=git_token.header)
+#     data_list.append(data.json())
+#     print("========= :" , data_list)
+#     obj = pd.json_normalize(data_list)
+#     print(obj)
+#
+# df3 = pd.DataFrame(obj)
+# print(df)
+
 df3 = pd.read_csv('jspwiki_check_pull.csv')
 
 label = df3[['url' , 'id', 'node_id', 'number',
@@ -29,5 +39,5 @@ base_sha = merge_draft_true['base.sha']
 base_sha_drop = base_sha.drop_duplicates()
 merge_sha_drop = merge_sha.drop_duplicates()
 
-base_sha_drop.to_csv("_base.txt" , index=False, header=None)
+base_sha_drop.to_csv("shiro_base.txt" , index=False, header=None)
 merge_sha_drop.to_csv("merge_base.txt" , index=False, header=None)

@@ -43,7 +43,10 @@ def qurtile_data(cluster_data):
             quartile_data[f'cluter{cluster_value}_q3'] = [q3]
             quartile_data[f'shape_c{cluster_value}'] = [equal_q3.shape]
             quartile_data[f'cv_q3_c{cluster_value}'] = [coefficient_of_variation(equal_q3['hours'])]
+<<<<<<< HEAD
             quartile_data[f'label'] = [df_col_combined['label'].tolist()]
+=======
+>>>>>>> 4c815474 (new version)
         cluster_list.append(quartile_data)
 
     return cluster_list
@@ -93,4 +96,8 @@ if __name__ == '__main__':
 
     print("total time", total_time)
     print("total_time {:.2f} minutes".format(time_minutes))
+<<<<<<< HEAD
     print("Total time {:.2f} hours".format(time_hours))
+=======
+    print("Total time {:.2f} hours".format(time_hours))
+>>>>>>> 4c815474 (new version)

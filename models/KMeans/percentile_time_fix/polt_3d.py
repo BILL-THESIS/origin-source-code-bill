@@ -24,6 +24,10 @@ def polt_3d_subplot(x_label, y_label, z_label):
 
     fig = go.Figure(data=[
         go.Scatter3d(x=X, y=Y, z=Z, mode='markers', marker=dict(size=12, color=Z, colorscale='Viridis', opacity=0.8))])
+    fig.update_layout(
+        title=f"3D Plot of {z_label.name}",
+        scene=dict(xaxis_title=f'{x_label.name}', yaxis_title=f'{y_label.name}', zaxis_title=f'{z_label.name}'))
+
     fig.select_xaxes('time01 (hours)')
     fig.select_yaxes('time12 (hours)')
     fig.show()
@@ -88,11 +92,12 @@ if __name__ == '__main__':
     with open(os.path.join('../../KMeans/output/class_time_3_smote.parquet'), 'rb') as f:
         df_class_3_smote = joblib.load(f)
 
-    df_utilize = pd.read_pickle('../../KMeans/output/class_time_3_smote_utilize.pkl')
+    # df_utilize = pd.read_pickle('../../KMeans/output/class_time_3_smote_utilize.pkl')
+    df_utilize_robust_outline = pd.read_pickle('../../KMeans/output/class_time_3_smote_utilize_robust_outline.pkl')
 
     # Convert 'time01' and 'time12' to total seconds in hours
-    df_class_3_smote['time01'] = pd.to_timedelta(df_class_3_smote['time01']).dt.total_seconds() / 3600
-    df_class_3_smote['time12'] = pd.to_timedelta(df_class_3_smote['time12']).dt.total_seconds() / 3600
+    df_utilize_robust_outline['time01'] = pd.to_timedelta(df_utilize_robust_outline['time01']).dt.total_seconds() / 3600
+    df_utilize_robust_outline['time12'] = pd.to_timedelta(df_utilize_robust_outline['time12']).dt.total_seconds() / 3600
 
     # Prepare the data for 3D plotting
     X = df_class_3_smote['index_time01'].values
@@ -101,13 +106,9 @@ if __name__ == '__main__':
     z_normal = df_class_3_smote['f1_macro']
     z_smote = df_class_3_smote['f1_smote']
 
-    x_utilize = df_utilize['index_time01'].values
-    y_utilize = df_utilize['index_time12'].values
-    z_utilize = df_utilize['f1_smote']
+    x_utilize = df_utilize_robust_outline['index_time01'].values
+    y_utilize = df_utilize_robust_outline['index_time12'].values
+    z_utilize = df_utilize_robust_outline['f1_smote']
 
-    plot_normal = polt_3d_subplot(X, Y, z_normal)
-    plot_smote = polt_3d_subplot(X, Y, z_smote)
-    plot_normal_grid = polt_3d_grid(X, Y, z_normal)
-    plot_smote_grid = polt_3d_grid(X, Y, z_smote)
-    p1 = polt_3d_subplot(x_utilize, y_utilize, z_utilize)
-    p2 = polt_3d_grid(x_utilize, y_utilize, z_utilize)
+    # Plot the data
+    polt_3d_html_robuts_outliert = polt_3d_subplot(x_utilize, y_utilize, z_utilize)

@@ -287,45 +287,45 @@ if __name__ == '__main__':
     g, b = check_amount_time_class(class_3)
 
 
-    (precision_macro_list, recall_macro_list, f1_macro_list,
-     precision_smote_list, recall_smote_list, f1_smote_list,
-     acc_normal_list, acc_smote_list,
-     roc_auc_smote_list,
-     y_original_list, y_resampled_list, y_train_list, y_train_smote_list,
-     list_indx_time01, list_indx_time12, list_time01, list_time12) = split_data_x_y(g[:3])
+    # (precision_macro_list, recall_macro_list, f1_macro_list,
+    #  precision_smote_list, recall_smote_list, f1_smote_list,
+    #  acc_normal_list, acc_smote_list,
+    #  roc_auc_smote_list,
+    #  y_original_list, y_resampled_list, y_train_list, y_train_smote_list,
+    #  list_indx_time01, list_indx_time12, list_time01, list_time12) = split_data_x_y(g[:3])
 
     # a = {'Links': lines, 'Titles': titles, 'Singers': finalsingers, 'Albums': finalalbums, 'Years': years}
     # df = pd.DataFrame.from_dict(a, orient='index')
 
-    df_time_class3 = {
-        'accuracy': acc_normal_list,
-        'precision_macro': precision_macro_list,
-        'recall_macro': recall_macro_list,
-        'f1_macro': f1_macro_list,
+    # df_time_class3 = {
+    #     'accuracy': acc_normal_list,
+    #     'precision_macro': precision_macro_list,
+    #     'recall_macro': recall_macro_list,
+    #     'f1_macro': f1_macro_list,
+    #
+    #     'accuracy_smote': acc_smote_list,
+    #     'precision_smote': precision_smote_list,
+    #     'recall_smote': recall_smote_list,
+    #     'f1_smote': f1_smote_list,
+    #     'roc_auc_smote': roc_auc_smote_list,
+    #
+    #     'y_original': y_original_list,
+    #     'y_resample': y_resampled_list,
+    #     'y_train': y_train_list,
+    #     'y_train_resample': y_train_smote_list,
+    #
+    #     'index_time01': list_indx_time01,
+    #     'time01': list_time01,
+    #     'index_time12': list_indx_time12,
+    #     'time12': list_time12
+    # }
 
-        'accuracy_smote': acc_smote_list,
-        'precision_smote': precision_smote_list,
-        'recall_smote': recall_smote_list,
-        'f1_smote': f1_smote_list,
-        'roc_auc_smote': roc_auc_smote_list,
+    # df_time_class3 = pd.DataFrame.from_dict(df_time_class3, orient='index')
+    # df_time_class3 = df_time_class3.T
 
-        'y_original': y_original_list,
-        'y_resample': y_resampled_list,
-        'y_train': y_train_list,
-        'y_train_resample': y_train_smote_list,
-
-        'index_time01': list_indx_time01,
-        'time01': list_time01,
-        'index_time12': list_indx_time12,
-        'time12': list_time12
-    }
-
-    df_time_class3 = pd.DataFrame.from_dict(df_time_class3, orient='index')
-    df_time_class3 = df_time_class3.T
-
-    with open('../../../models/KMeans/output/class_time_3_smote_new.parquet', 'wb') as f:
-        joblib.dump(df_time_class3, f)
-        print("save file Done!")
+    # with open('../../../models/KMeans/output/class_time_3_smote_new.parquet', 'wb') as f:
+    #     joblib.dump(df_time_class3, f)
+    #     print("save file Done!")
 
     end = time.time()
     total_time = end - start_time

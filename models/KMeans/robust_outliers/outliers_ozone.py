@@ -91,12 +91,12 @@ def table_time_fix_percentile(list_each_percentile):
 
 
 if __name__ == '__main__':
-    model_original = pd.read_pickle('../../../Github/output/seatunnel_filtered_final_api.pkl')
+    model_original = pd.read_pickle('../../../Github/output/ozone_filtered_final_api.pkl')
 
     # divide the dataset into normal and outliers
     df_outliers, df_normal = robust_outlier_detection(model_original)
 
-    df_normal.to_parquet('../output/seatunnel_filtered_robust_outlier.parquet')
+    # df_normal.to_parquet('../output/ozone_filtered_robust_outlier.parquet')
 
     # prepare the data time modify to calculate the percentiles
     percentiles_normal = calculate_percentiles(df_normal['total_time'])
@@ -107,8 +107,7 @@ if __name__ == '__main__':
     df_time_point_index = set_index_combinations_percentiles(time_point_list)
     df_time_point_sort = table_time_fix_percentile(df_time_point_index)
 
-    # save the model
     end = df_normal['merge_commit_sha'].drop_duplicates()
-    end.to_csv('../output/tracking_api_to_sonar/seatunnel_filtered_robust_outlier_end.txt', header=True, index=False)
+    end.to_csv('../output/tracking_api_to_sonar/ozone_filtered_robust_outlier_end.txt', header=True, index=False)
     start = df_normal['base.sha'].drop_duplicates()
-    start.to_csv('../output/tracking_api_to_sonar/seatunnel_filtered_robust_outlier_start.txt', header=True, index=False)
+    start.to_csv('../output/tracking_api_to_sonar/ozone_filtered_robust_outlier_start.txt', header=True, index=False)

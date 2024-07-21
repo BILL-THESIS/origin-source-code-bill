@@ -114,10 +114,10 @@ def divide_time_class_2(df_original, df_time_point):
 
         # Create the 'time_class' column directly during iteration
         df_original['time_class'] = values_time
-        df_original['index_time01'] = row['index_time01'] * len(df_original)
-        df_original['time_01'] = time01 * len(df_original)
-        df_original['index_time12'] = row['index_time12'] * len(df_original)
-        df_original['time_12'] = time12 * len(df_original)
+        df_original['index_time01'] = row['index_time01']
+        df_original['time_01'] = row['time01']
+        df_original['index_time12'] = row['index_time12']
+        df_original['time_12'] = row['time12']
 
         # Append the modified DataFrame to results
         results.append(df_original.copy())  # Avoid modifying the original
@@ -186,7 +186,6 @@ def split_data_x_y(df, random_state=3, test_size=0.3):
     acc_normal_list = []
 
     y_original_list = []
-    y_resampled_list = []
     y_train_list = []
 
     list_indx_time01 = []
@@ -195,10 +194,10 @@ def split_data_x_y(df, random_state=3, test_size=0.3):
     list_time12 = []
 
     for col in df:
-        index_time01 = col['index_time01']
-        index_time12 = col['index_time12']
-        time01 = col['time_01']
-        time12 = col['time_12']
+        index_time01 = col['index_time01'].iloc[0]
+        index_time12 = col['index_time12'].iloc[0]
+        time01 = col['time_01'].iloc[0]
+        time12 = col['time_12'].iloc[0]
         X = col[['created_D', 'created_B', 'created_CP', 'created_C', 'created_OOA',
                  'ended_D', 'ended_B', 'ended_CP', 'ended_C', 'ended_OOA',
                  'percentage_b', 'percentage_cp', 'percentage_c', 'percentage_ooa']]
@@ -229,7 +228,7 @@ def split_data_x_y(df, random_state=3, test_size=0.3):
         list_time12.append(time12)
 
     return (precision_macro_list, recall_macro_list, f1_macro_list,
-            acc_normal_list, y_original_list, y_resampled_list, y_train_list,
+            acc_normal_list, y_original_list, y_train_list,
             list_indx_time01, list_indx_time12, list_time01, list_time12)
 
 
@@ -256,30 +255,29 @@ if __name__ == '__main__':
 
     g, b = check_amount_time_class(class_3)
 
-    (precision_macro_list, recall_macro_list, f1_macro_list,
-     acc_normal_list, y_original_list, y_resampled_list, y_train_list,
-     list_indx_time01, list_indx_time12, list_time01, list_time12) = split_data_x_y(g)
-
-    df_time_class3 = {
-        'accuracy': acc_normal_list,
-        'precision_macro': precision_macro_list,
-        'recall_macro': recall_macro_list,
-        'f1_macro': f1_macro_list,
-        'y_original': y_original_list,
-        'y_resample': y_resampled_list,
-        'y_train': y_train_list,
-        'index_time01': list_indx_time01,
-        'time01': list_time01,
-        'index_time12': list_indx_time12,
-        'time12': list_time12
-    }
-
-    df_time_class3 = pd.DataFrame.from_dict(df_time_class3, orient='index')
-    df_time_class3 = df_time_class3.T
-
-    with open('../../../models/KMeans/output/class_time_3_normal.parquet', 'wb') as f:
-        joblib.dump(df_time_class3, f)
-        print("save file Done!")
+    # (precision_macro_list, recall_macro_list, f1_macro_list,
+    #  acc_normal_list, y_original_list, y_train_list,
+    #  list_indx_time01, list_indx_time12, list_time01, list_time12) = split_data_x_y(g)
+    #
+    # df_time_class3 = {
+    #     'accuracy': acc_normal_list,
+    #     'precision_macro': precision_macro_list,
+    #     'recall_macro': recall_macro_list,
+    #     'f1_macro': f1_macro_list,
+    #     'y_original': y_original_list,
+    #     'y_train': y_train_list,
+    #     'index_time01': list_indx_time01,
+    #     'time01': list_time01,
+    #     'index_time12': list_indx_time12,
+    #     'time12': list_time12
+    # }
+    #
+    # df_time_class3 = pd.DataFrame.from_dict(df_time_class3, orient='index')
+    # df_time_class3 = df_time_class3.T
+    #
+    # with open('../../../models/KMeans/output/class_time_3_normal.parquet', 'wb') as f:
+    #     joblib.dump(df_time_class3, f)
+    #     print("save file Done!")
 
     end = time.time()
     total_time = end - start_time

@@ -38,8 +38,7 @@ while True:
         break
 
 # Step 3: Concatenate all data lists from different pages
-# df_result = pd.concat([pd.DataFrame(data_list, columns=['project_key'])])
-df_result = pd.concat([pd.DataFrame(data_list)])
+df_result = pd.concat([pd.DataFrame(data_list, columns=['project_key'])])
 print(df_result)
 
 # Step 4: Export data list to a CSV file

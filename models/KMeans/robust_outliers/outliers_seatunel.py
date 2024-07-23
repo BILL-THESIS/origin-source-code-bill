@@ -102,6 +102,8 @@ if __name__ == '__main__':
     percentiles_normal = calculate_percentiles(df_normal['total_time'])
     percentiles_outliers = calculate_percentiles(df_outliers['total_time'])
 
+    # print(percentiles_normal.describe())
+
     # combinations of percentiles to divide time class for 3 classes
     time_point_list = list(itertools.combinations(percentiles_normal.iloc, 2))
     df_time_point_index = set_index_combinations_percentiles(time_point_list)

@@ -1,6 +1,8 @@
 import pandas as pd
+import joblib
 
-df =pd.read_csv("smells_all.csv")
+df = pd.read_csv("smells_all.csv")
+df_2 = pd.read_pickle("output/sonar_smells_ozone.pkl")
 grouped_data_dropna = df.dropna(axis='columns')
 # set_index_df = grouped_data_dropna.set_index(['project', 'rule'])
 # rule_counts = set_index_df.groupby(['project', 'rule']).size()

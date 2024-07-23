@@ -3,9 +3,9 @@ import json
 import pandas as pd
 from sonarqube import SonarQubeClient
 
-url = 'http://localhost:9000'
+url = 'https://eserg-sonarqube.dto.technology/'
 username = "admin"
-password = "admin21"
+password = "mgphev123"
 
 sonar = SonarQubeClient(sonarqube_url=url, username=username, password=password)
 
@@ -14,7 +14,6 @@ params = {
     'types': 'CODE_SMELL',
     'ps': 500,
     'p': 1
-    # 'tags': 'correctness'
 }
 
 rules = sonar.rules.search_rules(**params)

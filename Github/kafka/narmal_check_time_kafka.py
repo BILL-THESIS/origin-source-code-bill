@@ -15,7 +15,7 @@ def query_data(df: pd.DataFrame) -> pd.DataFrame:
 
 
 if __name__ == '__main__':
-    df = pd.read_pickle("../output/flink_filtered_issue_requests_comments_pulls.pkl")
+    df = pd.read_pickle("../output/kafka_filtered_issue_requests_comments_pulls.pkl")
     re_df = query_data(df)
     # Drop NaN values specifically in the 'merged_at' column
     re_df_drop_nan = re_df.dropna(subset=['merged_at'])
@@ -24,12 +24,11 @@ if __name__ == '__main__':
         re_df_drop_nan['created_at'])
     # Converting total_time to hours for better readability
     re_df_drop_nan['total_time_hours'] = re_df_drop_nan['total_time'].dt.total_seconds() / 3600
-    re_df_drop_nan.to_pickle("../output/flink_filtered_final_api.pkl")
-
+    re_df_drop_nan.to_pickle("../output/kafka_filtered_final_api.pkl")
     # Plotting total_time_hours
     plt.figure(figsize=(10, 6))
     sns.histplot(re_df_drop_nan['total_time_hours'], bins=50, kde=True)
     plt.xlabel('Total Time (hours)')
     plt.ylabel('Frequency')
-    plt.title('Distribution of Total Time from Creation to Merge on Flink Repository')
+    plt.title('Distribution of Total Time from Creation to Merge on Kafka Repository')
     plt.show()

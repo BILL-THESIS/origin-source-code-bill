@@ -90,13 +90,48 @@ def table_time_fix_percentile(list_each_percentile):
     return df_time_point
 
 
+def divide_time_class_2(df_original, df_time_point):
+    results = []
+    for index, row in df_time_point.iterrows():
+        # Create a copy of the DataFrame for the current percentile
+        time01 = row['time01']
+        time12 = row['time12']
+        time_fix_hours = df_original['total_time']
+        # time_fix_hours = df_original['total_time'].dt.total_seconds() / 3600
+
+        values_time = []
+        for time_i in time_fix_hours:
+            if time_i <= time01:
+                values_time.append(0)
+                # print(f"time modify :: {time_i} < time01 :: {time01}")
+            elif (time_i > time01) & (time_i < time12):
+                values_time.append(1)
+                # print(f"time01 :: {time01} >= time modify :: {time_i} < time12 :: {time12}")
+            else:  # time_i >= time12
+                values_time.append(2)
+                # print(f"time modify :: {time_i} >=  time12 :: {time12}")
+
+        # Create the 'time_class' column directly during iteration
+        df_original['time_class'] = values_time
+        df_original['index_time01'] = row['index_time01']
+        df_original['time_01'] = row['time01']
+        df_original['index_time12'] = row['index_time12']
+        df_original['time_12'] = row['time12']
+
+        # Append the modified DataFrame to results
+        results.append(df_original.copy())
+        # Avoid modifying the original
+
+    return results
+
+
 if __name__ == '__main__':
-    model_original = pd.read_pickle('../../../Github/output/ozone_filtered_final_api.pkl')
+    model_original = pd.read_pickle('../../../Github/output/kafka_filtered_final_api.pkl')
 
     # divide the dataset into normal and outliers
     df_outliers, df_normal = robust_outlier_detection(model_original)
 
-    # df_normal.to_parquet('../output/ozone_filtered_robust_outlier.parquet')
+    df_normal.to_parquet('../output/kafka_filtered_robust_outlier.parquet')
 
     # prepare the data time modify to calculate the percentiles
     percentiles_normal = calculate_percentiles(df_normal['total_time'])
@@ -112,10 +147,12 @@ if __name__ == '__main__':
     sns.histplot(df_normal['total_time_hours'], bins=50, kde=True)
     plt.xlabel('Total Time (hours)')
     plt.ylabel('Frequency')
-    plt.title('Outliers Ozone Repository')
+    plt.title('Outliers Kafka Repository')
     plt.show()
 
+
+    # save the model
     end = df_normal['merge_commit_sha'].drop_duplicates()
-    end.to_csv('../output/tracking_api_to_sonar/ozone_filtered_robust_outlier_end.txt', header=True, index=False)
+    end.to_csv('../output/tracking_api_to_sonar/kafka_filtered_robust_outlier_end.txt', header=True, index=False)
     start = df_normal['base.sha'].drop_duplicates()
-    start.to_csv('../output/tracking_api_to_sonar/ozone_filtered_robust_outlier_start.txt', header=True, index=False)
+    start.to_csv('../output/tracking_api_to_sonar/kafka_filtered_robust_outlier_start.txt', header=True, index=False)

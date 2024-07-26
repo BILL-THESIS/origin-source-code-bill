@@ -3,8 +3,8 @@ import itertools
 import numpy as np
 import pandas as pd
 import joblib
-from matplotlib import pyplot as plt
-import plotly.graph_objects as go
+import matplotlib.pyplot as plt
+import seaborn as sns
 import logging
 
 
@@ -142,9 +142,17 @@ if __name__ == '__main__':
     df_time_point_index = set_index_combinations_percentiles(time_point_list)
     df_time_point_sort = table_time_fix_percentile(df_time_point_index)
 
+    # Plotting total_time_hours
+    plt.figure(figsize=(10, 6))
+    sns.histplot(df_normal['total_time_hours'], bins=50, kde=True)
+    plt.xlabel('Total Time (hours)')
+    plt.ylabel('Frequency')
+    plt.title('Outliers Flink Repository')
+    plt.show()
+
 
     # save the model
-    end = df_normal['merge_commit_sha'].drop_duplicates()
-    end.to_csv('../output/tracking_api_to_sonar/flink_filtered_robust_outlier_end.txt', header=True, index=False)
-    start = df_normal['base.sha'].drop_duplicates()
-    start.to_csv('../output/tracking_api_to_sonar/flink_filtered_robust_outlier_start.txt', header=True, index=False)
+    # end = df_normal['merge_commit_sha'].drop_duplicates()
+    # end.to_csv('../output/tracking_api_to_sonar/flink_filtered_robust_outlier_end.txt', header=True, index=False)
+    # start = df_normal['base.sha'].drop_duplicates()
+    # start.to_csv('../output/tracking_api_to_sonar/flink_filtered_robust_outlier_start.txt', header=True, index=False)

@@ -1,5 +1,17 @@
 import pandas as pd
-import ast
+from googletrans import Translator
+
+# Initialize the translator
+translator = Translator()
+
+
+# Function to translate text
+def translate_text(text, dest_language='th'):
+    try:
+        translated = translator.translate(text, dest=dest_language)
+        return translated.text
+    except Exception as e:
+        return str(e)
 
 
 # Define a function to categorize each rule based on the provided keywords
@@ -7,7 +19,9 @@ def categorize_rule(description, name):
     bloaters_keywords = ["long method", "large class", "primitive obsession", "long parameter list", "duplicate",
                          "long", "large", "complexity", "size", "multiple variables", "multiple exit points",
                          "lines should not be too long", "too many parameters", "too many statements",
-                         "too many fields", "not have too many lines", "should not have too many parameters"]
+                         "too many fields", "not have too many lines",
+                         "should not have too many parameters", "reusable resources", "objects should not be created"
+                         "primitive "]
 
     oo_abusers_keywords = ["alternative", "classes", "different interfaces", "refused bequest", "switch statements",
                            "inheritance", "object-oriented", "encapsulation", "switch", "refused bequest", "bug",
@@ -19,7 +33,14 @@ def categorize_rule(description, name):
                            "arrays should not be created for varargs parameters",
                            "checked exception", "methods returns", "branches",
                            "try-with-resources", "boolean expressions should not be gratuitous",
-                           "exception should not be caught"]
+                           "exception should not be caught",
+                           "consumer Builders should be used",
+                           "should be set explicitly",
+                           "should be preferred", "lambdas should not invoke other lambdas synchronously",
+                           "aws region should not be set with a hardcoded String",
+                           "boolean checks should not be inverted",
+                           "exit methods should not be called", "generic exceptions should never be thrown",
+                           "urls should not be hardcoded", "arrays should not be copied using loops"]
 
     change_preventers_keywords = ["divergent change", "parallel inheritance hierarchies", "shotgun surgery", "change",
                                   "dependency", "modularization", "parameter names", "method name", "class name",
@@ -27,7 +48,8 @@ def categorize_rule(description, name):
                                   "custom getter method", "local variable type", "variable type", "variable",
                                   "should be declared with base types", "replace", "assertthat",
                                   "containing characters subject to normalization should use", "diamond operator",
-                                  "deprecated annotations", "explanations"]
+                                  "deprecated annotations", "explanations", "semicolons", "string object",
+                                  "package declaration should match source file directory", "should be used instead"]
 
     dispensables_keywords = ["comments", "duplicate code", "data class", "dead code", "lazy class", "dead",
                              "speculative", "generality", "unused", "dead", "duplicate", "lazy", "data class",
@@ -37,12 +59,15 @@ def categorize_rule(description, name):
                              "remove", "should not be stored", "delete", "deleteonexit", "should not be used",
                              "close curly brace", "statements should be merged", "should be removed",
                              "should be avoided", "merged", "identical implementations", "superfluous",
-                             "annotation repetitions"]
+                             "annotation repetitions", "whitespace", "removal",
+                             "statements should be on separate lines"]
 
     couplers_keywords = ["feature envy", "inappropriate intimacy", "incomplete library class", "message chains",
                          "coupling", "dependencies", "feature envy", "message chain", "inappropriate intimacy",
                          "super class", "sub class", "complex method", "complex", "library", "limited dependence",
-                         "limited"]
+                         "limited", "too many dependencies", "too many", "should not be coupled",
+                         "should not be dependent", "methods should not have too many return statements",
+                         "nested"]
 
     description_lower = description.lower()
     name_lower = name.lower()
@@ -81,10 +106,16 @@ if __name__ == "__main__":
 
     # Display the categorized rules
     categorize_smells = java_rules_smell_df[['key', 'name', 'content', 'category']]
+    categorize_smells.to_parquet("../Sonar/output/sonar_rules_categorized.parquet")
 
     # Filter for rules that are categorized as "Uncategorized"
     uncategorized_rules_df = categorize_smells[categorize_smells['category'] == 'Uncategorized']
     print(uncategorized_rules_df)
+
+    # translate the rules to Thai
+    # uncategorized_rules_df['translated'] = uncategorized_rules_df['name'].apply(
+    #     lambda x: translate_text(x, dest_language='th'))
+
     Bloaters = categorize_smells[categorize_smells['category'] == 'Bloaters']
     # print(Bloaters)
     Object_Orientation_Abusers = categorize_smells[categorize_smells['category'] == 'Object-Orientation Abusers']

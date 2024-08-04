@@ -7,16 +7,16 @@ from sklearn.model_selection import train_test_split, cross_val_predict
 
 
 def percentage_smell(df):
-    df = df.rename(columns={'begin_Dispensables': 'created_D',
-                            'begin_Bloaters': 'created_B',
-                            'begin_Change Preventers': 'created_CP',
-                            'begin_Couplers': 'created_C',
-                            'begin_Object-Orientation Abusers': 'created_OOA',
-                            'end_Dispensables': 'ended_D',
-                            'end_Bloaters': 'ended_B',
-                            'end_Change Preventers': 'ended_CP',
-                            'end_Couplers': 'ended_C',
-                            'end_Object-Orientation Abusers': 'ended_OOA'})
+    df = df.rename(columns={'created_Dispensables': 'created_D',
+                            'created_Bloaters': 'created_B',
+                            'created_Change Preventers': 'created_CP',
+                            'created_Couplers': 'created_C',
+                            'created_Object-Orientation Abusers': 'created_OOA',
+                            'ended_Dispensables': 'ended_D',
+                            'ended_Bloaters': 'ended_B',
+                            'ended_Change Preventers': 'ended_CP',
+                            'ended_Couplers': 'ended_C',
+                            'ended_Object-Orientation Abusers': 'ended_OOA'})
 
     df['percentage_b'] = ((df['ended_D'] - df['created_D'].astype(float)) / df['created_D'].astype(float)) * 100
     df['percentage_b'] = ((df['ended_B'] - df['created_B']) / df['created_B']) * 100
@@ -105,7 +105,7 @@ if __name__ == '__main__':
     start_time_gmt = time.strftime("%Y-%m-%d %H:%M:%S", start_time_gmt)
     print(f"start to normalize cluster at: {start_time_gmt}")
 
-    df_original = pd.read_parquet('../../../models/KMeans/output/seatunnel_all_information.parquet')
+    df_original = pd.read_parquet('../../../models/KMeans/output/ozone_prepare_to_train.parquet')
 
     # prepare the data X
     df_original_rename = percentage_smell(df_original)

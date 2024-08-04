@@ -16,16 +16,16 @@ from dask.distributed import Client, LocalCluster
 
 
 def percentage_smell(df):
-    df = df.rename(columns={'begin_Dispensables': 'created_D',
-                            'begin_Bloaters': 'created_B',
-                            'begin_Change Preventers': 'created_CP',
-                            'begin_Couplers': 'created_C',
-                            'begin_Object-Orientation Abusers': 'created_OOA',
-                            'end_Dispensables': 'ended_D',
-                            'end_Bloaters': 'ended_B',
-                            'end_Change Preventers': 'ended_CP',
-                            'end_Couplers': 'ended_C',
-                            'end_Object-Orientation Abusers': 'ended_OOA'})
+    df = df.rename(columns={'created_Dispensables': 'created_D',
+                            'created_Bloaters': 'created_B',
+                            'created_Change Preventers': 'created_CP',
+                            'created_Couplers': 'created_C',
+                            'created_Object-Orientation Abusers': 'created_OOA',
+                            'ended_Dispensables': 'ended_D',
+                            'ended_Bloaters': 'ended_B',
+                            'ended_Change Preventers': 'ended_CP',
+                            'ended_Couplers': 'ended_C',
+                            'ended_Object-Orientation Abusers': 'ended_OOA'})
 
     df['created_D'].astype(float)
     df['percentage_b'] = ((df['ended_D'] - df['created_D'].astype(float)) / df['created_D'].astype(float)) * 100
@@ -198,6 +198,7 @@ def split_data_x_y(df, random_state=3, test_size=0.3):
         index_time12 = col['index_time12'].iloc[0]
         time01 = col['time_01'].iloc[0]
         time12 = col['time_12'].iloc[0]
+
         X = col[['created_D', 'created_B', 'created_CP', 'created_C', 'created_OOA',
                  'ended_D', 'ended_B', 'ended_CP', 'ended_C', 'ended_OOA',
                  'percentage_b', 'percentage_cp', 'percentage_c', 'percentage_ooa']]
@@ -238,7 +239,7 @@ if __name__ == '__main__':
     start_time_gmt = time.strftime("%Y-%m-%d %H:%M:%S", start_time_gmt)
     print(f"start to normalize cluster at: {start_time_gmt}")
 
-    df_original_rename = pd.read_parquet('../../../models/KMeans/output/seatunnel_all_information.parquet')
+    df_original_rename = pd.read_parquet('../../../models/KMeans/output/ozone_prepare_to_train.parquet')
     df_original_rename = percentage_smell(df_original_rename)
 
     hour = df_original_rename['total_time'].dt.total_seconds() / 3600
@@ -255,29 +256,29 @@ if __name__ == '__main__':
 
     g, b = check_amount_time_class(class_3)
 
-    # (precision_macro_list, recall_macro_list, f1_macro_list,
-    #  acc_normal_list, y_original_list, y_train_list,
-    #  list_indx_time01, list_indx_time12, list_time01, list_time12) = split_data_x_y(g)
-    #
-    # df_time_class3 = {
-    #     'accuracy': acc_normal_list,
-    #     'precision_macro': precision_macro_list,
-    #     'recall_macro': recall_macro_list,
-    #     'f1_macro': f1_macro_list,
-    #     'y_original': y_original_list,
-    #     'y_train': y_train_list,
-    #     'index_time01': list_indx_time01,
-    #     'time01': list_time01,
-    #     'index_time12': list_indx_time12,
-    #     'time12': list_time12
-    # }
-    #
-    # df_time_class3 = pd.DataFrame.from_dict(df_time_class3, orient='index')
-    # df_time_class3 = df_time_class3.T
-    #
-    # with open('../../../models/KMeans/output/class_time_3_normal.parquet', 'wb') as f:
-    #     joblib.dump(df_time_class3, f)
-    #     print("save file Done!")
+    (precision_macro_list, recall_macro_list, f1_macro_list,
+     acc_normal_list, y_original_list, y_train_list,
+     list_indx_time01, list_indx_time12, list_time01, list_time12) = split_data_x_y(g)
+
+    df_time_class3 = {
+        'accuracy': acc_normal_list,
+        'precision_macro': precision_macro_list,
+        'recall_macro': recall_macro_list,
+        'f1_macro': f1_macro_list,
+        'y_original': y_original_list,
+        'y_train': y_train_list,
+        'index_time01': list_indx_time01,
+        'time01': list_time01,
+        'index_time12': list_indx_time12,
+        'time12': list_time12
+    }
+
+    df_time_class3 = pd.DataFrame.from_dict(df_time_class3, orient='index')
+    df_time_class3 = df_time_class3.T
+
+    with open('../../../models/KMeans/output/class_time_3_normal.parquet', 'wb') as f:
+        joblib.dump(df_time_class3, f)
+        print("save file Done!")
 
     end = time.time()
     total_time = end - start_time

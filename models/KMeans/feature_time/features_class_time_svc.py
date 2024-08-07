@@ -293,8 +293,8 @@ if __name__ == '__main__':
     time_str = str(start_time_gmt)
 
     # input files
-    file_features = r'../output/q3_c3/q3_c3_5000_normal2024-05-02 07:04:12.parquet'
-    df_20_col = pd.read_parquet('../output/seatunnal_20col.parquet')
+    file_features = r'../../output/q3_c3/q3_c3_5000_normal2024-05-02 07:04:12.parquet'
+    df_20_col = pd.read_parquet('../../output/seatunnal_20col.parquet')
     df_original = pd.read_parquet('../../../Sonar/seatunnel_all_information.parquet')
 
     # command of the function

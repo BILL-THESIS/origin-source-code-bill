@@ -178,8 +178,8 @@ if __name__ == '__main__':
 
     # input files
     # file_features = r'../../models/KMeans/output/3/quartile_data_2024-05-24 04:55:29.parquet.gz'
-    file_features = r'../output/q3_c3_15_col_not_sort_2024.parquet.gz'
-    df_20_col = pd.read_parquet('../output/seatunnal_20col.parquet')
+    file_features = r'../../output/q3_c3_15_col_not_sort_2024.parquet.gz'
+    df_20_col = pd.read_parquet('../../output/seatunnal_20col.parquet')
     df_original = pd.read_parquet('../../../Sonar/seatunnel_all_information.parquet')
 
     # command of the function

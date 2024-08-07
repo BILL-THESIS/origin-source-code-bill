@@ -139,7 +139,7 @@ if __name__ == '__main__':
     start_time_gmt = time.strftime("%Y-%m-%d %H:%M:%S", start_time_gmt)
     print(f"start to normalize cluster at: {start_time_gmt}")
 
-    df_original = pd.read_parquet('../../../models/KMeans/output/seatunnel_all_information.parquet')
+    df_original = pd.read_parquet('../output/seatunnel_all_information.parquet')
 
     # prepare the data X
     df_original_rename = percentage_smell(df_original)

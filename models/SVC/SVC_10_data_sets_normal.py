@@ -149,8 +149,8 @@ def train_model(X_list, y_list, X_train_list, y_train_list):
 
 
 if __name__ == '__main__':
-    directory_path_max = r'../../models/KMeans/output/q3_c3/df_max_time_class_normal.parquet'
-    df_20_col = pd.read_parquet('../../models/KMeans/output/seatunnal_20col.parquet')
+    directory_path_max = r'../output/q3_c3/df_max_time_class_normal.parquet'
+    df_20_col = pd.read_parquet('../output/seatunnal_20col.parquet')
     df_original = pd.read_parquet('../../Sonar/seatunnel_all_information.parquet')
 
     df_max_class = pd.read_parquet(directory_path_max)

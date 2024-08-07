@@ -126,7 +126,7 @@ if __name__ == '__main__':
     cpus = 3
 
     # prepare the data frame
-    df_original_20_col = pd.read_parquet('../output/seatunnal_20col.parquet')
+    df_original_20_col = pd.read_parquet('../../output/seatunnal_20col.parquet')
     df_original_20_col = df_original_20_col.drop(
         columns=['D_change', 'B_change', 'CP_change', 'C_change', 'OOA_change'])
     df_original_all_col = pd.read_parquet('../../../Sonar/seatunnel_all_information.parquet')

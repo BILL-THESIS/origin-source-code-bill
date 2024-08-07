@@ -105,7 +105,7 @@ if __name__ == '__main__':
     start_time_gmt = time.strftime("%Y-%m-%d %H:%M:%S", start_time_gmt)
     print(f"start to normalize cluster at: {start_time_gmt}")
 
-    df_original = pd.read_parquet('../../../models/KMeans/output/ozone_prepare_to_train.parquet')
+    df_original = pd.read_parquet('../output/pulsar_prepare_to_train.parquet')
 
     # prepare the data X
     df_original_rename = percentage_smell(df_original)
@@ -132,6 +132,9 @@ if __name__ == '__main__':
         'time1': y1_list,
         'point_time01': point_list
     })
+
+    df_time_class2.to_parquet('../../../models/KMeans/output/pulsar_GBC_time_class2.parquet')
+    print("saved file Done !!!")
 
     end = time.time()
     total_time = end - start_time

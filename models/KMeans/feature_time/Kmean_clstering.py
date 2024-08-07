@@ -66,7 +66,7 @@ if __name__ == '__main__':
     # cpus = multiprocessing.cpu_count()
     cpus = 3
     # Test the function
-    df = pd.read_parquet('../output/seatunnal_20col.parquet')
+    df = pd.read_parquet('../../output/seatunnal_20col.parquet')
     # drop the columns that are not needed
     df = df.drop(
         columns=['D_change', 'B_change', 'CP_change', 'C_change', 'OOA_change'])

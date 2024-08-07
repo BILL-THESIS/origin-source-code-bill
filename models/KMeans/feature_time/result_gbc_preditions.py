@@ -16,7 +16,7 @@ if __name__ == '__main__':
     time_str = str(start_time_gmt)
 
     # input files
-    file_features = r'../output/over_all_GBC_matrix1_2024-05-27 04:58:08.parquet'
+    file_features = r'../../output/over_all_GBC_matrix1_2024-05-27 04:58:08.parquet'
 
     df = pd.read_parquet(file_features)
 

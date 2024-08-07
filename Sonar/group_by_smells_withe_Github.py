@@ -45,15 +45,15 @@ def process_project(df_outliers, df_sonar, df_category_smells, project_name):
         'ended_qualifier_y', 'ended_visibility_y', 'ended_lastAnalysisDate_y', 'ended_revision_y', 'ended_project'
     ], axis=1)
 
-    final_df.to_parquet(f"../models/KMeans/output/{project_name}_prepare_to_train.parquet")
+    final_df.to_parquet(f"../models/output/{project_name}_prepare_to_train.parquet")
 
     return final_df
 
 
 if __name__ == "__main__":
-    df_pulsar_outliers = pd.read_parquet("../models/KMeans/output/pulsar_filtered_robust_outlier.parquet")
-    df_seatunnel_outliers = pd.read_parquet("../models/KMeans/output/seatunnel_filtered_robust_outlier.parquet")
-    df_ozone_outliers = pd.read_parquet("../models/KMeans/output/ozone_filtered_robust_outlier.parquet")
+    df_pulsar_outliers = pd.read_parquet("../models/output/pulsar_filtered_robust_outlier.parquet")
+    df_seatunnel_outliers = pd.read_parquet("../models/output/seatunnel_filtered_robust_outlier.parquet")
+    df_ozone_outliers = pd.read_parquet("../models/output/ozone_filtered_robust_outlier.parquet")
 
     df_sonar = pd.read_pickle("../Sonar/output/sonar_all_projects_version3.pkl")
     df_rule_ = pd.read_pickle("../Sonar/output/sonar_rules_version9.9.6.pkl")

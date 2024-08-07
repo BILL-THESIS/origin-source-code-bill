@@ -73,7 +73,7 @@ if __name__ == '__main__':
     time_str = str(start_time_gmt)
 
     df_original = pd.read_parquet('../../../Sonar/seatunnel_all_information.parquet')
-    df_20_col = pd.read_parquet('../output/seatunnal_20col.parquet')
+    df_20_col = pd.read_parquet('../../output/seatunnal_20col.parquet')
 
     file_names = (
         # '../../output/1709313625.730204.pkl',

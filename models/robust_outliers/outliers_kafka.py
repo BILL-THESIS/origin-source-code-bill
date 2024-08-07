@@ -126,7 +126,7 @@ def divide_time_class_2(df_original, df_time_point):
 
 
 if __name__ == '__main__':
-    model_original = pd.read_pickle('../../../Github/output/kafka_filtered_final_api.pkl')
+    model_original = pd.read_pickle('../../Github/output/kafka_filtered_final_api.pkl')
 
     # divide the dataset into normal and outliers
     df_outliers, df_normal = robust_outlier_detection(model_original)

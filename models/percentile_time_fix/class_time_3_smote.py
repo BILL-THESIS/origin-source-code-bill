@@ -8,9 +8,8 @@ import itertools
 
 from imblearn.over_sampling import SMOTE
 from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 from sklearn.model_selection import train_test_split, cross_val_predict, GridSearchCV
-
 import joblib
 from dask.distributed import Client, LocalCluster
 
@@ -83,22 +82,13 @@ def table_time_fix_percentile(list_each_percentile):
 
 
 def divide_time_class_2(df_original, df_time_point):
-    """
-    Assigns time classes (0, 1, 2) to rows in df_original based on time intervals in df_time_point.
-
-    Args:
-        df_original (pd.DataFrame): The original DataFrame with a 'total_time' column.
-        df_time_point (pd.DataFrame): A DataFrame with 'time01' and 'time12' columns defining intervals.
-
-    Returns:
-        list: A list of DataFrames with a new 'time_class' column.
-    """
-
     results = []
     for index, row in df_time_point.iterrows():
+        # Create a copy of the DataFrame for the current percentile
         time01 = row['time01']
         time12 = row['time12']
-        time_fix_hours = df_original['total_time'].dt.total_seconds() / 3600
+        time_fix_hours = df_original['total_time']
+        # time_fix_hours = df_original['total_time'].dt.total_seconds() / 3600
 
         values_time = []
         for time_i in time_fix_hours:
@@ -120,7 +110,8 @@ def divide_time_class_2(df_original, df_time_point):
         df_original['time_12'] = row['time12']
 
         # Append the modified DataFrame to results
-        results.append(df_original.copy())  # Avoid modifying the original
+        results.append(df_original.copy())
+        # Avoid modifying the original
 
     return results
 
@@ -153,29 +144,34 @@ def check_amount_time_class(df):
         t_0 = df[df['time_class'] == 0].shape[0]
         t_1 = df[df['time_class'] == 1].shape[0]
         t_2 = df[df['time_class'] == 2].shape[0]
-        print("Time class 0: ", df[df['time_class'] == 0].shape[0])
-        print("Time class 1: ", df[df['time_class'] == 1].shape[0])
-        print("Time class 2: ", df[df['time_class'] == 2].shape[0])
+        # print("Time class 0: ", df[df['time_class'] == 0].shape[0])
+        # print("Time class 1: ", df[df['time_class'] == 1].shape[0])
+        # print("Time class 2: ", df[df['time_class'] == 2].shape[0])
 
-        if (t_0 > 1) & (t_1 > 1) & (t_2 > 1):
+        if (t_0 >= 6) & (t_1 >= 6) & (t_2 >= 6):
             save_df_good.append(df)
-        elif (t_0 > 1) & (t_1 > 1) & (t_2 == 0):
-            save_df_good.append(df)
-        elif (t_0 > 1) & (t_1 == 0) & (t_2 > 1):
-            save_df_good.append(df)
-        elif (t_0 == 0) & (t_1 > 1) & (t_2 > 1):
-            save_df_good.append(df)
-        elif (t_0 > 1) & (t_1 == 0) & (t_2 == 0):
+        elif (t_0 < 6) & (t_1 < 6) & (t_2 < 6):
             save_df_bad.append(df)
-        elif (t_0 == 0) & (t_1 > 1) & (t_2 == 0):
+
+        elif (t_0 < 6) & (t_1 >= 6) & (t_2 >= 6):
             save_df_bad.append(df)
-        elif (t_0 == 0) & (t_1 == 0) & (t_2 > 1):
+        elif (t_0 >= 6) & (t_1 < 6) & (t_2 >= 6):
             save_df_bad.append(df)
-        elif (t_0 == 0) & (t_1 == 0) & (t_2 == 0):
+        elif (t_0 >= 6) & (t_1 >= 6) & (t_2 < 6):
+            save_df_bad.append(df)
+
+        elif (t_0 < 6) & (t_1 < 6) & (t_2 >= 6):
+            save_df_bad.append(df)
+        elif (t_0 < 6) & (t_1 >= 6) & (t_2 < 6):
+            save_df_bad.append(df)
+        elif (t_0 < 6) & (t_1 < 6) & (t_2 >= 6):
             save_df_bad.append(df)
         else:
             print("Time class is not enough")
     return save_df_good, save_df_bad
+
+
+# add check_amount_time_class to calculate the amount of time class
 
 
 def split_data_x_y(df, random_state=3, test_size=0.3):
@@ -183,10 +179,18 @@ def split_data_x_y(df, random_state=3, test_size=0.3):
     recall_macro_list = []
     f1_macro_list = []
 
+    precision_smote_list = []
+    recall_smote_list = []
+    f1_smote_list = []
+
     acc_normal_list = []
+    acc_smote_list = []
 
     y_original_list = []
+    y_resampled_list = []
     y_train_list = []
+    y_train_smote_list = []
+    roc_auc_smote_list = []
 
     list_indx_time01 = []
     list_indx_time12 = []
@@ -198,12 +202,20 @@ def split_data_x_y(df, random_state=3, test_size=0.3):
         index_time12 = col['index_time12'].iloc[0]
         time01 = col['time_01'].iloc[0]
         time12 = col['time_12'].iloc[0]
-
         X = col[['created_D', 'created_B', 'created_CP', 'created_C', 'created_OOA',
                  'ended_D', 'ended_B', 'ended_CP', 'ended_C', 'ended_OOA',
                  'percentage_b', 'percentage_cp', 'percentage_c', 'percentage_ooa']]
         y = col['time_class']
         print('Original dataset shape %s' % Counter(y))
+
+        smote = SMOTE(random_state=random_state)
+        X_resampled, y_resampled = smote.fit_resample(X, y)
+        print('Resampled dataset shape %s' % Counter(y_resampled))
+        X_train_resampled, X_test_resampled, y_train_resampled, y_test_resampled = train_test_split(X_resampled,
+                                                                                                    y_resampled,
+                                                                                                    test_size=test_size,
+                                                                                                    random_state=random_state)
+        print('y_train_resampled dataset shape %s', Counter(y_train_resampled))
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size,
                                                             random_state=random_state)
@@ -211,17 +223,33 @@ def split_data_x_y(df, random_state=3, test_size=0.3):
 
         model = GradientBoostingClassifier()
         normal_fit = model.fit(X_train, y_train)
+        smote_fit = model.fit(X_train_resampled, y_train_resampled)
 
         y_pred = cross_val_predict(normal_fit, X_train, y_train, cv=5)
         acc_normal = accuracy_score(y_train, y_pred)
+
+        y_pred_smote = cross_val_predict(smote_fit, X_train_resampled, y_train_resampled, cv=5)
+        acc_smote = accuracy_score(y_train_resampled, y_pred_smote)
+
+        y_pred_roc = smote_fit.predict_proba(X_test_resampled)
+        roc_auc = roc_auc_score(y_test_resampled, y_pred_roc, multi_class='ovr')
 
         precision_macro_list.append(precision_score(y_train, y_pred, average='macro'))
         recall_macro_list.append(recall_score(y_train, y_pred, average='macro'))
         f1_macro_list.append(f1_score(y_train, y_pred, average='macro'))
 
+        precision_smote_list.append(precision_score(y_train_resampled, y_pred_smote, average='macro'))
+        recall_smote_list.append(recall_score(y_train_resampled, y_pred_smote, average='macro'))
+        f1_smote_list.append(f1_score(y_train_resampled, y_pred_smote, average='macro'))
+        roc_auc_smote_list.append(roc_auc)
+
         acc_normal_list.append(acc_normal)
+        acc_smote_list.append(acc_smote)
+
         y_original_list.append(Counter(y))
         y_train_list.append(Counter(y_train))
+        y_resampled_list.append(Counter(y_resampled))
+        y_train_smote_list.append(Counter(y_train_resampled))
 
         list_indx_time01.append(index_time01)
         list_indx_time12.append(index_time12)
@@ -229,7 +257,10 @@ def split_data_x_y(df, random_state=3, test_size=0.3):
         list_time12.append(time12)
 
     return (precision_macro_list, recall_macro_list, f1_macro_list,
-            acc_normal_list, y_original_list, y_train_list,
+            precision_smote_list, recall_smote_list, f1_smote_list,
+            acc_normal_list, acc_smote_list,
+            roc_auc_smote_list,
+            y_original_list, y_resampled_list, y_train_list, y_train_smote_list,
             list_indx_time01, list_indx_time12, list_time01, list_time12)
 
 
@@ -239,47 +270,80 @@ if __name__ == '__main__':
     start_time_gmt = time.strftime("%Y-%m-%d %H:%M:%S", start_time_gmt)
     print(f"start to normalize cluster at: {start_time_gmt}")
 
-    df_original_rename = pd.read_parquet('../../../models/KMeans/output/ozone_prepare_to_train.parquet')
-    df_original_rename = percentage_smell(df_original_rename)
+    pulsar_original_rename = pd.read_parquet('../output/pulsar_prepare_to_train.parquet')
+    pulsar_original_rename = percentage_smell(pulsar_original_rename)
 
-    hour = df_original_rename['total_time'].dt.total_seconds() / 3600
-    percentiles = calculate_percentiles(hour)
+    ozone_original_rename = pd.read_parquet('../output/ozone_prepare_to_train.parquet')
+    ozone_original_rename = percentage_smell(ozone_original_rename)
 
-    # combianations of percentiles to divide time class for 3 classes
-    time_point_list = list(itertools.combinations(percentiles.iloc, 2))
-    df_time_point_index = set_index_combinations_percentiles(time_point_list)
-    df_time_point_sort = table_time_fix_percentile(df_time_point_index)
+    # hour = df_original_rename['total_time'].dt.total_seconds() / 3600
+    # percentiles = calculate_percentiles(hour)
+    pulsar_percentiles = calculate_percentiles(pulsar_original_rename['total_time'])
+    pulsar_percentiles.to_pickle('../output/pulsar_percentile.pkl')
 
-    df_time_class_lists = divide_time_class_2(df_original_rename, df_time_point_sort)
+    ozone_percentiles = calculate_percentiles(ozone_original_rename['total_time'])
+    ozone_percentiles.to_pickle('../output/ozone_percentile.pkl')
 
-    class_2, class_3 = prepare_data_time_class(df_time_class_lists)
 
-    g, b = check_amount_time_class(class_3)
+    # combinations of percentiles to divide time class for 3 classes
+    pulsar_time_point_list = list(itertools.combinations(pulsar_percentiles.iloc, 2))
+    pulsar_time_point_index = set_index_combinations_percentiles(pulsar_time_point_list)
+    pulsar_time_point_sort = table_time_fix_percentile(pulsar_time_point_index)
+    pulsar_time_point_sort.to_pickle('../output/pulsar_time_percentile_combinations.pkl')
 
-    (precision_macro_list, recall_macro_list, f1_macro_list,
-     acc_normal_list, y_original_list, y_train_list,
-     list_indx_time01, list_indx_time12, list_time01, list_time12) = split_data_x_y(g)
+    ozone_time_point_list = list(itertools.combinations(ozone_percentiles.iloc, 2))
+    ozone_time_point_index = set_index_combinations_percentiles(ozone_time_point_list)
+    ozone_time_point_sort = table_time_fix_percentile(ozone_time_point_index)
+    ozone_time_point_sort.to_pickle('../output/ozone_time_percentile_combinations.pkl')
 
-    df_time_class3 = {
-        'accuracy': acc_normal_list,
-        'precision_macro': precision_macro_list,
-        'recall_macro': recall_macro_list,
-        'f1_macro': f1_macro_list,
-        'y_original': y_original_list,
-        'y_train': y_train_list,
-        'index_time01': list_indx_time01,
-        'time01': list_time01,
-        'index_time12': list_indx_time12,
-        'time12': list_time12
-    }
 
-    df_time_class3 = pd.DataFrame.from_dict(df_time_class3, orient='index')
-    df_time_class3 = df_time_class3.T
 
-    with open('../../../models/KMeans/output/class_time_3_normal.parquet', 'wb') as f:
-        joblib.dump(df_time_class3, f)
-        print("save file Done!")
 
+    # df_time_class_lists = divide_time_class_2(df_original_rename, df_time_point_sort)
+    #
+    # class_2, class_3 = prepare_data_time_class(df_time_class_lists)
+    #
+    # g, b = check_amount_time_class(class_3)
+    #
+    # (precision_macro_list, recall_macro_list, f1_macro_list,
+    #  precision_smote_list, recall_smote_list, f1_smote_list,
+    #  acc_normal_list, acc_smote_list,
+    #  roc_auc_smote_list,
+    #  y_original_list, y_resampled_list, y_train_list, y_train_smote_list,
+    #  list_indx_time01, list_indx_time12, list_time01, list_time12) = split_data_x_y(g)
+    #
+    # # a = {'Links': lines, 'Titles': titles, 'Singers': finalsingers, 'Albums': finalalbums, 'Years': years}
+    # # df = pd.DataFrame.from_dict(a, orient='index')
+    #
+    # df_time_class3_smote = {
+    #     'accuracy': acc_normal_list,
+    #     'precision_macro': precision_macro_list,
+    #     'recall_macro': recall_macro_list,
+    #     'f1_macro': f1_macro_list,
+    #
+    #     'accuracy_smote': acc_smote_list,
+    #     'precision_smote': precision_smote_list,
+    #     'recall_smote': recall_smote_list,
+    #     'f1_smote': f1_smote_list,
+    #     'roc_auc_smote': roc_auc_smote_list,
+    #
+    #     'y_original': y_original_list,
+    #     'y_resample': y_resampled_list,
+    #     'y_train': y_train_list,
+    #     'y_train_resample': y_train_smote_list,
+    #
+    #     'index_time01': list_indx_time01,
+    #     'time01': list_time01,
+    #     'index_time12': list_indx_time12,
+    #     'time12': list_time12
+    # }
+    #
+    # df_time_class3 = pd.DataFrame.from_dict(df_time_class3_smote, orient='index')
+    # df_time_class3 = df_time_class3.T
+    #
+    # with open('../output/pulsar_GBC_class_time3_smote_new.parquet', 'wb') as f:
+    #     joblib.dump(df_time_class3, f)
+    #     print("save file Done!")
     end = time.time()
     total_time = end - start_time
     time_minutes = total_time / 60

@@ -295,8 +295,8 @@ if __name__ == '__main__':
     # ozone_time_point_sort = table_time_fix_percentile(ozone_time_point_index)
     # ozone_time_point_sort.to_pickle('../output/ozone_time_percentile_combinations.pkl')
 
-    # df_time_class_lists = divide_time_class_2(df_original_rename, df_time_point_sort)
-    #
+    df_time_class_lists = divide_time_class_2(df_original_rename, df_time_point_sort)
+
     # class_2, class_3 = prepare_data_time_class(df_time_class_lists)
     #
     # g, b = check_amount_time_class(class_3)

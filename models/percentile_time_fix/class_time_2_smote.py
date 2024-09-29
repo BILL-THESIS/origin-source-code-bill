@@ -1,3 +1,4 @@
+import joblib
 import pandas as pd
 import numpy as np
 import time
@@ -9,25 +10,24 @@ from sklearn.model_selection import train_test_split, cross_val_predict
 from collections import Counter
 from imblearn.over_sampling import SMOTE
 
-
 def percentage_smell(df):
-    df = df.rename(columns={'begin_Dispensables': 'created_D',
-                            'begin_Bloaters': 'created_B',
-                            'begin_Change Preventers': 'created_CP',
-                            'begin_Couplers': 'created_C',
-                            'begin_Object-Orientation Abusers': 'created_OOA',
-                            'end_Dispensables': 'ended_D',
-                            'end_Bloaters': 'ended_B',
-                            'end_Change Preventers': 'ended_CP',
-                            'end_Couplers': 'ended_C',
-                            'end_Object-Orientation Abusers': 'ended_OOA'})
+    df = df.rename(columns={'created_Dispensables': 'created_D',
+                            'created_Bloaters': 'created_B',
+                            'created_Change Preventers': 'created_CP',
+                            'created_Couplers': 'created_C',
+                            'created_Object-Orientation Abusers': 'created_OOA',
+                            'ended_Dispensables': 'ended_D',
+                            'ended_Bloaters': 'ended_B',
+                            'ended_Change Preventers': 'ended_CP',
+                            'ended_Couplers': 'ended_C',
+                            'ended_Object-Orientation Abusers': 'ended_OOA'})
 
-    df['percentage_b'] = ((df['ended_D'] - df['created_D'].astype(float)) / df['created_D'].astype(float)) * 100
+    df['created_D'].astype(float)
+    df['percentage_d'] = ((df['ended_D'] - df['created_D'].astype(float)) / df['created_D'].astype(float)) * 100
     df['percentage_b'] = ((df['ended_B'] - df['created_B']) / df['created_B']) * 100
     df['percentage_cp'] = ((df['ended_CP'] - df['created_CP']) / df['created_CP']) * 100
     df['percentage_c'] = ((df['ended_C'] - df['created_C']) / df['created_C']) * 100
     df['percentage_ooa'] = ((df['ended_OOA'] - df['created_OOA']) / df['created_OOA']) * 100
-
     return df
 
 
@@ -139,7 +139,7 @@ if __name__ == '__main__':
     start_time_gmt = time.strftime("%Y-%m-%d %H:%M:%S", start_time_gmt)
     print(f"start to normalize cluster at: {start_time_gmt}")
 
-    df_original = pd.read_parquet('../output/seatunnel_all_information.parquet')
+    df_original = pd.read_parquet('../output/ozone_prepare_to_train_newversion_9Sep.parquet')
 
     # prepare the data X
     df_original_rename = percentage_smell(df_original)
@@ -176,6 +176,11 @@ if __name__ == '__main__':
         'y_train': y_train_list,
         'y_train_smote': y_train_smote_list,
     })
+
+    with open('../output/ozone_GBC_time_class2_newversion_9Sep.parquet', 'wb') as f:
+        joblib.dump(df_time_class2, f)
+        print("save file Done!")
+
 
     end = time.time()
     total_time = end - start_time

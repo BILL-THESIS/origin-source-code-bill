@@ -27,7 +27,7 @@ def percentage_smell(df):
                             'end_Object-Orientation Abusers': 'ended_OOA'})
 
     df['created_D'].astype(float)
-    df['percentage_b'] = ((df['ended_D'] - df['created_D'].astype(float)) / df['created_D'].astype(float)) * 100
+    df['percentage_d'] = ((df['ended_D'] - df['created_D'].astype(float)) / df['created_D'].astype(float)) * 100
     df['percentage_b'] = ((df['ended_B'] - df['created_B']) / df['created_B']) * 100
     df['percentage_cp'] = ((df['ended_CP'] - df['created_CP']) / df['created_CP']) * 100
     df['percentage_c'] = ((df['ended_C'] - df['created_C']) / df['created_C']) * 100

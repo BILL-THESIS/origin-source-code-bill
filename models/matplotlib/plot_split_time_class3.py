@@ -61,10 +61,15 @@ if __name__ == '__main__':
     with open(os.path.join('../output/pulsar_split_f1_smote_time_class3.pkl'), 'rb') as f:
         pulsar = joblib.load(f)
 
+    with open(os.path.join('../output/seatunnel_split_f1_smote_time_class3.pkl'), 'rb') as f:
+        seatunnel = joblib.load(f)
+
     ozone_plot = polt_3d_html(ozone['index_time01'], ozone['index_time12'], ozone['f1_macro'], 'ozone')
     ozone_plot_smote = polt_3d_html(ozone['index_time01'], ozone['index_time12'], ozone['f1_smote'], 'ozone')
     pulsar_plot = polt_3d_html(pulsar['index_time01'], pulsar['index_time12'], pulsar['f1_macro'], 'pulsar')
     pulsar_plot_smote = polt_3d_html(pulsar['index_time01'], pulsar['index_time12'], pulsar['f1_smote'], 'pulsar')
+    seatunnel_plot = polt_3d_html(seatunnel['index_time01'], seatunnel['index_time12'], seatunnel['f1_macro'], 'seatunnel')
+    seatunnel_plot_smote = polt_3d_html(seatunnel['index_time01'], seatunnel['index_time12'], seatunnel['f1_smote'], 'seatunnel')
 
     ozone_plot2 = polt_3d_subplot(ozone['index_time01'], ozone['index_time12'], ozone['f1_macro'], 'ozone')
     ozone_plot2_smote = polt_3d_subplot(ozone['index_time01'], ozone['index_time12'], ozone['f1_smote'], 'ozone')

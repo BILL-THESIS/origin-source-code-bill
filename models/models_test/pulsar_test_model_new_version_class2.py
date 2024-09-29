@@ -17,7 +17,7 @@ def check_time_df(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
     df['merged_at'] = pd.to_datetime(df['merged_at'], errors='coerce')
 
     # Define cutoff date with UTC timezone
-    cutoff_date = pd.Timestamp('2024-02-01', tz='UTC')
+    cutoff_date = pd.Timestamp('2024-01-01', tz='UTC')
     after_2024 = df[df['merged_at'] >= cutoff_date]
     before_2024 = df[df['merged_at'] < cutoff_date]
 
@@ -166,24 +166,24 @@ def split_data_x_y(df_list: List[pd.DataFrame], df_before_year: pd.DataFrame, df
 
 if __name__ == '__main__':
     # Load the data
-    ozone_api = pd.read_parquet('../../models/output/ozone_prepare_to_train_newversion_9Sep.parquet')
-    ozone_api = percentage_smell(ozone_api)
+    pulsar_api = pd.read_parquet('../../models/output/pulsar_prepare_to_train_newversion_9Sep.parquet')
+    pulsar_api = percentage_smell(pulsar_api)
 
     # Check the data time out of 2024
-    before_2024, after_2024 = check_time_df(ozone_api)
+    before_2024, after_2024 = check_time_df(pulsar_api)
 
     # prepare percentile to divide time class for 2 classes
-    percentile_list = [np.percentile(ozone_api['total_time_hours'], range(1, 100))]
+    percentile_list = [np.percentile(pulsar_api['total_time_hours'], range(1, 101))]
     percentile_df = pd.DataFrame(percentile_list).T
 
-    data_time_class_list, data_time_point_list = process_data(ozone_api, percentile_df)
+    data_time_class_list, data_time_point_list = process_data(pulsar_api, percentile_df)
 
-    # ozone_result = split_data_x_y(data_time_class_list, before_2024, after_2024)
-    #
-    # # Convert the list of dictionaries into a DataFrame
-    # ozone_result_df = pd.DataFrame(ozone_result)
-    #
-    # with open('../../models/output/ozone_teat_model_somte_newversion_class2_18Sep.parquet', 'wb') as f:
-    #     joblib.dump(ozone_result_df, f)
-    #     print("save file Done!")
-    #     print(ozone_result_df)  # This will now print the DataFrame containing the concatenated results
+    pulsar_result = split_data_x_y(data_time_class_list, before_2024, after_2024)
+
+    # Convert the list of dictionaries into a DataFrame
+    pulsar_result_df = pd.DataFrame(pulsar_result)
+
+    with open('../../models/output/pulsar_teat_model_somte_newversion_class2_18Sep.parquet', 'wb') as f:
+        joblib.dump(pulsar_result_df, f)
+        print("save file Done!")
+        print(pulsar_result_df)  # This will now print the DataFrame containing the concatenated results

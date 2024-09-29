@@ -152,14 +152,12 @@ def check_amount_time_class(df):
             save_df_good.append(df)
         elif (t_0 < 6) & (t_1 < 6) & (t_2 < 6):
             save_df_bad.append(df)
-
         elif (t_0 < 6) & (t_1 >= 6) & (t_2 >= 6):
             save_df_bad.append(df)
         elif (t_0 >= 6) & (t_1 < 6) & (t_2 >= 6):
             save_df_bad.append(df)
         elif (t_0 >= 6) & (t_1 >= 6) & (t_2 < 6):
             save_df_bad.append(df)
-
         elif (t_0 < 6) & (t_1 < 6) & (t_2 >= 6):
             save_df_bad.append(df)
         elif (t_0 < 6) & (t_1 >= 6) & (t_2 < 6):
@@ -270,76 +268,64 @@ if __name__ == '__main__':
     start_time_gmt = time.strftime("%Y-%m-%d %H:%M:%S", start_time_gmt)
     print(f"start to normalize cluster at: {start_time_gmt}")
 
-    pulsar_original_rename = pd.read_parquet('../output/pulsar_prepare_to_train.parquet')
-    pulsar_original_rename = percentage_smell(pulsar_original_rename)
+    df_original_rename = pd.read_parquet('../output/seatunnel_prepare_to_train.parquet')
+    df_original_rename = percentage_smell(df_original_rename)
 
-    ozone_original_rename = pd.read_parquet('../output/ozone_prepare_to_train.parquet')
-    ozone_original_rename = percentage_smell(ozone_original_rename)
+    df_original_rename['total_time'].dt.total_seconds() / 3600
 
-    # hour = df_original_rename['total_time'].dt.total_seconds() / 3600
-    # percentiles = calculate_percentiles(hour)
-    # pulsar_percentiles = calculate_percentiles(pulsar_original_rename['total_time'])
-    # pulsar_percentiles.to_pickle('../output/pulsar_percentile.pkl')
-    #
-    # ozone_percentiles = calculate_percentiles(ozone_original_rename['total_time'])
-    # ozone_percentiles.to_pickle('../output/ozone_percentile.pkl')
+    df_percentiles = calculate_percentiles(df_original_rename['total_time'])
 
     # combinations of percentiles to divide time class for 3 classes
-    # pulsar_time_point_list = list(itertools.combinations(pulsar_percentiles.iloc, 2))
-    # pulsar_time_point_index = set_index_combinations_percentiles(pulsar_time_point_list)
-    # pulsar_time_point_sort = table_time_fix_percentile(pulsar_time_point_index)
-    # pulsar_time_point_sort.to_pickle('../output/pulsar_time_percentile_combinations.pkl')
-    #
-    # ozone_time_point_list = list(itertools.combinations(ozone_percentiles.iloc, 2))
-    # ozone_time_point_index = set_index_combinations_percentiles(ozone_time_point_list)
-    # ozone_time_point_sort = table_time_fix_percentile(ozone_time_point_index)
-    # ozone_time_point_sort.to_pickle('../output/ozone_time_percentile_combinations.pkl')
+    df_time_point_list = list(itertools.combinations(df_percentiles.iloc, 2))
+    df_time_point_index = set_index_combinations_percentiles(df_time_point_list)
+    df_time_point_sort = table_time_fix_percentile(df_time_point_index)
+    df_time_point_sort.to_pickle('../output/seatunnel_time_percentile_combinations.pkl')
 
-    # df_time_class_lists = divide_time_class_2(df_original_rename, df_time_point_sort)
-    #
-    # class_2, class_3 = prepare_data_time_class(df_time_class_lists)
-    #
-    # g, b = check_amount_time_class(class_3)
-    #
-    # (precision_macro_list, recall_macro_list, f1_macro_list,
-    #  precision_smote_list, recall_smote_list, f1_smote_list,
-    #  acc_normal_list, acc_smote_list,
-    #  roc_auc_smote_list,
-    #  y_original_list, y_resampled_list, y_train_list, y_train_smote_list,
-    #  list_indx_time01, list_indx_time12, list_time01, list_time12) = split_data_x_y(g)
-    #
-    # # a = {'Links': lines, 'Titles': titles, 'Singers': finalsingers, 'Albums': finalalbums, 'Years': years}
-    # # df = pd.DataFrame.from_dict(a, orient='index')
-    #
-    # df_time_class3_smote = {
-    #     'accuracy': acc_normal_list,
-    #     'precision_macro': precision_macro_list,
-    #     'recall_macro': recall_macro_list,
-    #     'f1_macro': f1_macro_list,
-    #
-    #     'accuracy_smote': acc_smote_list,
-    #     'precision_smote': precision_smote_list,
-    #     'recall_smote': recall_smote_list,
-    #     'f1_smote': f1_smote_list,
-    #     'roc_auc_smote': roc_auc_smote_list,
-    #
-    #     'y_original': y_original_list,
-    #     'y_resample': y_resampled_list,
-    #     'y_train': y_train_list,
-    #     'y_train_resample': y_train_smote_list,
-    #
-    #     'index_time01': list_indx_time01,
-    #     'time01': list_time01,
-    #     'index_time12': list_indx_time12,
-    #     'time12': list_time12
-    # }
-    #
-    # df_time_class3 = pd.DataFrame.from_dict(df_time_class3_smote, orient='index')
-    # df_time_class3 = df_time_class3.T
-    #
-    # with open('../output/pulsar_GBC_class_time3_smote_new.parquet', 'wb') as f:
-    #     joblib.dump(df_time_class3, f)
-    #     print("save file Done!")
+    df_time_class_lists = divide_time_class_2(df_original_rename, df_time_point_sort)
+
+    class_2, class_3 = prepare_data_time_class(df_time_class_lists)
+
+    g, b = check_amount_time_class(class_3)
+
+    (precision_macro_list, recall_macro_list, f1_macro_list,
+     precision_smote_list, recall_smote_list, f1_smote_list,
+     acc_normal_list, acc_smote_list,
+     roc_auc_smote_list,
+     y_original_list, y_resampled_list, y_train_list, y_train_smote_list,
+     list_indx_time01, list_indx_time12, list_time01, list_time12) = split_data_x_y(g)
+
+    # a = {'Links': lines, 'Titles': titles, 'Singers': finalsingers, 'Albums': finalalbums, 'Years': years}
+    # df = pd.DataFrame.from_dict(a, orient='index')
+
+    df_time_class3_smote = {
+        'accuracy': acc_normal_list,
+        'precision_macro': precision_macro_list,
+        'recall_macro': recall_macro_list,
+        'f1_macro': f1_macro_list,
+
+        'accuracy_smote': acc_smote_list,
+        'precision_smote': precision_smote_list,
+        'recall_smote': recall_smote_list,
+        'f1_smote': f1_smote_list,
+        'roc_auc_smote': roc_auc_smote_list,
+
+        'y_original': y_original_list,
+        'y_resample': y_resampled_list,
+        'y_train': y_train_list,
+        'y_train_resample': y_train_smote_list,
+
+        'index_time01': list_indx_time01,
+        'time01': list_time01,
+        'index_time12': list_indx_time12,
+        'time12': list_time12
+    }
+
+    df_time_class3 = pd.DataFrame.from_dict(df_time_class3_smote, orient='index')
+    df_time_class3 = df_time_class3.T
+
+    with open('../output/seatunnel_GBC_class_time3_smote.parquet', 'wb') as f:
+        joblib.dump(df_time_class3, f)
+        print("save file Done!")
     end = time.time()
     total_time = end - start_time
     time_minutes = total_time / 60

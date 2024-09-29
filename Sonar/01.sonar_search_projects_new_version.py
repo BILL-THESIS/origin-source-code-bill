@@ -4,7 +4,7 @@ from sonarqube import SonarQubeClient
 from Authorization import sonar_token
 # Constants
 PAGE_SIZE = 500
-PKL_FILE_NAME = "output/sonar_all_projects_version3.pkl"
+PKL_FILE_NAME = "output/sonar_all_projects_version6.pkl"
 
 
 def get_sonar_client(url, username, password):

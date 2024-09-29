@@ -91,7 +91,7 @@ def table_time_fix_percentile(list_each_percentile):
 
 
 if __name__ == '__main__':
-    model_original = pd.read_pickle('../../Github/output/pulsar_filtered_final_api.pkl')
+    model_original = pd.read_pickle('../../Github/output/pulsar_filtered_final_api_new.pkl')
 
     # divide the dataset into normal and outliers
     df_outliers, df_normal = robust_outlier_detection(model_original)

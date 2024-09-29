@@ -19,8 +19,8 @@ def transform_data(dict_group_smell):
 
 if __name__ == "__main__":
     df_smells = pd.read_parquet("../Sonar/output/sonar_rules_categorized.parquet")
-    df_sonar = pd.read_pickle("../Sonar/output/sonar_all_projects_version3.pkl")
-    df_rules = pd.read_pickle("../Sonar/output/sonar_smells_all_project.pkl")
+    df_sonar = pd.read_pickle("../Sonar/output/sonar_all_projects_version5.pkl")
+    df_rules = pd.read_pickle("../Sonar/output/sonar_smells_all_project_version6.pkl")
     df_rules_reindex = df_rules.reset_index()
 
     df_sonar_smells = pd.merge(df_sonar, df_rules, left_on='key', right_index=True)
@@ -42,5 +42,5 @@ if __name__ == "__main__":
     result_df = merged_df.pivot_table(index='project', columns='category', values='count_x', aggfunc='sum').reset_index()
     result_final = pd.merge(df_sonar, result_df, left_on='key', right_on='project')
 
-    result_final.to_pickle("../Sonar/output/sonar_group_rules_category_smells.pkl")
+    result_final.to_pickle("../Sonar/output/sonar_group_rules_category_smells_version6.pkl")
 

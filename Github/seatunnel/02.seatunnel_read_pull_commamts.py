@@ -43,5 +43,5 @@ if __name__ == '__main__':
     data_list_pull_url_api = pd.json_normalize(data_list_pull_url_api)
 
     # filter the data not Nan in the required columns
-    data_list_pull_url_api_not_nan = data_list_pull_url_api[data_list_pull_url_api['commits_url'].notna()]
-    data_list_pull_url_api_not_nan.to_pickle("../output/seatunnel_filtered_issue_requests_comments_pulls.pkl")
+    data_list_pull_url_api_not_nan = data_list_pull_url_api[data_list_pull_url_api['merged_at'].notna()]
+    data_list_pull_url_api_not_nan.to_pickle("../output/seatunnel_filtered_issue_requests_comments_pulls_new.pkl")

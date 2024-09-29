@@ -24,6 +24,9 @@ if __name__ == '__main__':
     with open(os.path.join('../output/ozone_GBC_class_time_3_smote_new.parquet'), 'rb') as f:
         ozone_class_3_smote = joblib.load(f)
 
+    with open(os.path.join('../output/seatunnel_GBC_class_time3_smote.parquet'), 'rb') as f:
+        seatunnel_class_3_smote = joblib.load(f)
+
     pulsar_unutilized, pulsar_utilize = sort_percentile_f1(pulsar_class_3_smote, 'pulsar')
     print('pulsar unutilized describe', pulsar_unutilized.describe())
     print("\n")
@@ -31,4 +34,4 @@ if __name__ == '__main__':
 
     ozone_unutilized, ozone_utilize = sort_percentile_f1(ozone_class_3_smote, 'ozone')
 
-
+    seatunnel_unutilized, seatunnel_utilize = sort_percentile_f1(seatunnel_class_3_smote, 'seatunnel')

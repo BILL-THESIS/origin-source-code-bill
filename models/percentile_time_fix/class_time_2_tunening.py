@@ -41,8 +41,6 @@ def process_data(df, percentile_df):
         df_point = df.copy()
 
         # Apply the condition using vectorized operations
-        # df_point['time_class'] = (df['total_time'] < percentile_value).astype(int)
-        # df_point['time_class'] = np.where(df_point['total_time'] < percentile_value, 0, 1)
         df_point['time_class'] = (df_point['total_time'] < percentile_value).apply(lambda x: 0 if x else 1)
         # Append the processed DataFrame to results
         results.append(df_point)
@@ -82,12 +80,6 @@ def split_data_x_y(df, random_state=3, test_size=0.3 ):
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
 
         parameters = {
-
-            # 'learning_rate': [0.01, 0.1, 1.0],
-            # 'n_estimators': [0.1, 1, 100],
-            # 'subsample': [0.7],
-            # 'max_depth': [1, 2, 3],
-            # 'random_state': [3, 5],
 
             'learning_rate': [0.01, 1.0],
             'n_estimators': [500, 5000],

@@ -23,8 +23,8 @@ def liners_regression(df, project_name):
     axs[0, 1].set_ylabel('Precision Macro')
 
     # Plot recall_macro over time
-    axs[1, 0].plot(df['index'], df['recall_macro'], marker='o', color='r')
-    axs[1, 0].set_title('Recall Macro over Time')
+    axs[1, 0].plot(df['index'], df['f1_smote_macro'], marker='o', color='r')
+    axs[1, 0].set_title('F1 SMOTE over Time')
     axs[1, 0].set_xlabel('Index')
     axs[1, 0].set_ylabel('Recall Macro')
 
@@ -41,13 +41,16 @@ def liners_regression(df, project_name):
 
 
 if __name__ == '__main__':
-    ozone = pd.read_parquet('../output/ozone_GBC_time_class2.parquet')
+
+    with open(os.path.join('../output/ozone_GBC_time_class2_newversion_9Sep.parquet'), 'rb') as f:
+        ozone = joblib.load(f)
+    # ozone = pd.read_parquet('../output/ozone_GBC_time_class2_newversion_9Sep.parquet')
     ozone = ozone.reset_index()
     print("ozone describe", ozone.describe())
-    ozone.to_csv('ozone_csv.csv')
-    pulsar = pd.read_parquet('../output/pulsar_GBC_time_class2.parquet')
-    pulsar = pulsar.reset_index()
-    print("pulsar describe", pulsar.describe())
+    # ozone.to_csv('ozone_csv.csv')
+    # pulsar = pd.read_parquet('../output/pulsar_GBC_time_class2.parquet')
+    # pulsar = pulsar.reset_index()
+    # print("pulsar describe", pulsar.describe())
 
     ozone_plot = liners_regression( ozone, 'ozone')
-    pulsar_plot = liners_regression(pulsar, 'pulsar')
+    # pulsar_plot = liners_regression(pulsar, 'pulsar')

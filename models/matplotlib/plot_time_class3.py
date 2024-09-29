@@ -1,6 +1,7 @@
 import os
 import joblib
 import matplotlib.pyplot as plt
+import pandas as pd
 import plotly.graph_objects as go
 
 
@@ -53,18 +54,18 @@ def polt_3d_subplot(x_label, y_label, z_label, project_name):
 
 
 if __name__ == '__main__':
-    with open(os.path.join('../output/ozone_GBC_class_time_3_smote_new.parquet'), 'rb') as f:
+    with open(os.path.join('../output/ozone_GBC_class_time3_smote_newversion_9Sep.parquet'), 'rb') as f:
         ozone = joblib.load(f)
 
     with open(os.path.join('../output/pulsar_GBC_class_time3_smote_new.parquet'), 'rb') as f:
         pulsar = joblib.load(f)
 
-    # ozone_plot = polt_3d_html(ozone['index_time01'], ozone['index_time12'], ozone['f1_macro'], 'ozone')
-    # ozone_plot_smote = polt_3d_html(ozone['index_time01'], ozone['index_time12'], ozone['f1_smote'], 'ozone')
+    ozone_plot = polt_3d_html(ozone['index_time01'], ozone['index_time12'], ozone['f1_macro'], 'ozone')
+    ozone_plot_smote = polt_3d_html(ozone['index_time01'], ozone['index_time12'], ozone['f1_smote'], 'ozone')
     # pulsar_plot = polt_3d_html(pulsar['index_time01'], pulsar['index_time12'], pulsar['f1_macro'], 'pulsar')
     # pulsar_plot_smote = polt_3d_html(pulsar['index_time01'], pulsar['index_time12'], pulsar['f1_smote'], 'pulsar')
     #
-    # ozone_plot2 = polt_3d_subplot(ozone['index_time01'], ozone['index_time12'], ozone['f1_macro'], 'ozone')
-    # ozone_plot2_smote = polt_3d_subplot(ozone['index_time01'], ozone['index_time12'], ozone['f1_smote'], 'ozone')
+    ozone_plot2 = polt_3d_subplot(ozone['index_time01'], ozone['index_time12'], ozone['f1_macro'], 'ozone')
+    ozone_plot2_smote = polt_3d_subplot(ozone['index_time01'], ozone['index_time12'], ozone['f1_smote'], 'ozone')
     # pulsar_plot2 = polt_3d_subplot(pulsar['index_time01'], pulsar['index_time12'], pulsar['f1_macro'], 'pulsar')
     # pulsar_plot2_smote = polt_3d_subplot(pulsar['index_time01'], pulsar['index_time12'], pulsar['f1_smote'], 'pulsar')

@@ -33,9 +33,9 @@ if __name__ == '__main__':
     df_issued_requests_not_nan['url_pull'] = df_issued_requests_not_nan['pull_request'].apply(lambda x: x['url'])
 
     # get the data from the urls
-    data_list_pull_url_api = get_data_from_urls(df_issued_requests_not_nan['url_pull'])
-    data_list_pull_url_api = pd.json_normalize(data_list_pull_url_api)
+    data_pull = get_data_from_urls(df_issued_requests_not_nan['url_pull'])
+    data_pull = pd.json_normalize(data_pull)
 
     # filter the data not Nan in the required columns
-    data_list_pull_url_api_not_nan = data_list_pull_url_api[data_list_pull_url_api['commits_url'].notna()]
-    data_list_pull_url_api_not_nan.to_pickle("../output/pulsar_filtered_issues_requests_comments_pulls.pkl")
+    data_list_pull_url_api_not_nan = data_pull[data_pull['merged_at'].notna()]
+    data_list_pull_url_api_not_nan.to_pickle("../output/pulsar_filtered_issues_requests_comments_pulls_new.pkl")

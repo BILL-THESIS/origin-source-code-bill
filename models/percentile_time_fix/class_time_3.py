@@ -97,6 +97,7 @@ def divide_time_class_2(df_original, df_time_point):
         time_fix_hours = df_original['total_time'].dt.total_seconds() / 3600
 
         values_time = []
+
         for time_i in time_fix_hours:
             if time_i <= time01:
                 values_time.append(0)

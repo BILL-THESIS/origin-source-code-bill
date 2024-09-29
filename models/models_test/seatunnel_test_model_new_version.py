@@ -11,9 +11,15 @@ from typing import Tuple, List, Dict, Any
 
 
 def check_time_df(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """Splits the DataFrame into two based on whether the 'merged_at' year is >= 2024."""
-    df['merged_at'] = pd.to_datetime(df['merged_at'], format='%Y-%m-%dT%H:%M:%SZ', utc=True)
-    return df[df['merged_at'].dt.year >= 2024], df[df['merged_at'].dt.year < 2024]
+    """Splits the DataFrame into two based on the 'merged_at' date, with a cutoff in April 2024."""
+    df['merged_at'] = pd.to_datetime(df['merged_at'], errors='coerce')
+
+    # Define cutoff date with UTC timezone
+    cutoff_date = pd.Timestamp('2024-04-01', tz='UTC')
+    after_2024 = df[df['merged_at'] >= cutoff_date]
+    before_2024 = df[df['merged_at'] < cutoff_date]
+
+    return after_2024, before_2024
 
 
 def percentage_smell(df: pd.DataFrame) -> pd.DataFrame:
@@ -62,7 +68,6 @@ def table_time_fix_percentile(percentile_dfs: List[pd.DataFrame]) -> pd.DataFram
 
     return pd.DataFrame(time_points)
 
-
 def divide_time_class(df_original: pd.DataFrame, df_time_point: pd.DataFrame) -> List[pd.DataFrame]:
     """Divides time classes based on time points and returns a list of DataFrames."""
     results = []
@@ -91,6 +96,11 @@ def filter_dfs_by_class_count(dfs: List[pd.DataFrame], min_count: int = 6) -> Tu
             save_df_bad.append(df)
 
     return save_df_good, save_df_bad
+
+
+def calculate_time_counts_std(data):
+    data['std_counts'] = data[['time0', 'time1', 'time2']].std(axis=1)
+    return data
 
 
 def split_data_x_y(df_list: List[pd.DataFrame], df_more_2024: pd.DataFrame, df_less_2024: pd.DataFrame,
@@ -180,25 +190,25 @@ def split_data_x_y(df_list: List[pd.DataFrame], df_more_2024: pd.DataFrame, df_l
 
 if __name__ == '__main__':
     # Load the data
-    ozone_api = pd.read_parquet('../../models/output/seatunnel_prepare_to_train.parquet')
-    ozone_api = percentage_smell(ozone_api)
+    data_outlier = pd.read_parquet('../../models/output/seatunnel_prepare_to_train_new26.parquet')
+    data_outlier = percentage_smell(data_outlier)
 
     # Check the data time out of 2024
-    more_2024, less_2024 = check_time_df(ozone_api)
+    more_2024, less_2024 = check_time_df(data_outlier)
 
     # Calculate the percentiles of the total_time_hours column
-    ozone_percentiles = calculate_percentiles(ozone_api['total_time_hours'])
-    ozone_percentile_combinations = set_index_combinations_percentiles(ozone_percentiles)
-    ozone_time_points = table_time_fix_percentile(ozone_percentile_combinations)
-    ozone_time_classes = divide_time_class(ozone_api, ozone_time_points)
-    ozone_good, ozone_bad = filter_dfs_by_class_count(ozone_time_classes)
+    percentiles_time = calculate_percentiles(data_outlier['total_time_hours'])
+    percentile_combinations = set_index_combinations_percentiles(percentiles_time)
+    time_points = table_time_fix_percentile(percentile_combinations)
+    time_classes = divide_time_class(data_outlier, time_points)
+    ues, useless = filter_dfs_by_class_count(time_classes)
 
-    ozone_result = split_data_x_y(ozone_good, more_2024, less_2024)
+    result = split_data_x_y(ues, more_2024, less_2024)
 
     # Convert the list of dictionaries into a DataFrame
-    ozone_result_df = pd.DataFrame(ozone_result)
+    result_df = pd.DataFrame(result)
 
-    with open('../../models/output/seatunnel_teat_model_time_class3_somte_newversion.parquet', 'wb') as f:
-        joblib.dump(ozone_result_df, f)
+    with open('../../models/output/seatunnel_teat_model_time_class3_somte_newversion26.parquet', 'wb') as f:
+        joblib.dump(result_df, f)
         print("save file Done!")
-        print(ozone_result_df)  # This will now print the DataFrame containing the concatenated results
+        print(result_df)  # This will now print the DataFrame containing the concatenated results

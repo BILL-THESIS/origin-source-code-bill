@@ -91,12 +91,12 @@ def table_time_fix_percentile(list_each_percentile):
 
 
 if __name__ == '__main__':
-    model_original = pd.read_pickle('../../Github/output/seatunnel_filtered_final_api.pkl')
+    model_original = pd.read_pickle('../../Github/output/seatunnel_filtered_final_api_new.pkl')
 
     # divide the dataset into normal and outliers
     df_outliers, df_normal = robust_outlier_detection(model_original)
 
-    df_normal.to_parquet('../output/seatunnel_filtered_robust_outlier.parquet')
+    df_normal.to_parquet('../output/seatunnel_filtered_robust_outlier_new.parquet')
 
     # prepare the data time modify to calculate the percentiles
     percentiles_normal = calculate_percentiles(df_normal['total_time'])
@@ -114,7 +114,7 @@ if __name__ == '__main__':
     sns.histplot(df_normal['total_time_hours'], bins=50, kde=True)
     plt.xlabel('Total Time (hours)')
     plt.ylabel('Frequency')
-    plt.title('Outliers Seatunnel Repository')
+    plt.title('Robust Outliers Seatunnel Repository')
     plt.show()
 
     # save the model

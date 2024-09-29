@@ -81,9 +81,9 @@ if __name__ == "__main__":
 
     merged_sonar = pd.merge(df_sonar, df_category_smells, on=['key', 'name'], how='inner')
 
-    merged_sonar_git_end = pd.merge(df_ozone_outliers, merged_sonar, left_on=['merge_commit_sha'],
+    merged_sonar_git_end = pd.merge(df_pulsar_outliers, merged_sonar, left_on=['merge_commit_sha'],
                                     right_on=['revision_x'], how='left')
-    merged_sonar_git_start = pd.merge(df_ozone_outliers, merged_sonar, left_on=['base.sha'], right_on=['revision_x'],
+    merged_sonar_git_start = pd.merge(df_pulsar_outliers, merged_sonar, left_on=['base.sha'], right_on=['revision_x'],
                                       how='left')
 
     merged_test = pd.merge(merged_sonar_git_start, merged_sonar_git_end, left_on='url', right_on='url', how='inner',
@@ -93,8 +93,8 @@ if __name__ == "__main__":
     df_nan_column_end, df_non_nan_column_end = verify_data_isNan(merged_sonar_git_end)
     df_nan_column_start, df_non_nan_column_start = verify_data_isNan(merged_sonar_git_start)
 
-    df_nan_column_end['merge_commit_sha'].to_csv('../models/output/tracking_api_to_sonar/ozone_nan_column_end.txt', index=False)
-    df_nan_column_start['base.sha'].to_csv('../models/output/tracking_api_to_sonar/ozone_nan_column_start.txt', index=False)
+    df_nan_column_end['merge_commit_sha'].to_csv('../models/output/tracking_api_to_sonar/pulsar_nan_column_end.txt', index=False)
+    df_nan_column_start['base.sha'].to_csv('../models/output/tracking_api_to_sonar/pulsar_nan_column_start.txt', index=False)
 
 
     # ozone = process_project(df_ozone_outliers, df_sonar, df_category_smells, "ozone")

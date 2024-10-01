@@ -2,7 +2,6 @@ import os
 import joblib
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.tri as mtri
 import plotly.graph_objects as go
 
 

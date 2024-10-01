@@ -12,11 +12,17 @@ if __name__ == '__main__':
     ozone_class3 = read_file_joblib('../../models/output/ozone_test_model_timeclass3_16Sep.parquet')
     ozone_class3.drop(columns=['report_dict'], axis=1, inplace=True)
 
+    ozone_class3_svc = read_file_joblib('../../models/output/ozone_test_model_svc_timeclass3_28Sep.parquet')
+    ozone_class3_svc.drop(columns=['report_dict'], axis=1, inplace=True)
+
     seatunnal_class3 = read_file_joblib('../../models/output/seatunnel_test_model_timeclass3_16Sep.parquet')
     seatunnal_class3.drop(columns=['report_dict'], axis=1, inplace=True)
 
     pulsar_class3 = read_file_joblib('../../models/output/pulsarl_test_model_timeclass3_16Sep.parquet')
     pulsar_class3.drop(columns=['report_dict'], axis=1, inplace=True)
+
+    pulsar_class3_svc = read_file_joblib('../../models/output/pulsar_test_model_svc_timeclass3_28Sep.parquet')
+    pulsar_class3_svc.drop(columns=['report_dict'], axis=1, inplace=True)
 
     ozone_count_std_f1_smote_60_class3 = ozone_class3[
         (ozone_class3['f1_smote_class0'] >= 0.6) & (ozone_class3['f1_smote_class1'] >= 0.6) & (

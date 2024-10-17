@@ -44,37 +44,24 @@ def percentage_smell(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+
 def calculate_hourly_sums(df_outlier, hour_class):
     # Calculates sums for the specified hour class
     df_hour = df_outlier[df_outlier['time_hour_class'] == hour_class]
     if df_hour.empty:  # Handle case where there are no records for the hour class
         return {f'Hour Class {hour_class}': 'No Data'}
 
-    # creactng the data to data frame
+    # Create a dictionary of sums for the specified columns
+    columns = ['created_d', 'created_b', 'created_cp', 'created_c', 'created_ooa', 'created_u',
+               'ended_d', 'ended_b', 'ended_cp', 'ended_c', 'ended_ooa', 'ended_u',
+               'diff_d', 'diff_b', 'diff_cp', 'diff_c', 'diff_ooa', 'diff_u']
+    sums = {col: df_hour[col].sum() for col in columns}
 
-    return {
-        'number_row_class': df_hour.shape[0],
-        'created_d': df_hour['created_d'].sum(),
-        'created_b': df_hour['created_b'].sum(),
-        'created_cp': df_hour['created_cp'].sum(),
-        'created_c': df_hour['created_c'].sum(),
-        'created_ooa': df_hour['created_ooa'].sum(),
-        'created_u': df_hour['created_u'].sum(),
+    # Add the number of rows in the hour class
+    sums['number_row_class'] = df_hour.shape[0]
 
-        'ended_d': df_hour['ended_d'].sum(),
-        'ended_b': df_hour['ended_b'].sum(),
-        'ended_cp': df_hour['ended_cp'].sum(),
-        'ended_c': df_hour['ended_c'].sum(),
-        'ended_ooa': df_hour['ended_ooa'].sum(),
-        'ended_u': df_hour['ended_u'].sum(),
+    return sums
 
-        'diff_d': df_hour['diff_d'].sum(),
-        'diff_b': df_hour['diff_b'].sum(),
-        'diff_cp': df_hour['diff_cp'].sum(),
-        'diff_c': df_hour['diff_c'].sum(),
-        'diff_ooa': df_hour['diff_ooa'].sum(),
-        'diff_u': df_hour['diff_u'].sum()
-    }
 
 
 def summarize_hourly_data(df_outlier : pd.DataFrame) -> pd.DataFrame:

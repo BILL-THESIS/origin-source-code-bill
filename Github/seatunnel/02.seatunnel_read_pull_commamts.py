@@ -32,7 +32,9 @@ def loop_row_data(df: pd.DataFrame) -> pd.DataFrame:
 
 if __name__ == '__main__':
     # Load the filtered pull requests
-    df_issued_comments = pd.read_pickle("../output/seatunnel_filtered_issues_requests_comments.pkl")
+    # df_issued_comments = pd.read_pickle("../output/seatunnel_bug_pull_requests.pkl")
+    # df_issued_comments = pd.read_pickle("../output/ozone_bug_pull_requests.pkl")
+    df_issued_comments = pd.read_pickle("../output/pulsar_bug_pull_requests.pkl")
 
     # filter the data not Nan in the required columns
     df_issued_requests_not_nan = df_issued_comments[df_issued_comments['pull_request'].notna()]
@@ -44,4 +46,6 @@ if __name__ == '__main__':
 
     # filter the data not Nan in the required columns
     data_list_pull_url_api_not_nan = data_list_pull_url_api[data_list_pull_url_api['merged_at'].notna()]
-    data_list_pull_url_api_not_nan.to_pickle("../output/seatunnel_filtered_issue_requests_comments_pulls_new.pkl")
+    # data_list_pull_url_api_not_nan.to_pickle("../output/seatunnel_filtered_issue_bug.pkl")
+    # data_list_pull_url_api_not_nan.to_pickle("../output/ozone_filtered_issue_bug.pkl")
+    data_list_pull_url_api_not_nan.to_pickle("../output/pulsar_filtered_issue_bug.pkl")

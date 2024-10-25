@@ -34,6 +34,9 @@ def get_pull_requests_with_comments(url):
 
     return pull_requests
 
+def filter_pull_requests_by_label(pull_requests, label):
+    return [pr for pr in pull_requests if any(lbl['name'] == label for lbl in pr.get('labels', []))]
+
 
 # Pull Requests URL
 # https://api.github.com/repos/apache/seatunnel/issues/7128
@@ -41,6 +44,7 @@ pulls_url = f'https://api.github.com/repos/{owner}/{repo}/issues'
 
 # Fetch pull requests with more than one comment
 filtered_pull_requests = get_pull_requests_with_comments(pulls_url)
+bug_pull_requests = filter_pull_requests_by_label(filtered_pull_requests, 'bug')
 
 # Save the filtered pull requests to a file
 df = pd.DataFrame(filtered_pull_requests)

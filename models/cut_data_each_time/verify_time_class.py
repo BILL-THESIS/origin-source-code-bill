@@ -42,8 +42,7 @@ def percentage_smell(df: pd.DataFrame) -> pd.DataFrame:
 
 def separate_smell_integer(df):
     # Check the number of rows for each time_hour_class
-    positive = {}
-    negative = {}
+    positive, negative = {}, {}
     for col in ['d', 'b', 'cp', 'c', 'ooa', 'u']:
         positive_list = df[df[f'diff_{col.lower()}'] >= 0].drop(
             columns=[f'diff_{c}' for c in ['d', 'b', 'cp', 'c', 'ooa', 'u'] if c != col])
@@ -56,7 +55,7 @@ def separate_smell_integer(df):
     return positive, negative
 
 
-def separate_smell_classes(df: pd.DataFrame) -> dict:
+def separate_smell_classes(df: pd.DataFrame) -> pd.DataFrame:
     # Separate the smell classes
     data = []
 
@@ -65,28 +64,23 @@ def separate_smell_classes(df: pd.DataFrame) -> dict:
         print(f"shape: {df.shape[0]}")
         print(f"sum: {df[f'diff_{key}'].sum()}")
 
-        unique_classes = df['time_hour_class'].unique()
-        for h in unique_classes:
+        for h in df['time_hour_class'].unique():
             class_df = df[df['time_hour_class'] == h]
             data.append({
                 'smell_key': key,
                 'time_hour_class': h,
                 'sum_diff': class_df[f'diff_{key}'].sum(),
-                f'shape': class_df.shape[0]
+                'shape': class_df.shape[0]
             })
 
-    new_df = pd.DataFrame(data)
-
-    return new_df
+    return pd.DataFrame(data)
 
 
-def separant_calculate_smell(df_positive: pd.DataFrame, df_negative: pd.DataFrame):
+def separant_calculate_smell(df_positive: pd.DataFrame, df_negative: pd.DataFrame) -> pd.DataFrame:
     df_positive['percentage_positive'] = df_positive['sum_diff'] / df_positive['shape']
     df_negative['percentage_negative'] = df_negative['sum_diff'] / df_negative['shape']
 
-    df_merge = pd.merge(df_positive, df_negative, on=['time_hour_class', 'smell_key'], how='outer')
-
-    return df_merge
+    return pd.merge(df_positive, df_negative, on=['time_hour_class', 'smell_key'], how='outer')
 
 def plot_compare_interge(df: pd.DataFrame, project_name: str):
 
@@ -100,23 +94,17 @@ def plot_compare_interge(df: pd.DataFrame, project_name: str):
 
         # Bar plot for percentage_positive (green) and percentage_negative (red) for each time_hour_class
         plt.bar(data['time_hour_class'], data['percentage_positive'],
-                color='green', label=f'Smell {smell.upper()} Positive',
-                width=0.4
-                , alpha=0.5
-                # ,align='center'
-                )
+               color='green', label=f'Smell {smell.upper()} Positive',
+               width=0.4, alpha=0.5)
         plt.bar(data['time_hour_class'], data['percentage_negative'],
                 color='red', label=f'Smell {smell.upper()} Negative',
-                width=0.4
-                , alpha=0.5
-                # ,align='edge'
-                )
+                width=0.4, alpha=0.5)
 
         plt.title(f'{project_name} - Smell {smell.upper()} Positive and Negative Percentages Over Time Hour Classes')
 
         # Set custom x-ticks and labels based on unique values in 'Hour Class'
         plt.xticks(
-            ticks=range(len(data)),  # Adjust ticks to the length of 'Hour Class'
+            ticks=range(len(data)),
             labels=['< 0', '1', '2', '3', '4', '5', '6', '7-12', '12-18', '18-24', '24-48', '48-72', '72-96', '96-120',
                     '> 120'],
             rotation=45
@@ -254,15 +242,15 @@ if __name__ == '__main__':
     pulsar = separant_calculate_smell(pulsar_positive_class, pulsar_negative_class)
     seatunnal = separant_calculate_smell(seatunnal_positive_class, seatunnal_negative_class)
 
-    plot_compare_interge(ozone, 'Ozone')
-    plot_compare_interge(pulsar, 'Pulsar')
-    plot_compare_interge(seatunnal, 'Seatunnal')
-    plot_compare_smell(ozone, 'Ozone')
-    plot_compare_smell(pulsar, 'Pulsar')
-    plot_compare_smell(seatunnal, 'Seatunnal')
-    plot_compare_shape(ozone, 'Ozone')
-    plot_compare_shape(pulsar, 'Pulsar')
-    plot_compare_shape(seatunnal, 'Seatunnal')
+    # plot_compare_interge(ozone, 'Ozone')
+    # plot_compare_interge(pulsar, 'Pulsar')
+    # plot_compare_interge(seatunnal, 'Seatunnal')
+    # plot_compare_smell(ozone, 'Ozone')
+    # plot_compare_smell(pulsar, 'Pulsar')
+    # plot_compare_smell(seatunnal, 'Seatunnal')
+    # plot_compare_shape(ozone, 'Ozone')
+    # plot_compare_shape(pulsar, 'Pulsar')
+    # plot_compare_shape(seatunnal, 'Seatunnal')
 
 
 

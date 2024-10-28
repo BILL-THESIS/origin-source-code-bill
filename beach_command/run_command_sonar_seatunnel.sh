@@ -1,19 +1,19 @@
 #!/bin/zsh
 
-text_merge="/Users/bill/origin-source-code-bill/beach_command/output/ozone_base_sha.text"
-text_base="/Users/bill/origin-source-code-bill/beach_command/output/ozone_merge_commit_sha.text"
+text_base="/Users/bill/origin-source-code-bill/beach_command/output/seatunnel_base_sha.text"
+text_merge="/Users/bill/origin-source-code-bill/beach_command/output/seatunnel_merge_commit_sha.text"
 host="https://eserg-sonarqube.dto.technology"
 token_sonar="sqa_80671462b7276a63d28d08b1fcca5d7594adb340"
 token_line="sTphJfgqNg0XgkbhA2iy9olSzW0fWXvyx7pswSywab1"
 
-source="/Users/bill/ozone"
-log_dir="/Users/bill/origin-source-code-bill/beach_command/output/logs_ozone"
+source="/Users/bill/seatunnel"
+log_dir="/Users/bill/origin-source-code-bill/beach_command/output/logs_seatunnel"
 
 # สร้างไดเรกทอรี log ถ้ายังไม่มี
 mkdir -p $log_dir
 
 cd $source
-echo "file directory :: $source"
+	echo "file directory :: $source"
 
 while read line; do
     echo "Processing line no. : $line"
@@ -35,8 +35,8 @@ while read line; do
     # Run sonar scan and log
     mvn sonar:sonar \
         -Dmaven.test.skip=true \
-        -Dsonar.projectKey=ozone-$line \
-        -Dsonar.projectName=ozone-$line \
+        -Dsonar.projectKey=seatunnel-$line \
+        -Dsonar.projectName=seatunnel-$line \
         -Dsonar.java.binaries=$source \
         -Dsonar.host.url=$host \
         -Dsonar.token=$token_sonar \
@@ -51,4 +51,4 @@ while read line; do
 
     sleep 5
 
-done < $text_base
+done < $text_merge

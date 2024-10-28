@@ -408,7 +408,7 @@ if __name__ == '__main__':
     pulsar_issue_bug_time_avg = separate_times_avg(pulsar_issue_bug_median_avg)
     # plot_compare_time(pulsar_issue_bug_time, 'pulsar')
     # plot_compare_time_class_median(pulsar_issue_bug_time_media, 'pulsar-time-media')
-    plot_compare_time_class_average(pulsar_issue_bug_time_avg, 'pulsar-time-average')
+    # plot_compare_time_class_average(pulsar_issue_bug_time_avg, 'pulsar-time-average')
 
     #
     ozone_issue_bug = custom_time_hour_clustering_year(dfs_pull_bug_issues['ozone'])
@@ -418,7 +418,7 @@ if __name__ == '__main__':
     ozone_issue_bug_time_avg = separate_times_avg(ozone_issue_bug_median_avg)
     # plot_compare_time(ozone_issue_bug_time, 'ozone')
     # plot_compare_time_class_median(ozone_issue_bug_time_median, 'ozone-time-media')
-    plot_compare_time_class_average(ozone_issue_bug_time_avg,'ozone-time-average')
+    # plot_compare_time_class_average(ozone_issue_bug_time_avg,'ozone-time-average')
 
     seatunnel_issue_bug = custom_time_hour_clustering_year(dfs_pull_bug_issues['seatunnel'])
     seatunnel_issue_bug_median_avg = custom_time_clustering_media_average(seatunnel_issue_bug)
@@ -427,5 +427,5 @@ if __name__ == '__main__':
     seatunnel_smell_bug_time_avg = separate_times_avg(seatunnel_issue_bug_median_avg)
     # plot_compare_time(seatunnel_issue_bug_time, 'seatunnel')
     # plot_compare_time_class_median(seatunnel_issue_bug_time_median, 'seatunnel-time-media')
-    plot_compare_time_class_average(seatunnel_smell_bug_time_avg, 'seatunnel-time-average')
+    # plot_compare_time_class_average(seatunnel_smell_bug_time_avg, 'seatunnel-time-average')
 

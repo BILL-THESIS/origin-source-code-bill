@@ -4,8 +4,10 @@ from Authorization import sonar_token
 
 # Constants
 PAGE_SIZE = 500
-PKL_FILE_NAME = "output/sonar_smells_all_project_version6.pkl"
-PROJECTS_PKL = "../Sonar/output/sonar_all_projects_version6.pkl"
+# svae file name
+PKL_FILE_NAME = "../Sonar/output/sonar_bug_pull_smell.pkl"
+# read project file name
+PROJECTS_PKL = "../Sonar/output/sonar_all_projects_bug_pull.pkl"
 
 
 def get_sonar_client(url, username, password):

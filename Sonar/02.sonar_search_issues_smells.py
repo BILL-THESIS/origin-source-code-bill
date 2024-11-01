@@ -5,9 +5,9 @@ from Authorization import sonar_token
 # Constants
 PAGE_SIZE = 500
 # svae file name
-PKL_FILE_NAME = "../Sonar/output/sonar_bug_pull_smell.pkl"
+PKL_FILE_NAME = "../Sonar/output/02.sonar_bug_pull_smell.pkl"
 # read project file name
-PROJECTS_PKL = "../Sonar/output/sonar_all_projects_bug_pull.pkl"
+PROJECTS_PKL = "../Sonar/output/01.sonar_search_pull_bug.pkl"
 
 
 def get_sonar_client(url, username, password):
@@ -85,10 +85,10 @@ def main():
         print(f"Processing project: {project_key}")
         issues = fetch_issues_for_project(sonar_client, project_key, PAGE_SIZE)
         all_issues.extend(process_issues(issues))
-
     pivot_df = group_and_pivot_issues(all_issues)
     save_to_pickle(pivot_df, PKL_FILE_NAME)
 
+    return pivot_df
 
 if __name__ == "__main__":
     main()

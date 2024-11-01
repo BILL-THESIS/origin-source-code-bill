@@ -18,7 +18,7 @@ def fetch_sonar_rules(client, params):
         return None
 
 
-def get_rules_data(client, language='java', types='CODE_SMELL', page_size=500):
+def get_rules_data(client, language='java', types='BUG', page_size=500):
     """Retrieve all rules data, handling pagination."""
     params = {
         'languages': language,
@@ -55,7 +55,7 @@ def main():
     # Normalize and convert to DataFrame
     if rules_data:
         df = pd.json_normalize(rules_data)
-        df.to_pickle("../Sonar/output/sonar_rules_version9.9.6.pkl")
+        df.to_pickle("../Sonar/output/sonar_rules_bug_version9.9.6.pkl")
         print(df.head())
     else:
         print("No rules data fetched.")

@@ -5,9 +5,9 @@ from Authorization import sonar_token
 # Constants
 PAGE_SIZE = 500
 # svae file name
-PKL_FILE_NAME = "../Sonar/output/sonar_measures_bug.pkl"
+PKL_FILE_NAME = "../Sonar/output/02.sonar_measures_smells.pkl"
 # read project file name
-PROJECTS_PKL = "../Sonar/output/01.sonar_search_pull_bug.pkl"
+PROJECTS_PKL = "../Sonar/output/01.sonar_search_pull.pkl"
 
 
 def get_sonar_client(url, username, password):
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     for project_key in df_projects['key']:
         measures = sonar_client.measures.get_component_with_specified_measures(component=project_key,
                                                                  fields="metrics",
-                                                                 metricKeys="bugs")
+                                                                 metricKeys="code_smells")
         all_measures.append(measures)
         print(f"Measures for project {project_key} fetched.")
     # Convert to DataFrame and save

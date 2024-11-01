@@ -42,5 +42,5 @@ if __name__ == "__main__":
     result_df = merged_df.pivot_table(index='project', columns='category', values='count_x', aggfunc='sum').reset_index()
     result_final = pd.merge(df_sonar, result_df, left_on='key', right_on='project')
 
-    result_final.to_pickle("../Sonar/output/sonar_group_rules_category_smells_version6.pkl")
+    # result_final.to_pickle("../Sonar/output/sonar_group_rules_category_smells_version6.pkl")
 

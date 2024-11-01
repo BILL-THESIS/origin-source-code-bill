@@ -6,7 +6,7 @@ from Authorization import sonar_token
 
 # Constants
 PAGE_SIZE = 500
-PKL_FILE_NAME = "output/sonar_all_projects_bug_pull.pkl"
+PKL_FILE_NAME = "output/01.sonar_search_pull.pkl"
 
 
 def get_sonar_client(url, username, password):

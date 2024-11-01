@@ -93,9 +93,9 @@ if __name__ == "__main__":
     df_nan_column_end, df_non_nan_column_end = verify_data_isNan(merged_sonar_git_end)
     df_nan_column_start, df_non_nan_column_start = verify_data_isNan(merged_sonar_git_start)
 
-    df_nan_column_end['merge_commit_sha'].to_csv('../models/output/tracking_api_to_sonar/pulsar_nan_column_end.txt', index=False)
-    df_nan_column_start['base.sha'].to_csv('../models/output/tracking_api_to_sonar/pulsar_nan_column_start.txt', index=False)
-
+    # df_nan_column_end['merge_commit_sha'].to_csv('../models/output/tracking_api_to_sonar/pulsar_nan_column_end.txt', index=False)
+    # df_nan_column_start['base.sha'].to_csv('../models/output/tracking_api_to_sonar/pulsar_nan_column_start.txt', index=False)
+    #
 
     # ozone = process_project(df_ozone_outliers, df_sonar, df_category_smells, "ozone")
     # pulsar = process_project(df_pulsar_outliers, df_sonar, df_category_smells, "pulsar")

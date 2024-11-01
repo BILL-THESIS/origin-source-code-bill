@@ -1,6 +1,3 @@
-from heapq import merge
-from typing import Tuple
-
 import pandas as pd
 
 

@@ -236,7 +236,7 @@ def plot_cumulative_diff_sum(df, project_name):
 
     # Show the plot
     plt.tight_layout()
-    plt.savefig(os.path.join(f'../matplotlib/output/{project_name}_Cumulative_Difference_Sum.png'))
+    # plt.savefig(os.path.join(f'../matplotlib/output/{project_name}_Cumulative_Difference_Sum.png'))
     return plt.show()
 
 
@@ -276,7 +276,7 @@ def plot_cumulative_diff_positive_sum(df, project_name):
 
     # Show the plot
     plt.tight_layout()
-    plt.savefig(os.path.join(f'../matplotlib/output/{project_name}_Cumulative_Difference_Positive_sum.png'))
+    # plt.savefig(os.path.join(f'../matplotlib/output/{project_name}_Cumulative_Difference_Positive_sum.png'))
     return plt.show()
 
 def plot_cumulative_diff_negative_sum(df, project_name):
@@ -319,44 +319,31 @@ def plot_cumulative_diff_negative_sum(df, project_name):
     return plt.show()
 
 
-def liners_regression(df, project_name):
+def plot_cumulative_diff(df, project_name):
     # Set up the figure and axes for the plots
     fig, axs = plt.subplots(3, 2, figsize=(15, 10))
     fig.suptitle(f'Cumulative Difference of {project_name}')
 
-    axs[0, 0].plot(df['Hour Class'], df['cumulative_diff_d'], marker='o', color='b')
-    axs[0, 0].set_title('cumulative diff smell d')
-    axs[0, 0].set_xlabel('Hour Class')
-    axs[0, 0].set_ylabel('cumulative_diff_d')
+    # Define the columns and their corresponding titles and colors
+    plots = [
+        ('cumulative_diff_d', 'cumulative diff smell d', 'b'),
+        ('cumulative_diff_b', 'cumulative diff smell b', 'g'),
+        ('cumulative_diff_cp', 'cumulative diff smell cp', 'r'),
+        ('cumulative_diff_ooa', 'cumulative diff smell ooa', 'm'),
+        ('cumulative_diff_c', 'cumulative diff smell c', 'g'),
+        ('cumulative_diff_u', 'cumulative diff smell u', 'g')
+    ]
 
-    axs[0, 1].plot(df['Hour Class'], df['cumulative_diff_b'], marker='o', color='g')
-    axs[0, 1].set_title('cumulative diff smell b')
-    axs[0, 1].set_xlabel('Hour Class')
-    axs[0, 1].set_ylabel('cumulative_diff_b')
-
-    axs[1, 0].plot(df['Hour Class'], df['cumulative_diff_cp'], marker='o', color='r')
-    axs[1, 0].set_title('cumulative diff smell cp')
-    axs[1, 0].set_xlabel('Hour Class')
-    axs[1, 0].set_ylabel('cumulative_diff_cp')
-
-    axs[1, 1].plot(df['Hour Class'], df['cumulative_diff_ooa'], marker='o', color='m')
-    axs[1, 1].set_title('cumulative diff smell ooa')
-    axs[1, 1].set_xlabel('Hour Class')
-    axs[1, 1].set_ylabel('cumulative_diff_ooa')
-
-    axs[2, 0].plot(df['Hour Class'], df['cumulative_diff_c'], marker='o', color='g')
-    axs[2, 0].set_title('cumulative diff smell c')
-    axs[2, 0].set_xlabel('Hour Class')
-    axs[2, 0].set_ylabel('cumulative diff c')
-
-    axs[2, 1].plot(df['Hour Class'], df['cumulative_diff_u'], marker='o', color='g')
-    axs[2, 1].set_title('cumulative diff smell u')
-    axs[2, 1].set_xlabel('Hour Class')
-    axs[2, 1].set_ylabel('cumulative_diff_u')
+    # Plot each cumulative_diff column
+    for ax, (col, title, color) in zip(axs.flat, plots):
+        ax.plot(df['Hour Class'], df[col], marker='o', color=color)
+        ax.set_title(title)
+        ax.set_xlabel('Hour Class')
+        ax.set_ylabel(col)
 
     # Adjust layout
     plt.tight_layout()
-    plt.savefig(os.path.join(f'../matplotlib/output/{project_name}_Cumulative_Difference.png'))
+    # plt.savefig(os.path.join(f'../matplotlib/output/{project_name}_Cumulative_Difference.png'))
     return plt.show()
 
 if __name__ == '__main__':
@@ -408,12 +395,12 @@ if __name__ == '__main__':
     # plot_cumulative_diff_sum(pulsar_df, 'Pulsar')
     # plot_cumulative_diff_sum(seatunnal_df, 'Seatunnal')
 
-    plot_cumulative_diff_positive_sum(ozone_df, 'Ozone')
-    plot_cumulative_diff_positive_sum(pulsar_df, 'Pulsar')
+    # plot_cumulative_diff_positive_sum(ozone_df, 'Ozone')
+    # plot_cumulative_diff_positive_sum(pulsar_df, 'Pulsar')
     plot_cumulative_diff_positive_sum(seatunnal_df, 'Seatunnal')
-
-    plot_cumulative_diff_negative_sum(ozone_df, 'Ozone')
-    plot_cumulative_diff_negative_sum(pulsar_df, 'Pulsar')
+    #
+    # plot_cumulative_diff_negative_sum(ozone_df, 'Ozone')
+    # plot_cumulative_diff_negative_sum(pulsar_df, 'Pulsar')
     plot_cumulative_diff_negative_sum(seatunnal_df, 'Seatunnal')
 
     # Count the number of instances in each class

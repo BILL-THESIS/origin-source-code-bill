@@ -64,3 +64,4 @@ if __name__ == "__main__":
     ozone_start_pull = merge_with_category_smell(ozone_start, data_category_smell)
     ozone_end_pull = merge_with_category_smell(ozone_end, data_category_smell)
     ozone_compare_bugs = merge_selected_columns(ozone_start_pull, ozone_end_pull)
+    ozone_compare_bugs.to_pickle('../Sonar/output/tag_bug/ozone_bug_comapare_time.pkl')

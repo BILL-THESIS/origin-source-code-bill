@@ -4,30 +4,30 @@ import matplotlib.pyplot as plt
 
 
 def calculate_smell_bug(df: pd.DataFrame) -> pd.DataFrame:
-    rename_dict = {
-        'Dispensables_created': 'created_d',
-        'Bloaters_created': 'created_b',
-        'Change Preventers_created': 'created_cp',
-        'Couplers_created': 'created_c',
-        'Object-Orientation Abusers_created': 'created_ooa',
-        'Uncategorized_created': 'created_u',
-        'Dispensables_ended': 'ended_d',
-        'Bloaters_ended': 'ended_b',
-        'Change Preventers_ended': 'ended_cp',
-        'Couplers_ended': 'ended_c',
-        'Object-Orientation Abusers_ended': 'ended_ooa',
-        'Uncategorized_ended': 'ended_u'
-    }
-    df = df.rename(columns=rename_dict)
+    # rename_dict = {
+    #     'Dispensables_created': 'created_d',
+    #     'Bloaters_created': 'created_b',
+    #     'Change Preventers_created': 'created_cp',
+    #     'Couplers_created': 'created_c',
+    #     'Object-Orientation Abusers_created': 'created_ooa',
+    #     'Uncategorized_created': 'created_u',
+    #     'Dispensables_ended': 'ended_d',
+    #     'Bloaters_ended': 'ended_b',
+    #     'Change Preventers_ended': 'ended_cp',
+    #     'Couplers_ended': 'ended_c',
+    #     'Object-Orientation Abusers_ended': 'ended_ooa',
+    #     'Uncategorized_ended': 'ended_u'
+    # }
+    # df = df.rename(columns=rename_dict)
     df['total_time'] = pd.to_datetime(df['merged_at']) - pd.to_datetime(df['created_at'])
-    df['value_ended'] = pd.to_numeric(df['value_ended'], errors='coerce')
-    df['value_created'] = pd.to_numeric(df['value_created'], errors='coerce')
-    df['diff_bug'] = df['value_ended'] - df['value_created']
-    df['percentage_bug'] = ((df['value_ended'] - df['value_created']) / df['value_created']) * 100
+    # df['value_ended'] = pd.to_numeric(df['value_ended'], errors='coerce')
+    # df['value_created'] = pd.to_numeric(df['value_created'], errors='coerce')
+    # df['diff_bug'] = df['value_ended'] - df['value_created']
+    # df['percentage_bug'] = ((df['value_ended'] - df['value_created']) / df['value_created']) * 100
 
-    for col in ['d', 'b', 'cp', 'c', 'ooa', 'u']:
-        df[f'diff_{col}'] = df[f'ended_{col}'] - df[f'created_{col}']
-        df[f'percentage_{col}'] = ((df[f'ended_{col}'] - df[f'created_{col}']) / df[f'created_{col}']) * 100
+    # for col in ['d', 'b', 'cp', 'c', 'ooa', 'u']:
+    #     df[f'diff_{col}'] = df[f'ended_{col}'] - df[f'created_{col}']
+    #     df[f'percentage_{col}'] = ((df[f'ended_{col}'] - df[f'created_{col}']) / df[f'created_{col}']) * 100
 
     # Add a new column for year-month
     df['year_month'] = pd.to_datetime(df['created_at']).dt.to_period('M')
@@ -76,7 +76,7 @@ def plot_compare_shape(summary_df: pd.DataFrame, project_name: str):
 
 
 if __name__ == '__main__':
-    data_original = pd.read_pickle('../../Sonar/output/tag_bug/seatunnal_bug_comapare_time.pkl')
+    data_original = pd.read_pickle("../../Github/output/ozone_filtered_issue_bug.pkl")
     data_original = calculate_smell_bug(data_original)
 
     # Group by `year_month` instead of `year`
@@ -94,4 +94,4 @@ if __name__ == '__main__':
     ])
 
     summary_df.reset_index(drop=True, inplace=True)
-    plot_compare_shape(summary_df, 'seatunnal')
+    plot_compare_shape(summary_df, 'ozone')

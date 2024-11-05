@@ -20,6 +20,7 @@ def calculate_smell_bug(df: pd.DataFrame) -> pd.DataFrame:
     # }
     # df = df.rename(columns=rename_dict)
     df['total_time'] = pd.to_datetime(df['merged_at']) - pd.to_datetime(df['created_at'])
+    df['completed_date'] = pd.to_datetime(df['created_at']) + df['total_time']
     # df['value_ended'] = pd.to_numeric(df['value_ended'], errors='coerce')
     # df['value_created'] = pd.to_numeric(df['value_created'], errors='coerce')
     # df['diff_bug'] = df['value_ended'] - df['value_created']
@@ -30,7 +31,7 @@ def calculate_smell_bug(df: pd.DataFrame) -> pd.DataFrame:
     #     df[f'percentage_{col}'] = ((df[f'ended_{col}'] - df[f'created_{col}']) / df[f'created_{col}']) * 100
 
     # Add a new column for year-month
-    df['year_month'] = pd.to_datetime(df['created_at']).dt.to_period('M')
+    df['year_month'] = pd.to_datetime(df['completed_date']).dt.to_period('M')
 
     return df
 
@@ -71,7 +72,7 @@ def plot_compare_shape(summary_df: pd.DataFrame, project_name: str):
     plt.legend()
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.tight_layout()
-    plt.savefig(f'../../models/robust_outliers/output/{project_name}_outliers.png')
+    plt.savefig(f'../../models/robust_outliers/output/{project_name}_robits_outliers.png')
     plt.show()
 
 
@@ -100,6 +101,7 @@ if __name__ == '__main__':
 
     # Group by `year_month` instead of `year`
     grouped = data_original.groupby('year_month')
+    normal, low_outliers, high_outliers = robust_outlier_detection(data_original)
     results = {period: robust_outlier_detection(group) for period, group in grouped}
 
     summary_df = pd.DataFrame([
@@ -113,4 +115,4 @@ if __name__ == '__main__':
     ])
 
     summary_df.reset_index(drop=True, inplace=True)
-    plot_compare_histogram(summary_df, 'pulsar-robust-outliers')
+    plot_compare_shape(summary_df, 'pulsar-total-time')

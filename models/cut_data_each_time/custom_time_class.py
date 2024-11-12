@@ -397,11 +397,11 @@ if __name__ == '__main__':
 
     # plot_cumulative_diff_positive_sum(ozone_df, 'Ozone')
     # plot_cumulative_diff_positive_sum(pulsar_df, 'Pulsar')
-    plot_cumulative_diff_positive_sum(seatunnal_df, 'Seatunnal')
+    # plot_cumulative_diff_positive_sum(seatunnal_df, 'Seatunnal')
     #
     # plot_cumulative_diff_negative_sum(ozone_df, 'Ozone')
     # plot_cumulative_diff_negative_sum(pulsar_df, 'Pulsar')
-    plot_cumulative_diff_negative_sum(seatunnal_df, 'Seatunnal')
+    # plot_cumulative_diff_negative_sum(seatunnal_df, 'Seatunnal')
 
     # Count the number of instances in each class
     # ozone_outlier_hour_counts = ozone_outlier_hour['time_hour_class'].value_counts().sort_index()

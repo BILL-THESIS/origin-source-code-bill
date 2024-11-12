@@ -1,37 +1,29 @@
 import pandas as pd
 
 
-def merge_seatunnal_data(df_pull, df_sonar_bug_pull):
-    strat = pd.merge(df_pull, df_sonar_bug_pull, left_on='base.sha', right_on='revision', how='left')
-    end = pd.merge(df_pull, df_sonar_bug_pull, left_on='merge_commit_sha', right_on='revision', how='left')
-    return strat, end
+def verity_sha(df_pull, df_sonar_bug_pull):
+    start_merge = pd.merge(df_pull, df_sonar_bug_pull, left_on='base.sha', right_on='revision', how='left')
+    end_merge = pd.merge(df_pull, df_sonar_bug_pull, left_on='merge_commit_sha', right_on='revision', how='left')
+    return start_merge, end_merge
 
 
 def select_columns(df_start, df_end):
-    start = df_start[['url', 'base.sha', 'created_at',
-                      'merge_commit_sha', 'merged_at',
-                      'comments', 'review_comments',
-                      'commits',
-                      'additions', 'deletions', 'changed_files',
-                      'key', 'revision', 'metric',
-                      'value']]
-    end = df_end[['url', 'base.sha', 'created_at',
-                  'merge_commit_sha', 'merged_at',
-                  'comments', 'review_comments',
-                  'commits',
-                  'additions', 'deletions', 'changed_files',
-                  'key', 'revision', 'metric',
-                  'value']]
-    return start, end
+    columns = [
+        'url', 'base.sha', 'created_at', 'merge_commit_sha', 'merged_at',
+        'comments', 'review_comments', 'commits', 'additions', 'deletions',
+        'changed_files', 'key', 'revision', 'metric', 'value'
+    ]
+    start_selected = df_start[columns]
+    end_selected = df_end[columns]
+    return start_selected, end_selected
 
 
 def merge_selected_columns(df_start, df_end):
-    df_compare_bugs = pd.merge(df_start, df_end, on=['url', 'base.sha', 'created_at',
-                                                     'merge_commit_sha', 'merged_at',
-                                                     'comments', 'review_comments',
-                                                     'commits',
-                                                     'additions', 'deletions', 'changed_files'],
-                               suffixes=('_created', '_ended'))
+    merge_columns = [
+        'url', 'base.sha', 'created_at', 'merge_commit_sha', 'merged_at',
+        'comments', 'review_comments', 'commits', 'additions', 'deletions', 'changed_files'
+    ]
+    df_compare_bugs = pd.merge(df_start, df_end, on=merge_columns, suffixes=('_created', '_ended'))
     return df_compare_bugs
 
 def merge_with_category_smell(df, data_category_smell):
@@ -52,16 +44,16 @@ if __name__ == "__main__":
     df_sonar_bug_pull = pd.merge(df_sonar, df_sonar_bug_measures, left_on='key', right_on='component.key')
 
     # Transform the data frame to have the smell categories as columns
-    seatunnal_strat_bug, seatunnal_end_bug = merge_seatunnal_data(df_seatunnel, df_sonar_bug_pull)
+    seatunnal_strat_bug, seatunnal_end_bug = verity_sha(df_seatunnel, df_sonar_bug_pull)
     seatunnal_strat, seatunnal_end = select_columns(seatunnal_strat_bug, seatunnal_end_bug)
     seatunnal_strat_pull = merge_with_category_smell(seatunnal_strat, data_category_smell)
     seatunnal_end_pull = merge_with_category_smell(seatunnal_end, data_category_smell)
     seatunnal_compare_bugs = merge_selected_columns(seatunnal_strat_pull, seatunnal_end_pull)
-    seatunnal_compare_bugs.to_pickle('../Sonar/output/tag_bug/seatunnal_bug_comapare_time.pkl')
+    # seatunnal_compare_bugs.to_pickle('../Sonar/output/tag_bug/seatunnal_bug_comapare_time.pkl')
 
-    ozone_start_bug, ozone_end_bug = merge_seatunnal_data(df_ozone, df_sonar_bug_pull)
+    ozone_start_bug, ozone_end_bug = verity_sha(df_ozone, df_sonar_bug_pull)
     ozone_start, ozone_end = select_columns(ozone_start_bug, ozone_end_bug)
     ozone_start_pull = merge_with_category_smell(ozone_start, data_category_smell)
     ozone_end_pull = merge_with_category_smell(ozone_end, data_category_smell)
     ozone_compare_bugs = merge_selected_columns(ozone_start_pull, ozone_end_pull)
-    ozone_compare_bugs.to_pickle('../Sonar/output/tag_bug/ozone_bug_comapare_time.pkl')
+    # ozone_compare_bugs.to_pickle('../Sonar/output/tag_bug/ozone_bug_comapare_time.pkl')

@@ -58,21 +58,21 @@ if __name__ == '__main__':
     pull_bug_issues_files = {
         'pulsar': '../output/pulsar_filtered_issue_bug.pkl',
         'ozone': '../output/ozone_filtered_issue_bug.pkl',
-        'seatunnel': '../output/seatunnel_filtered_issue_bug.pkl'
+        'seatunnel': '../../Sonar/output/tag_bug/seatunnal_bug_comapare_time.pkl'
     }
 
     dfs_pull_bug_issues = load_and_prepare_data(pull_bug_issues_files)
 
-    pulsar_bug = dfs_pull_bug_issues['pulsar']
-    ozone_bug = dfs_pull_bug_issues['ozone']
+    # pulsar_bug = dfs_pull_bug_issues['pulsar']
+    # ozone_bug = dfs_pull_bug_issues['ozone']
     seatunnel_bug = dfs_pull_bug_issues['seatunnel']
 
-    # Apply the function to the DataFrame
-    p_total_time = separant_calculate_total_time(custom_time_hour_clustering(pulsar_bug))
-    o_total_time = separant_calculate_total_time(custom_time_hour_clustering(ozone_bug))
+    # # Apply the function to the DataFrame
+    # p_total_time = separant_calculate_total_time(custom_time_hour_clustering(pulsar_bug))
+    # o_total_time = separant_calculate_total_time(custom_time_hour_clustering(ozone_bug))
     s_total_time = separant_calculate_total_time(custom_time_hour_clustering(seatunnel_bug))
 
-    plot_total_time(p_total_time, 'Pulsar')
-    plot_total_time(o_total_time, 'Ozone')
+    # plot_total_time(p_total_time, 'Pulsar')
+    # plot_total_time(o_total_time, 'Ozone')
     plot_total_time(s_total_time, 'Seatunnel')
 

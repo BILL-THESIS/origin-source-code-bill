@@ -43,7 +43,7 @@ def robust_outlier_detection(df: pd.DataFrame, threshold: float = 2.24) -> tuple
     mad = np.abs(data - median).median()
     madn = mad / 0.6745
 
-    low_outliers = (data - median) / madn < -threshold
+    low_outliers = (data - median) / madn < threshold
     high_outliers = (data - median) / madn > threshold
 
     outlier = (data - median).abs() / madn > threshold
@@ -88,6 +88,7 @@ if __name__ == '__main__':
     # Group by `year_month` instead of `year`
     grouped = data_original.groupby('year_month')
     normal, low_outliers, high_outliers = robust_outlier_detection(data_original)
+    normal.to_pickle('output/seatunnal_bug_comapare_time_robuts_outlier.pkl')
     results = {period: robust_outlier_detection(group) for period, group in grouped}
 
     summary_df = pd.DataFrame([
@@ -101,4 +102,4 @@ if __name__ == '__main__':
     ])
 
     summary_df.reset_index(drop=True, inplace=True)
-    plot_compare_shape(summary_df, 'seatunnal-total-time')
+    # plot_compare_shape(summary_df, 'seatunnal-total-time')

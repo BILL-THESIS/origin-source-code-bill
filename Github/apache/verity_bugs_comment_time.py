@@ -2,7 +2,6 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from docutils.languages.ru import labels
 
 
 def filter_pull(df: pd.DataFrame) -> pd.DataFrame:
@@ -14,9 +13,6 @@ def filter_pull(df: pd.DataFrame) -> pd.DataFrame:
 
     df['year'] = pd.to_datetime(df['merged_at']).dt.year
     df['time_total'] = pd.to_datetime(df['merged_at']) - pd.to_datetime(df['created_at'])
-
-    # df['time_total_median'] = df['time_total'].median()
-    # df['time_total_mean'] = df['time_total'].mean()
 
     df['time_total_median'] = df['time_total'].median().days
     df['time_total_mean'] = df['time_total'].mean().days

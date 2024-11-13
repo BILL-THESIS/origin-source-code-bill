@@ -14,6 +14,8 @@ mkdir -p $log_dir
 cd $source
 echo "file directory :: $source"
 
+
+
 while read line; do
     echo "Processing line no. : $line"
 
@@ -31,9 +33,10 @@ while read line; do
     # Notify via LINE
     curl -X POST -H "Authorization: Bearer $token_line" -F "message=Checkout: $line" https://notify-api.line.me/api/notify
 
-#    mvn install:install-file -DgroupId=com -DartifactId=github -Dversion=os72 -Dclassifier=3.14.0 -Dpackaging=protoc -Dfile=/opt/homebrew/Cellar/protobuf/3.14.0/bin/protoc
 
     mvn -U dependency:copy -Dartifact=com.foo:my-foo:LATEST
+
+
     # Run sonar scan and log
     mvn sonar:sonar \
         -Dmaven.test.skip=true \

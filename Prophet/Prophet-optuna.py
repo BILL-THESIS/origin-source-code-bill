@@ -88,10 +88,10 @@ def optimize_prophet(df: pd.DataFrame, col: str, trials: int = 50) -> Prophet:
 
 
 def train_and_forecast(df: pd.DataFrame, col: str, model: Prophet):
-    seatunnal_train = df[['completed_date', col]].rename(columns={'completed_date': 'ds', col: 'y'})
-    seatunnal_train['ds'] = pd.to_datetime(seatunnal_train['ds']).dt.tz_localize(None)
+    train = df[['completed_date', col]].rename(columns={'completed_date': 'ds', col: 'y'})
+    train['ds'] = pd.to_datetime(train['ds']).dt.tz_localize(None)
 
-    model.fit(seatunnal_train)
+    model.fit(train)
 
     future = model.make_future_dataframe(periods=365)
     forecast = model.predict(future)
@@ -100,12 +100,14 @@ def train_and_forecast(df: pd.DataFrame, col: str, model: Prophet):
     plt.title(f'Forecast for {col}')
     plt.xlabel('Date')
     plt.ylabel(f'Y value of {col}')
-    plt.savefig(f'output/forecast_{col}.png')
+    plt.tight_layout()
+    plt.savefig(f'output/forecast_{col}-test.png')
     plt.show()
 
     fig2 = model.plot_components(forecast)
     plt.title(f'Components for {col}')
-    plt.savefig(f'output/forecast_{col}_components.png')
+    plt.tight_layout()
+    plt.savefig(f'output/forecast_{col}_components-test.png')
     plt.show()
 
     return forecast
@@ -114,17 +116,39 @@ def train_and_forecast(df: pd.DataFrame, col: str, model: Prophet):
 if __name__ == '__main__':
     # Load data
     seatunnal = pd.read_pickle('../Sonar/output/tag_bug/seatunnal_bug_comapare_time.pkl')
+    pulsar = pd.read_pickle('../Sonar/output/tag_bug/pulsar_bug_comapare_time.pkl')
+
     seatunnal = calculate_smell_bug(seatunnal)
+    pulsar = calculate_smell_bug(pulsar)
 
     columns_y = ['diff_bug', 'diff_d', 'diff_b', 'diff_cp', 'diff_c', 'diff_ooa', 'diff_u', 'sum_smell']
 
+    # suparate the positive and negative values
+    check_value_positive = pulsar[pulsar['diff_bug'] > 0]
+    check_value_negative = pulsar[pulsar['diff_bug'] < 0]
+    check_value_equal = pulsar[pulsar['diff_bug'] == 0]
+
     # Optimize Prophet model
-    optimized_model = optimize_prophet(seatunnal, col='diff_bug', trials=50)
+    optimized_model = optimize_prophet(check_value_positive, col='diff_bug', trials=50)
 
     # Train and forecast
-    forecast = train_and_forecast(seatunnal, col='diff_bug', model=optimized_model)
+    forecast = train_and_forecast(check_value_positive, col='diff_bug', model=optimized_model)
 
     # Cross-validation
     df_cv = cross_validation(optimized_model, period='365 days', horizon='90 days')
     df_p = performance_metrics(df_cv)
     print(df_p)
+
+    # Calculate summary statistics for the evaluation metrics
+    metrics = ["mse", "rmse", "mae", "mdape", "smape", "coverage"]
+    summary_stats = df_p[metrics].describe()
+
+    # Extract minimum values for comparison
+    min_values = summary_stats.loc["min"]
+
+    # Extract maximum values for comparison
+    max_values = summary_stats.loc["max"]
+
+    # Display summary statistics, minimum, and maximum values
+    summary_stats, min_values, max_values
+

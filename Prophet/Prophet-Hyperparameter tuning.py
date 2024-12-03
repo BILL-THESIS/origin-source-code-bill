@@ -120,18 +120,25 @@ if __name__ == '__main__':
     pulsar_outlier = calculate_smell_bug(pulsar_outlier)
     pulsar = calculate_smell_bug(pulsar)
 
-    columns_y = ['diff_bug', 'sum_smell']
-    # columns_y = ['diff_bug', 'diff_d', 'diff_b', 'diff_cp', 'diff_c', 'diff_ooa', 'diff_u', 'sum_smell']
+
+    columns_y = ['diff_bug', 'diff_d', 'diff_b', 'diff_cp', 'diff_c', 'diff_ooa', 'diff_u', 'sum_smell']
 
     # Optimize Prophet model
     optimized_model = optimize_prophet(pulsar, columns_y, trials=100)
 
+    # suparate the positive and negative values
+    check_value_positive = pulsar[pulsar['diff_bug'] > 0]
+    check_value_negative = pulsar[pulsar['diff_bug'] < 0]
+    check_value_equal = pulsar[pulsar['diff_bug'] == 0]
+
+
     # Train and forecast
-    # forecast_pulsar = train_and_forecast(pulsar_outlier, columns_y, best_params_dict=optimized_model, project_name='Pulsar Outlier')
+    forecast_pulsar = train_and_forecast(pulsar, columns_y, best_params_dict=optimized_model, project_name='Pulsar')
     # forecast_seatunnal = train_and_forecast(seatunnal, columns_y, best_params_dict=optimized_model, project_name='Seatunnal')
 
     # cross-validation
     df_p_list = []
+    summary_list = []
     for col in columns_y:
         model = Prophet(
             seasonality_mode=optimized_model[col]['seasonality_mode'],
@@ -147,6 +154,19 @@ if __name__ == '__main__':
         df_p['column'] = col
         # df_p_list.append(df_p.set_index('column'))
         df_p_list.append(df_p)
+
+        # Calculate summary statistics for the evaluation metrics
+        metrics = ["mse", "rmse", "mae", "mdape", "smape", "coverage"]
+        summary_stats = df_p[metrics].describe()
+
+        # Extract minimum values for comparison
+        min_values = summary_stats.loc["min"]
+
+        # Extract maximum values for comparison
+        max_values = summary_stats.loc["max"]
+
+        # Display summary statistics, minimum, and maximum values
+        summary_list.append(summary_stats)
 
     # Verify the process
     print("Process verification completed.")

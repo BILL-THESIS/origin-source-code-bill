@@ -99,43 +99,48 @@ def trend_sum_smell(df: pd.DataFrame, col: str, project_name: str):
     plt.savefig(f'output/{project_name}_forecast_{col}_components.png')
     plt.show()
 
+def remove_outliers_robust(df: pd.DataFrame, columns: list) -> pd.DataFrame:
+    list_outliers = []
+    for col in columns:
+        scaler = RobustScaler()
+        df[col] = scaler.fit_transform(df[col])
+        list_outliers.append(df[col])
+    return list_outliers
 
 
 if __name__ == '__main__':
-    seatunnal = pd.read_pickle('../Sonar/output/tag_bug/seatunnal_bug_comapare_time.pkl')
-    pulsar = pd.read_pickle('../Sonar/output/tag_bug/pulsar_bug_comapare_time.pkl')
-    ozone = pd.read_pickle('../Github/output/ozone_filtered_issue_bug.pkl')
 
-    columns_y = ['diff_bug', 'diff_d', 'diff_b', 'diff_cp', 'diff_c', 'diff_ooa', 'diff_u']
+    pulsar = pd.read_pickle('../models/robust_outliers/output/pulsar_normal_diff_bug.pkl')
 
-    seatunnal = calculate_smell_bug(seatunnal)
+    # columns_y = ['diff_bug', 'diff_d', 'diff_b', 'diff_cp', 'diff_c', 'diff_ooa', 'diff_u']
+    columns_y = ['diff_bug']
+
     pulsar = calculate_smell_bug(pulsar)
-
 
     # separate the positive and negative values
     check_value_positive = pulsar[pulsar['diff_bug'] > 0]
     check_value_negative = pulsar[pulsar['diff_bug'] < 0]
     check_value_equal = pulsar[pulsar['diff_bug'] == 0]
 
-    trend_each_smell_bug(check_value_negative, columns_y, 'Pulsar negative bug - not Tuning ')
-    # trend_sum_smell(pulsar, 'sum_smell', 'Pulsar')
-
-    train = check_value_negative[['completed_date', 'diff_bug']]
-    train.columns = ['ds', 'y']
-    train['ds'] = pd.to_datetime(train['ds']).dt.tz_localize(None)
-
-    model = Prophet()
-    model.fit(train)
-
-    future = model.make_future_dataframe(periods=365)
-    forecast = model.predict(future)
-
-    model.plot(forecast)
-    model.plot_components(forecast)
-
-    forecast_col = forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper', 'trend']]
-
-
+    # trend_each_smell_bug(check_value_negative, columns_y, 'Pulsar negative bug - not Tuning ')
+    # # trend_sum_smell(pulsar, 'sum_smell', 'Pulsar')
+    #
+    # train = check_value_negative[['completed_date', 'diff_bug']]
+    # train.columns = ['ds', 'y']
+    # train['ds'] = pd.to_datetime(train['ds']).dt.tz_localize(None)
+    #
+    # model = Prophet()
+    # model.fit(train)
+    #
+    # future = model.make_future_dataframe(periods=365)
+    # forecast = model.predict(future)
+    #
+    # model.plot(forecast)
+    # model.plot_components(forecast)
+    #
+    # forecast_col = forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper', 'trend']]
+    #
+    #
     # Cross-validation
     df_p_list_normal = []
     summary_list = []

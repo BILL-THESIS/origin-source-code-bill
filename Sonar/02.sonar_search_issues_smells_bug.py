@@ -5,7 +5,7 @@ from Authorization import sonar_token
 # Constants
 PAGE_SIZE = 500
 # svae file name
-PKL_FILE_NAME = "../Sonar/output/02.sonar_normal_pull_smell_v4.pkl"
+PKL_FILE_NAME = "../Sonar/output/02.sonar_vulnerability_pull_smell_v4.pkl"
 # read project file name
 PROJECTS_PKL = "../Sonar/output/01.sonar_search_pull_v4.pkl"
 
@@ -21,7 +21,7 @@ def fetch_issues_for_project(sonar_client, project_key, page_size):
         'componentKeys': project_key,
         'scopes': 'MAIN',
         'languages': 'java',
-        'types': 'CODE_SMELL',
+        'types': 'VULNERABILITY',
         'ps': page_size,
         'p': 1
     }

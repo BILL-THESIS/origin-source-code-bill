@@ -156,6 +156,12 @@ Github/output
 Sonar/output
 models/output
 models/matplotlib/output
+models/Box/files_variation
+models/cut_data_each_time/output
+models/robust_outliers/output
+beach_command/output
+Prophet/output
+
 
 
 # PyCharm

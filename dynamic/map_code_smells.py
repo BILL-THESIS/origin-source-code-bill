@@ -124,6 +124,7 @@ if __name__ == "__main__":
     seatunnel_start, seatunnel_end = verity_sha(seatunnel_query, sonar_issues_drop_filter_fill)
     seatunnel_compare = merge_selected_columns(seatunnel_start, seatunnel_end)
     seatunnel_compare = calculate_time_smell(seatunnel_compare)
+    seatunnel_compare.to_pickle('seatunnel_compare.pkl')
 
     df = pd.DataFrame(seatunnel_compare.describe())
 

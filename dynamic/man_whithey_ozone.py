@@ -13,10 +13,9 @@ def cliffs_delta(x, y):
     return delta
 
 
-def analyze_mann_whitney(data_path, p_value_threshold=0.01):
+def analyze_mann_whitney(df, p_value_threshold=0.01):
     # Load data
-    data = pd.read_pickle(data_path)
-    data = data.dropna()
+    data = df
 
     # Filter relevant columns
     java_columns = [col for col in data.columns if col.startswith('java:') and col.endswith('_ended')]
@@ -130,14 +129,16 @@ def analyze_high_low_delta(results_df, high_percentiles=[0.1, 0.15, 0.2, 0.25, 0
 
 if __name__ == "__main__":
     # File paths
-    file_path = "seatunnel_compare.pkl"
+    file_path = "output/ozone_compare.pkl"
+    data = pd.read_pickle(file_path)
+    data = data.dropna()
     # rule category
     rule_smell_bug = pd.read_pickle('../Sonar/output/sonar_rules_bug_version9.9.6.pkl')
     rule_smell_vulnerability = pd.read_pickle('../Sonar/output/sonar_rules_VULNERABILITY_version9.9.6.pkl')
     rule_smell_normal = pd.read_pickle('../Sonar/output/sonar_rules_version9.9.6.pkl')
 
     # Perform analysis
-    results_df = analyze_mann_whitney(file_path)
+    results_df = analyze_mann_whitney(data)
 
     # Remove specific keywords from the 'metric' column
     keywords_to_remove = ['_ended']
@@ -146,8 +147,9 @@ if __name__ == "__main__":
     results_df = calculate_effect_size(results_df)
     results_df = calculate_significance(results_df)
 
-    results = results_df[(results_df['significant'] == 'significant') & (results_df['eff_size'] == 'large')]
+    results = results_df[(results_df['significant'] == 'significant') & (results_df['eff_size'] == 'negligible')]
+    r_significant = results_df[results_df['significant'] == 'significant']
 
-    high_group, low_group = analyze_high_low_delta(results)
+    high_group, low_group = analyze_high_low_delta(r_significant)
 
 

@@ -48,7 +48,7 @@ def interpret_results(p_values):
 
 
 if __name__ == "__main__":
-    file_path = "seatunnel_compare.pkl"
+    file_path = "output/seatunnel_compare.pkl"
     data = pd.read_pickle(file_path)
 
     # Display basic information and preview the data

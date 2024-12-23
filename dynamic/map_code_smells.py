@@ -133,5 +133,12 @@ if __name__ == "__main__":
     pulsar_start, pulsar_end = verity_sha(pulsar_query, sonar_issues_drop_filter_fill)
     pulsar_compare = merge_selected_columns(pulsar_start, pulsar_end)
     pulsar_compare = calculate_time_smell(pulsar_compare)
+    pulsar_compare.to_pickle('pulsar_compare.pkl')
 
     df_2 = pd.DataFrame(pulsar_compare.describe())
+
+    ozone_query = factor_columns_github(ozone)
+    ozone_start, ozone_end = verity_sha(ozone_query, sonar_issues_drop_filter_fill)
+    ozone_compare = merge_selected_columns(ozone_start, ozone_end)
+    ozone_compare = calculate_time_smell(ozone_compare)
+    ozone_compare.to_pickle('ozone_compare.pkl')

@@ -89,19 +89,6 @@ def map_rule_category(results_dfs, rule_smell_bug, rule_smell_vulnerability, rul
     return list
 
 
-# def calculate_effect_size(results_dfs):
-#     list = []
-#     for results_df in results_dfs:
-#         results_df['eff_size'] = results_df['d_value'].apply(
-#             lambda i: 'small' if 0.147 < i < 0.33 else
-#             'medium' if 0.33 < i < 0.474 else
-#             'large' if i > 0.474 else
-#             'negligible'
-#         )
-#         list.append(results_df)
-#     return list
-
-
 def calculate_significance(results_dfs):
     data_list = []
     for results_df in results_dfs:
@@ -130,7 +117,7 @@ def analyze_high_low_data(results_df, percentiles=[0.1, 0.15, 0.2, 0.25, 0.3]):
 
 if __name__ == "__main__":
     # Define file paths
-    file_path = "../output/seatunnel_compare.pkl"
+    file_path = "../output/pulsar_compare.pkl"
     rule_paths = {
         'bug': '../../Sonar/output/sonar_rules_bug_version9.9.6.pkl',
         'vulnerability': '../../Sonar/output/sonar_rules_VULNERABILITY_version9.9.6.pkl',

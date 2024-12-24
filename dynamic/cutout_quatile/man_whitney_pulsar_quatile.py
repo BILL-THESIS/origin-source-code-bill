@@ -87,7 +87,7 @@ def map_categories(results_df, rule_smell_bug, rule_smell_vulnerability, rule_sm
 if __name__ == "__main__":
     # Test the functions
     # Define file paths
-    file_path = "../output/seatunnel_compare.pkl"
+    file_path = "../output/pulsar_compare.pkl"
     rule_paths = {
         'bug': '../../Sonar/output/sonar_rules_bug_version9.9.6.pkl',
         'vulnerability': '../../Sonar/output/sonar_rules_VULNERABILITY_version9.9.6.pkl',
@@ -111,5 +111,5 @@ if __name__ == "__main__":
 
     print(results_df.head())
 
-    s_data = results_df[(results_df['significant'] == 'significant') & (results_df['eff_size'] == 'large')]
+    # s_data = results_df[(results_df['significant'] == 'significant') & (results_df['eff_size'] == 'large')]
     s_data_singifcant = results_df[results_df['significant'] == 'significant']

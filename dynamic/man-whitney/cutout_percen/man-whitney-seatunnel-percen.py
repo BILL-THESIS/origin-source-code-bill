@@ -130,7 +130,7 @@ def analyze_high_low_data(results_df, percentiles=[0.1, 0.15, 0.2, 0.25, 0.3]):
 
 if __name__ == "__main__":
     # Define file paths
-    file_path = "../output/ozone_compare.pkl"
+    file_path = "../../output/seatunnel_compare.pkl"
     rule_paths = {
         'bug': '../../Sonar/output/sonar_rules_bug_version9.9.6.pkl',
         'vulnerability': '../../Sonar/output/sonar_rules_VULNERABILITY_version9.9.6.pkl',

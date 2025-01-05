@@ -117,7 +117,7 @@ def map_categories(results_df, rule_smell_bug, rule_smell_vulnerability, rule_sm
 if __name__ == "__main__":
     # Test the functions
     # Define file paths
-    file_path = "../output/seatunnel_compare.pkl"
+    file_path = "../../output/seatunnel_compare.pkl"
     rule_paths = {
         'bug': '../../Sonar/output/sonar_rules_bug_version9.9.6.pkl',
         'vulnerability': '../../Sonar/output/sonar_rules_VULNERABILITY_version9.9.6.pkl',

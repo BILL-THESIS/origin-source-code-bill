@@ -89,9 +89,9 @@ if __name__ == "__main__":
     # Define file paths
     file_path = "../../output/pulsar_compare.pkl"
     rule_paths = {
-        'bug': '../../Sonar/output/sonar_rules_bug_version9.9.6.pkl',
-        'vulnerability': '../../Sonar/output/sonar_rules_VULNERABILITY_version9.9.6.pkl',
-        'normal': '../../Sonar/output/sonar_rules_version9.9.6.pkl'
+        'bug': '../../../Sonar/output/sonar_rules_bug_version9.9.6.pkl',
+        'vulnerability': '../../../Sonar/output/sonar_rules_VULNERABILITY_version9.9.6.pkl',
+        'normal': '../../../Sonar/output/sonar_rules_version9.9.6.pkl'
     }
 
     # Load data
@@ -113,3 +113,4 @@ if __name__ == "__main__":
 
     # s_data = results_df[(results_df['significant'] == 'significant') & (results_df['eff_size'] == 'large')]
     s_data_singifcant = results_df[results_df['significant'] == 'significant']
+    s_data_singifcant.to_pickle('../../output/pulsar_quatile_significant.pkl')

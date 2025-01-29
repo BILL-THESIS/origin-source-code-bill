@@ -1,10 +1,3 @@
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from scipy import stats
-from itertools import combinations
-
-
 import pickle
 
 import numpy as np
@@ -96,13 +89,13 @@ def group_coordinates_from_df(df):
     # Convert to sorted lists
     return [sorted(group) for group in groups.values()]
 
+
 if __name__ == "__main__":
-    # significant level
-    data_significant = pd.read_pickle('../../output/pulsar_quatile_significant.pkl')
 
     # File paths
-    input_filepath = "../../output/pulsar_compare.pkl"
+    input_filepath = "../../output/ozone_compare.pkl"
     data = pd.read_pickle(input_filepath)
+
 
     selected_cols = select_cols(data)
 
@@ -117,13 +110,14 @@ if __name__ == "__main__":
     # Apply the function
     result_group = group_coordinates_from_df(df_corr_high[['col1', 'col2']])
 
-    with open('../../output/pulsar_correlation_main_group_7.pkl', 'wb') as f:
+    with open('../../output/ozone_correlation_main_group.pkl', 'wb') as f:
         pickle.dump(result_group, f)
 
-    # สร้าง combinations ของคอลัมน์ที่มี correlation สูง
-    combinations = list(product(data[result_group[0]], data[result_group[1]], data[result_group[2]], data[result_group[3]],
-                                data[result_group[4]], data[result_group[5]], data[result_group[6]]))
-
-    # save the result  combinations to pickle
-    with open('../../output/pulsar_correlation_group.pkl', 'wb') as f:
-        pickle.dump(combinations, f)
+    # # สร้าง combinations ของคอลัมน์ที่มี correlation สูง
+    # combinations = list(product(data[result_group[0]], data[result_group[1]], data[result_group[2]], data[result_group[3]]))
+    #
+    #
+    # # save the result  combinations to pickle
+    # with open('../../output/ozone_correlation_group.pkl', 'wb') as f:
+    #     pickle.dump(combinations, f)
+    #

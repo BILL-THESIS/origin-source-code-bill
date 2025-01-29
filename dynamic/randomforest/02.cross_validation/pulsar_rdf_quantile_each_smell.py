@@ -1,5 +1,5 @@
 from collections import Counter
-import logging
+
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import make_scorer, accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
@@ -7,12 +7,10 @@ from sklearn.model_selection import StratifiedKFold, cross_validate, GridSearchC
 from imblearn.over_sampling import SMOTE
 import pandas as pd
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-
 
 def load_data():
-    input_filepath = "../../output/seatunnel_compare.pkl"
-    data_group = pd.read_pickle("../../output/seatunnel_correlation_main_group_4.pkl")
+    input_filepath = "../../output/pulsar_compare.pkl"
+    data_group = pd.read_pickle("../../output/pulsar_correlation_main_group_7.pkl")
     data = pd.read_pickle(input_filepath)
     return data, data_group
 
@@ -20,7 +18,6 @@ def load_data():
 def preprocess_data(data):
     data['total_time'] = pd.to_timedelta(data['total_time'])
     data['total_hours'] = data['total_time'].dt.total_seconds() / 3600
-    q1 = data['total_hours'].quantile(0.25)
     q3 = data['total_hours'].quantile(0.75)
     bins = [-float('inf'), q3, float('inf')]
     labels = [0, 1]
@@ -33,7 +30,6 @@ if __name__ == "__main__":
     data_time = preprocess_data(data)
 
     list_group_results = []
-    list_feature_importances = []
 
     for col in data_group:
         for group_i in col:
@@ -58,28 +54,11 @@ if __name__ == "__main__":
 
             average_scores_normal = {metric: scores.mean() for metric, scores in cv_results_normal.items()}
 
-            # Train the model to get feature importances
-            rf.fit(X_resampled, y_resampled)
-            feature_importances = rf.feature_importances_
-
             df_results = pd.DataFrame(average_scores_normal, index=[0])
             df_results['features'] = X.name
             list_group_results.append(df_results)
 
-            # Store feature importances
-            df_importances = pd.DataFrame({
-                'feature': X.name,
-                'importance': feature_importances
-            }).sort_values(by='importance', ascending=False)
-            df_importances['feature_group'] = str(group_i)
-            list_feature_importances.append(df_importances)
-
         final_results_df = pd.concat(list_group_results, ignore_index=True)
-        feature_importances_df = pd.concat(list_feature_importances, ignore_index=True)
-
         print(final_results_df)
 
-        final_results_df.to_pickle("../../output/seatunnel_rdf_quantile_each_smell.pkl")
-        feature_importances_df.to_pickle("../../output/seatunnel_feature_importances_each_smell.pkl")
-
-        print("Evaluation complete. Results saved.")
+        final_results_df.to_pickle("../../output/pulsar_rdf_quantile_each_smell.pkl")

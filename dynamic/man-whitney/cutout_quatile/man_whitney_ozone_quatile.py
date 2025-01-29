@@ -38,7 +38,7 @@ def analyze_quartile(q1_data, q3_data):
                 'metric': col,
                 'u_statistic': u_statistic,
                 'p_value': p_val,
-                'd_value': cliff_delta[0],
+                'd_value': abs(cliff_delta[0]),
                 'smell_count_q1': data_q1[col].count(),
                 'smell_count_q3': data_q3[col].count(),
                 'smell_sum_q1': data_q1[col].sum(),
@@ -71,13 +71,6 @@ def map_categories(results_df, rule_smell_bug, rule_smell_vulnerability, rule_sm
     }
     results_df['category'] = results_df['key'].map(category_mapping).fillna('nan')
 
-    # results_df['eff_size'] = results_df['d_value'].apply(
-    #     lambda i: 'small' if 0.147 < i < 0.33 else
-    #     'medium' if 0.33 < i < 0.474 else
-    #     'large' if i > 0.474 else
-    #     'negligible'
-    # )
-
     results_df['significant'] = results_df['p_value'].apply(
         lambda i: 'significant' if i < 0.01 else 'not significant')
 
@@ -89,9 +82,9 @@ if __name__ == "__main__":
     # Define file paths
     file_path = "../../output/ozone_compare.pkl"
     rule_paths = {
-        'bug': '../../Sonar/output/sonar_rules_bug_version9.9.6.pkl',
-        'vulnerability': '../../Sonar/output/sonar_rules_VULNERABILITY_version9.9.6.pkl',
-        'normal': '../../Sonar/output/sonar_rules_version9.9.6.pkl'
+        'bug': '../../../Sonar/output/sonar_rules_bug_version9.9.6.pkl',
+        'vulnerability': '../../../Sonar/output/sonar_rules_VULNERABILITY_version9.9.6.pkl',
+        'normal': '../../../Sonar/output/sonar_rules_version9.9.6.pkl'
     }
 
     # Load data
@@ -108,8 +101,9 @@ if __name__ == "__main__":
 
     # Map categories and classify results
     results_df = map_categories(results_df, rule_smell_bug, rule_smell_vulnerability, rule_smell_normal)
+    results_df.to_pickle("../../output/ozone_all_status_significant.pkl")
 
     print(results_df.head())
 
-    s_data = results_df[(results_df['significant'] == 'significant') & (results_df['eff_size'] == 'large')]
+    # s_data = results_df[(results_df['significant'] == 'significant') & (results_df['eff_size'] == 'large')]
     s_data_singifcant = results_df[results_df['significant'] == 'significant']

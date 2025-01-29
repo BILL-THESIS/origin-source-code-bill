@@ -47,7 +47,7 @@ def analyze_quartile(q1_data, q3_data):
                 'metric': col,
                 'u_statistic': u_statistic,
                 'p_value': p_val,
-                'd_value': cliff_delta[0],
+                'd_value': abs(cliff_delta[0]),
                 'smell_count_q1': data_q1[col].count(),
                 'smell_count_q3': data_q3[col].count(),
                 'smell_sum_q1': data_q1[col].sum(),
@@ -108,6 +108,7 @@ if __name__ == "__main__":
 
     # Create results DataFrame
     results_df = pd.DataFrame(results)
+    results_df.to_pickle("../../output/seatunnel_all_status_significant.pkl")
 
     # Map categories and classify results
     results_df = map_categories(results_df, rule_smell_bug, rule_smell_vulnerability, rule_smell_normal)

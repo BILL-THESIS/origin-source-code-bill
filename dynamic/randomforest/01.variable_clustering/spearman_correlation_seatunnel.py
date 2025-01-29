@@ -1,6 +1,8 @@
+import pickle
+
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+from itertools import product
 from scipy import stats
 from itertools import combinations
 
@@ -110,33 +112,14 @@ if __name__ == "__main__":
     # Apply the function
     result_group = group_coordinates_from_df(df_corr_high[['col1', 'col2']])
 
+    with open('../../output/seatunnel_correlation_main_group_4.pkl', 'wb') as f:
+        pickle.dump(result_group, f)
 
-    # data frame for each group
-    data_group1 = data[result_group[0]]
-    data_group2 = data[result_group[1]]
-    data_group3 = data[result_group[2]]
-    data_group4 = data[result_group[3]]
+    # สร้าง combinations ของคอลัมน์ที่มี correlation สูง
+    combinations = list(product(data[result_group[0]], data[result_group[1]], data[result_group[2]], data[result_group[3]]))
 
 
-    # check columns significant
-    result1 = data[result_group[0]].columns.isin(data_significant['metric'])
-    result2 = data[result_group[1]].columns.isin(data_significant['metric'])
-    result3 = data[result_group[2]].columns.isin(data_significant['metric'])
-    result4 = data[result_group[3]].columns.isin(data_significant['metric'])
+    # save the result  combinations to pickle
+    with open('../../output/seatunnel_correlation_group_13360.pkl', 'wb') as f:
+        pickle.dump(combinations, f)
 
-    # สร้าง DataFrame จากผลลัพธ์
-    result1_significant = data[result_group[0]].loc[:, data[result_group[0]].columns.isin(data_significant['metric'])]
-    result2_significant = data[result_group[1]].loc[:, data[result_group[1]].columns.isin(data_significant['metric'])]
-    result3_significant = data[result_group[2]].loc[:, data[result_group[2]].columns.isin(data_significant['metric'])]
-    result4_significant = data[result_group[3]].loc[:, data[result_group[3]].columns.isin(data_significant['metric'])]
-
-    # เลือกมาแค่ 1  ตัวสำหรับแต่ละ group
-    result_final = result1_significant.iloc[:, :1].join([
-        data[result_group[1][6]],
-        data[result_group[2][2]],
-        data[result_group[3][0]]
-    ]).fillna(0)
-
-    result_final['total_time'] = data['total_time']
-    result_final.to_pickle('../../output/seatunnel_correlation.pkl')
-    result1_significant.to_pickle('../../output/seatunnel_correlation_group1_significant.pkl')

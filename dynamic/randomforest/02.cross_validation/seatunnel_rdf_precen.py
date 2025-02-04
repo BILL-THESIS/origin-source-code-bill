@@ -26,8 +26,6 @@ def preprocess_data(data):
     bins = [-float('inf'), percen_10_upper, float('inf')]
     labels = [0, 1]
 
-    # bins = [-float('inf'), percen_10_lower, percen_10_upper, float('inf')]
-    # labels = [0, 1, 2]
     data['time_category'] = pd.cut(data['total_hours'], bins=bins, labels=labels, right=False)
     return data, percen_10_lower, percen_10_upper
 
@@ -44,10 +42,10 @@ def oversample_data(X, y):
 def perform_grid_search(X_resampled, y_resampled):
     rf = RandomForestClassifier(random_state=42)
     param_grid = {
-        'n_estimators': [100, 200, 300],
-        'max_depth': [0.01, 0.1, 1],
-        'min_samples_split': [0.01, 0.1, 1],
-        'min_samples_leaf': np.arange(1, 9),
+        'n_estimators': [50 ,100, 200, 300],
+        'max_depth': [0.001,0.01, 0.1, 1],
+        'min_samples_split': [1,5,10,15,25,100],
+        'min_samples_leaf': [1, 2, 4],
         'max_features': ['auto', 'sqrt', 'log2'],
         'bootstrap': [True, False],
         'class_weight': ['balanced', 'balanced_subsample']
@@ -74,16 +72,19 @@ def evaluate_model(grid_search, X_resampled, y_resampled, cv, rf, scoring):
 def display_results(cv_results_tunning, cv_results_normal):
     average_scores_normal = {metric: scores.mean() for metric, scores in cv_results_normal.items()}
     average_scores_tunning = {metric: scores.mean() for metric, scores in cv_results_tunning.items()}
+
     for metric, score in average_scores_normal.items():
         print(f"{metric}_normal: {score:.4f}")
     for metric, score in average_scores_tunning.items():
         print(f"{metric}_tunning: {score:.4f}")
 
+    return average_scores_normal, average_scores_tunning
+
 if __name__ == "__main__":
     data, data_group1_significant = load_data()
-    data, q1, q3 = preprocess_data(data)
+    data, q3 = preprocess_data(data)
     X, y = split_data(data)
     X_resampled, y_resampled = oversample_data(X, y)
     grid_search, cv, rf, scoring = perform_grid_search(X_resampled, y_resampled)
     cv_results_tunning, cv_results_normal, best_rf= evaluate_model(grid_search, X_resampled, y_resampled, cv, rf, scoring)
-    resulst = display_results(cv_results_tunning, cv_results_normal)
+    average_scores_normal, average_scores_tunning = display_results(cv_results_tunning, cv_results_normal)

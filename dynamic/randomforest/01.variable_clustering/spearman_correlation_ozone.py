@@ -93,7 +93,7 @@ def group_coordinates_from_df(df):
 if __name__ == "__main__":
 
     # File paths
-    input_filepath = "../../output/ozone_compare.pkl"
+    input_filepath = "../../output/output/ozone_compare.pkl"
     data = pd.read_pickle(input_filepath)
 
 
@@ -110,7 +110,7 @@ if __name__ == "__main__":
     # Apply the function
     result_group = group_coordinates_from_df(df_corr_high[['col1', 'col2']])
 
-    with open('../../output/ozone_correlation_main_group.pkl', 'wb') as f:
+    with open('../../output/output/ozone_correlation_main_group.pkl', 'wb') as f:
         pickle.dump(result_group, f)
 
     # # สร้าง combinations ของคอลัมน์ที่มี correlation สูง

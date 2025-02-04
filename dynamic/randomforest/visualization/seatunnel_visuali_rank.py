@@ -1,13 +1,8 @@
 import pandas as pd
-import seaborn as sns
-import plotly.express as px
 from math import pi
-import matplotlib.pyplot as plt
 import numpy as np
 import time
 from ast import literal_eval
-
-from requests_toolbelt.multipart.encoder import total_len
 
 
 def load_data():
@@ -23,16 +18,16 @@ def load_data():
 
 
 if __name__ == "__main__":
-    file_significant = "../../output/seatunnel_all_status_significant.pkl"
-    file_group_smell = "../../output/seatunnel_rdf_quantile_all.pkl"
-    file_each_smell = "../../output/seatunnel_rdf_quantile_each_smell.pkl"
-    file_main_group = "../../output/seatunnel_correlation_main_group_4.pkl"
+    file_significant = "../../output/output/seatunnel_all_status_significant.pkl"
+    file_group_smell = "../../output/output/seatunnel_rdf_quantile_all.pkl"
+    file_each_smell = "../../output/output/seatunnel_rdf_quantile_each_smell.pkl"
+    file_main_group = "../../output/output/seatunnel_correlation_main_group_4.pkl"
 
     data_qr1 = pd.read_pickle(file_significant)
     data_group_smell = pd.read_pickle(file_group_smell)
     data_each_smell = pd.read_pickle(file_each_smell)
     data_mian_group = pd.read_pickle(file_main_group)
-    data_original = pd.read_pickle("../../output/seatunnel_compare.pkl")
+    data_original = pd.read_pickle("../../output/output/seatunnel_compare.pkl")
 
     data_each_smell['rank'] = data_each_smell['test_f1'].rank(ascending=False)
     groups = [data_each_smell[data_each_smell["features"].isin(data_mian_group[i])] for i in range(4)]
@@ -56,15 +51,15 @@ if __name__ == "__main__":
     grop_80_percen = data_group_smell.loc[data_group_smell['test_f1'] >= 0.8]
     grop_less_80_percen = data_group_smell.loc[data_group_smell['test_f1'] < 0.8]
 
-    data_rank_all_group = data_group_smell['features'].apply(lambda s: [group_join.set_index('features').loc[x, 'rank_f1'] for x in s])
+    data_all_group = data_group_smell['features'].apply(lambda s: [group_join.set_index('features').loc[x, 'rank_f1'] for x in s])
 
-    data_rank_all_group = pd.concat([data_group_smell['features'], data_group_smell['test_f1'], data_rank_all_group], axis=1)
+    data_rank_all_group = pd.concat([data_group_smell['features'], data_group_smell['test_f1'], data_all_group], axis=1)
     df_split_less_80_percen = pd.DataFrame(data_rank_all_group.iloc[:, 2].tolist(), columns=["G1", "G2", "G3", "G4"], index=data_rank_all_group.index)
 
     data_rank_all_group = pd.concat([data_rank_all_group, df_split_less_80_percen], axis=1)
     data_rank_all_group['sum'] = data_rank_all_group[['G1', 'G2', 'G3', 'G4']].sum(axis=1)
 
-    filtered_less = data_rank_all_group[data_rank_all_group['sum'] < []]
+    filtered_less = data_rank_all_group[data_rank_all_group['sum'] < 5]
     filtered_more_80_percen_f1 = filtered_less.loc[filtered_less['test_f1'] >= 0.8]
 
 
@@ -78,7 +73,7 @@ if __name__ == "__main__":
     data_rank_group_auc = pd.concat([data_rank_group_auc, df_split_auc], axis=1)
     data_rank_group_auc['sum'] = data_rank_group_auc[['G1', 'G2', 'G3', 'G4']].sum(axis=1)
 
-    filtered_auc = data_rank_group_auc[data_rank_group_auc['sum'] < 16]
+    filtered_auc = data_rank_group_auc[data_rank_group_auc['sum'] <= 12 ]
     filtered_more_80_percen_auc = filtered_auc.loc[filtered_auc['test_roc_auc'] >= 0.8]
 
 
@@ -91,5 +86,5 @@ if __name__ == "__main__":
     data_rank_group_d = pd.concat([data_rank_group_d, df_split_d], axis=1)
     data_rank_group_d['sum'] = data_rank_group_d[['G1', 'G2', 'G3', 'G4']].sum(axis=1)
 
-    filtered_d = data_rank_group_d[data_rank_group_d['sum'] <= 20]
-    filtered_more_80_percen_d = filtered_d.loc[filtered_d['test_f1'] >= 0.8]
+    # filtered_d = data_rank_group_d[data_rank_group_d['sum'] <= 20]
+    # filtered_more_80_percen_d = filtered_d.loc[filtered_d['test_f1'] >= 0.8]

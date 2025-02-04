@@ -113,11 +113,14 @@ def plot_scatter(data_compare, important_factures):
 
 
 if __name__ == "__main__":
-    file_significant = "../../output/pulsar_all_status_significant.pkl"
-    file_feature_importances = '../../output/pulsar_feature_importances.pkl'
-    file_group_smell = "../../output/pulsar_rdf_quantile_all.pkl"
-    file_each_smell = "../../output/pulsar_rdf_quantile_each_smell.pkl"
-    file_main_group = "../../output/pulsar_correlation_main_group_7.pkl"
+    file_significant = "../../output/output/pulsar_all_status_significant.pkl"
+    file_feature_importances = '../../output/pulsar_feature_importances_20250131_140603.pkl.pkl'
+    file_group_smell = "../../output/pulsar_rdf_quantile_all_20250131_140603.pkl.pkl"
+    file_each_smell = "../../output/output/pulsar_rdf_quantile_each_smell.pkl"
+    file_main_group = "../../output/output/pulsar_correlation_main_group_7.pkl"
+
+    # pulsar_feature_importances_20250131_140603.pkl
+    # pulsar_rdf_quantile_all_20250131_140603.pkl
 
     data_qr1 = pd.read_pickle(file_significant)
     data_feature_importances = pd.read_pickle(file_feature_importances)
@@ -125,7 +128,6 @@ if __name__ == "__main__":
     data_group_smell = pd.read_pickle(file_group_smell)
     data_each_smell = pd.read_pickle(file_each_smell)
     data_mian_group = pd.read_pickle(file_main_group)
-    data_original = pd.read_pickle("../../output/pulsar_compare.pkl")
 
     group_by_feature_set = data_feature_importances.groupby('feature')['importance'].agg(['mean', 'max', 'min'])
     group_by_feature_set.columns = ['mean', 'max', 'min']
@@ -158,25 +160,19 @@ if __name__ == "__main__":
 
     grop_70_percen = data_group_smell.loc[data_group_smell['test_f1'] >= 0.7]
 
-    data_rank_group_f1 = grop_70_percen['features'].apply(
-        lambda s: [group_join.set_index('features').loc[x, 'rank_f1'] for x in s])
-    data_rank_group_f1 = pd.concat([grop_70_percen['features'], grop_70_percen['test_f1'], data_rank_group_f1], axis=1)
-    df_split_f1 = pd.DataFrame(data_rank_group_f1.iloc[:, 2].tolist(), columns=["G1", "G2", "G3", "G4", "G5", "G6", "G7"],
-                               index=data_rank_group_f1.index)
-    data_rank_group_f1 = pd.concat([data_rank_group_f1, df_split_f1], axis=1)
-    data_rank_group_f1['sum'] = data_rank_group_f1['sum'] = data_rank_group_f1[["G1", "G2", "G3", "G4", "G5", "G6", "G7"]].sum(axis=1)
+grop_80_percen = data_group_smell.loc[data_group_smell['test_f1'] >= 0.8]
+grop_less_80_percen = data_group_smell.loc[data_group_smell['test_f1'] < 0.8]
 
-    data_rank_group_auc = grop_70_percen['features'].apply(
-        lambda s: [group_join.set_index('features').loc[x, 'rank_roc'] for x in s])
-    data_rank_group_auc = pd.concat([grop_70_percen['features'], grop_70_percen['test_roc_auc'], data_rank_group_auc],
-                                    axis=1)
-    df_split_auc = pd.DataFrame(data_rank_group_auc.iloc[:, 2].tolist(), columns=["G1", "G2", "G3", "G4", "G5", "G6", "G7"],
-                                index=data_rank_group_auc.index)
-    data_rank_group_auc = pd.concat([data_rank_group_auc, df_split_auc], axis=1)
+data_rank_all_group = data_group_smell['features'].apply(
+    lambda s: [group_join.set_index('features').loc[x, 'rank_f1'] for x in s])
 
-    data_rank_group_d = grop_70_percen['features'].apply(
-        lambda s: [group_join.set_index('features').loc[x, 'rank_d'] for x in s])
-    data_rank_group_d = pd.concat([grop_70_percen['features'], data_rank_group_d], axis=1)
-    df_split_d = pd.DataFrame(data_rank_group_d.iloc[:, 1].tolist(), columns=["G1", "G2", "G3", "G4", "G5", "G6", "G7"],
-                              index=data_rank_group_d.index)
-    data_rank_group_d = pd.concat([data_rank_group_d, df_split_d], axis=1)
+data_rank_all_group = pd.concat([data_group_smell['features'], data_group_smell['test_f1'], data_rank_all_group],
+                                axis=1)
+df_split_less_80_percen = pd.DataFrame(data_rank_all_group.iloc[:, 2].tolist(), columns=["G1", "G2", "G3", "G4"],
+                                       index=data_rank_all_group.index)
+
+data_rank_all_group = pd.concat([data_rank_all_group, df_split_less_80_percen], axis=1)
+data_rank_all_group['sum'] = data_rank_all_group[['G1', 'G2', 'G3', 'G4']].sum(axis=1)
+
+filtered_less = data_rank_all_group[data_rank_all_group['sum'] < []]
+filtered_more_80_percen_f1 = filtered_less.loc[filtered_less['test_f1'] >= 0.8]

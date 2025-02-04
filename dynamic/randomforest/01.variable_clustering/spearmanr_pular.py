@@ -9,7 +9,7 @@ from scipy.cluster.hierarchy import linkage, dendrogram, fcluster
 
 if __name__ == "__main__":
     # File paths
-    input_filepath = "../../output/pulsar_compare.pkl"
+    input_filepath = "../../output/output/pulsar_compare.pkl"
     data = pd.read_pickle(input_filepath)
 
     prefix = "java:"

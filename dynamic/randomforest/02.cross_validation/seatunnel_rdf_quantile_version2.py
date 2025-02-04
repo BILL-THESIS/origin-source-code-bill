@@ -36,7 +36,6 @@ def preprocess_time_category(data):
 
 
 def evaluate_features_with_importance(X, y, model, cv, scoring):
-    """ประเมินผลการทำงานของ features และดึงค่า feature importances"""
     X_resampled, y_resampled = SMOTE().fit_resample(X, y)
     logging.info(f"Evaluating features: {list(X.columns)}")
 

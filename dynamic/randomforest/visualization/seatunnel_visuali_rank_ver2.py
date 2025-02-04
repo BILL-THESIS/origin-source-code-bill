@@ -3,11 +3,11 @@ import pandas as pd
 
 def load_data():
     files = {
-        "significant": "../../output/seatunnel_all_status_significant.pkl",
-        "group_smell": "../../output/seatunnel_rdf_quantile_all.pkl",
-        "each_smell": "../../output/seatunnel_rdf_quantile_each_smell.pkl",
-        "main_group": "../../output/seatunnel_correlation_main_group_4.pkl",
-        "original": "../../output/seatunnel_compare.pkl"
+        "significant": "../../output/output/seatunnel_all_status_significant.pkl",
+        "group_smell": "../../output/output/seatunnel_rdf_quantile_all.pkl",
+        "each_smell": "../../output/output/seatunnel_rdf_quantile_each_smell.pkl",
+        "main_group": "../../output/output/seatunnel_correlation_main_group_4.pkl",
+        "original": "../../output/output/seatunnel_compare.pkl"
     }
     return {key: pd.read_pickle(path) for key, path in files.items()}
 

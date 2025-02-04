@@ -4,7 +4,7 @@ import logging
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import make_scorer, accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
-from sklearn.model_selection import StratifiedKFold, cross_validate
+from sklearn.model_selection import StratifiedKFold, cross_validate, GridSearchCV
 from imblearn.over_sampling import SMOTE
 from concurrent.futures import ProcessPoolExecutor
 
@@ -36,6 +36,26 @@ def preprocess_time_category(data):
     return data
 
 
+def tune_hyperparameters(X, y, cv):
+    """ใช้ GridSearchCV เพื่อค้นหาพารามิเตอร์ที่ดีที่สุด"""
+    logging.info("Starting Grid Search for hyperparameter tuning...")
+
+    param_grid = {
+        'n_estimators': [50, 100, 200],
+        'max_depth': [None, 10, 20],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 2, 4]
+    }
+
+    rf = RandomForestClassifier(random_state=42)
+    grid_search = GridSearchCV(rf, param_grid, cv=cv, scoring='f1_macro', n_jobs=-1, verbose=1)
+    grid_search.fit(X, y)
+
+    logging.info(f"Best Parameters Found: {grid_search.best_params_}")
+
+    return grid_search.best_estimator_, grid_search.best_params_
+
+
 def evaluate_features_with_importance(X, y, model, cv, scoring):
     """ประเมินผลการทำงานของ features และดึงค่า feature importances"""
     X_resampled, y_resampled = SMOTE().fit_resample(X, y)
@@ -43,7 +63,7 @@ def evaluate_features_with_importance(X, y, model, cv, scoring):
 
     # Cross-validation
     cv_results = cross_validate(model, X_resampled, y_resampled, cv=cv, scoring=scoring, n_jobs=-1,
-                                 return_train_score=False)
+                                return_train_score=False)
     average_scores = {metric: scores.mean() for metric, scores in cv_results.items()}
 
     # Train model on resampled data to get feature importances

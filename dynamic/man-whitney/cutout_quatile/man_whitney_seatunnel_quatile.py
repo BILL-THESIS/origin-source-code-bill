@@ -89,13 +89,13 @@ def map_categories(results_df, rule_smell_bug, rule_smell_vulnerability, rule_sm
 if __name__ == "__main__":
     # Test the functions
     # Define file paths
-    file_path = "../../output/seatunnel_compare.pkl"
+    file_path = "../../output/output/seatunnel_compare.pkl"
     rule_paths = {
         'bug': '../../../Sonar/output/sonar_rules_bug_version9.9.6.pkl',
         'vulnerability': '../../../Sonar/output/sonar_rules_VULNERABILITY_version9.9.6.pkl',
         'normal': '../../../Sonar/output/sonar_rules_version9.9.6.pkl'
     }
-    f = pd.read_pickle('../../output/seatunnel_compare.pkl')
+    f = pd.read_pickle('../../output/output/seatunnel_compare.pkl')
 
     # Load data
     df, rule_smell_bug, rule_smell_vulnerability, rule_smell_normal = load_data(file_path, rule_paths)

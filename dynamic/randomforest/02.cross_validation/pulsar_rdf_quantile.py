@@ -8,7 +8,7 @@ from imblearn.over_sampling import SMOTE
 import pandas as pd
 
 def load_data():
-    input_filepath = "../../output/pulsar_compare.pkl"
+    input_filepath = "../../output/output/pulsar_compare.pkl"
     part = "../../output/pulsar_correlation_group.pkl"
     with open(part, 'rb') as f:
         data_group = pickle.load(f)

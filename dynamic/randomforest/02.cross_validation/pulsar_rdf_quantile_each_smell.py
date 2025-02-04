@@ -9,8 +9,8 @@ import pandas as pd
 
 
 def load_data():
-    input_filepath = "../../output/pulsar_compare.pkl"
-    data_group = pd.read_pickle("../../output/pulsar_correlation_main_group_7.pkl")
+    input_filepath = "../../output/output/pulsar_compare.pkl"
+    data_group = pd.read_pickle("../../output/output/pulsar_correlation_main_group_7.pkl")
     data = pd.read_pickle(input_filepath)
     return data, data_group
 

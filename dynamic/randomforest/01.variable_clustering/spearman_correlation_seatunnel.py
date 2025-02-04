@@ -92,10 +92,10 @@ def group_coordinates_from_df(df):
 
 if __name__ == "__main__":
     # significant level
-    data_significant = pd.read_pickle('../../output/seatunnel_significant.pkl')
+    data_significant = pd.read_pickle('../../output/output/seatunnel_significant.pkl')
 
     # File paths
-    input_filepath = "../../output/seatunnel_compare.pkl"
+    input_filepath = "../../output/output/seatunnel_compare.pkl"
     data = pd.read_pickle(input_filepath)
 
 
@@ -112,7 +112,7 @@ if __name__ == "__main__":
     # Apply the function
     result_group = group_coordinates_from_df(df_corr_high[['col1', 'col2']])
 
-    with open('../../output/seatunnel_correlation_main_group_4.pkl', 'wb') as f:
+    with open('../../output/output/seatunnel_correlation_main_group_4.pkl', 'wb') as f:
         pickle.dump(result_group, f)
 
     # สร้าง combinations ของคอลัมน์ที่มี correlation สูง
@@ -120,6 +120,6 @@ if __name__ == "__main__":
 
 
     # save the result  combinations to pickle
-    with open('../../output/seatunnel_correlation_group_13360.pkl', 'wb') as f:
+    with open('../../output/output/seatunnel_correlation_group_13360.pkl', 'wb') as f:
         pickle.dump(combinations, f)
 

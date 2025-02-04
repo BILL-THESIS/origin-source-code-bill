@@ -9,8 +9,8 @@ import pandas as pd
 
 
 def load_data():
-    input_filepath = "../../output/ozone_compare.pkl"
-    data_group = pd.read_pickle("../../output/ozone_correlation_main_group.pkl")
+    input_filepath = "../../output/output/ozone_compare.pkl"
+    data_group = pd.read_pickle("../../output/output/ozone_correlation_main_group.pkl")
     data = pd.read_pickle(input_filepath)
     return data, data_group
 

@@ -11,8 +11,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 
 
 def load_data():
-    input_filepath = "../../output/seatunnel_compare.pkl"
-    data_group = pd.read_pickle("../../output/seatunnel_correlation_main_group_4.pkl")
+    input_filepath = "../../output/output/seatunnel_compare.pkl"
+    data_group = pd.read_pickle("../../output/output/seatunnel_correlation_main_group_4.pkl")
     data = pd.read_pickle(input_filepath)
     return data, data_group
 

@@ -1,95 +1,154 @@
+import os
+from collections import Counter
+import pickle
+import logging
 import pandas as pd
-import seaborn as sns
-import plotly.express as px
-from math import pi
-import matplotlib.pyplot as plt
-import numpy as np
-import time
-from ast import literal_eval
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import make_scorer, accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
+from sklearn.model_selection import StratifiedKFold, cross_validate, GridSearchCV
+from imblearn.over_sampling import SMOTE
+from datetime import datetime
+from joblib import Parallel, delayed
+from multiprocessing import Pool
+# ใช้สำหรับ Parallel Processing
+import gc
 
-from requests_toolbelt.multipart.encoder import total_len
+# ตั้งค่าการทำงานของ logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
+OUTPUT_DIR = "/workspaces/origin-source-code-bill-1/dynamic/output"
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
 
-def load_data():
-    files = {
-        "significant": "../../output/seatunnel_all_status_significant.pkl",
-        "group_smell": "../../output/seatunnel_rdf_quantile_all.pkl",
-        "each_smell": "../../output/seatunnel_rdf_quantile_each_smell.pkl",
-        "main_group": "../../output/seatunnel_correlation_main_group_4.pkl",
-        "original": "../../output/seatunnel_compare.pkl"
+def load_data(input_filepath=f"{OUTPUT_DIR}/seatunnel_compare.pkl",
+              group_filepath=f"{OUTPUT_DIR}/seatunnel_correlation_group_13360.pkl"):
+    """โหลดข้อมูล input และกลุ่มของ features"""
+    logging.info("Loading data...")
+    with open(group_filepath, 'rb') as f:
+        feature_groups = pickle.load(f)
+    data = pd.read_pickle(input_filepath)
+    logging.info("Data and feature groups loaded successfully.")
+    return data, feature_groups
+
+
+def preprocess_time_category(data):
+    """เพิ่มคอลัมน์ time_category ตาม quantile ของ total_hours"""
+    logging.info("Processing time category...")
+    data['total_time'] = pd.to_timedelta(data['total_time'])
+    data['total_hours'] = data['total_time'].dt.total_seconds() / 3600
+    q3 = data['total_hours'].quantile(0.75)
+    bins = [-float('inf'), q3, float('inf')]
+    labels = [0, 1]
+    data['time_category'] = pd.cut(data['total_hours'], bins=bins, labels=labels, right=False)
+    logging.info("Time category processed.")
+    return data
+
+
+def tune_hyperparameters(X, y, cv):
+    """ทำ Hyperparameter tuning โดยใช้ GridSearchCV"""
+    logging.info(f"Tuning hyperparameters for {X.shape[1]} features...")
+    param_grid = {
+        'n_estimators': [50, 100, 200],
+        'max_depth': [1, 5, 10],
+        'min_samples_split': [2, 5, 10],
+        'min_samples_leaf': [1, 5, 10]
     }
-    return {key: pd.read_pickle(path) for key, path in files.items()}
+    rf = RandomForestClassifier(random_state=42)
+    grid_search = GridSearchCV(rf, param_grid, cv=cv, scoring='f1_macro', n_jobs=-1, verbose=1)
+    grid_search.fit(X, y)
+    logging.info(f"Best parameters found: {grid_search.best_params_}")
+    return grid_search.best_estimator_
 
+
+def evaluate_features_with_importance(X, y, model, cv, scoring):
+    """ประเมินผลโมเดล พร้อมคำนวณ feature importance"""
+    X_resampled, y_resampled = SMOTE().fit_resample(X, y)
+    logging.info(f"Evaluating features: {list(X.columns)}")
+
+    # Cross-validation
+    cv_results = cross_validate(model, X_resampled, y_resampled, cv=cv, scoring=scoring, n_jobs=-1,
+                                return_train_score=False)
+    average_scores = {metric: scores.mean() for metric, scores in cv_results.items()}
+
+    # Train model on resampled data to get feature importances
+    model.fit(X_resampled, y_resampled)
+    feature_importances = model.feature_importances_
+
+    # จัดเก็บความสำคัญของฟีเจอร์ในรูป DataFrame
+    importance_df = pd.DataFrame({
+        'feature': X.columns,
+        'importance': feature_importances
+    }).sort_values(by='importance', ascending=False)
+
+    return average_scores, importance_df
+
+
+def process_feature_set(feature_set, data, y, cv, scoring):
+    """รัน GridSearchCV และประเมินโมเดลสำหรับแต่ละชุดฟีเจอร์"""
+    X = data[list(feature_set)].fillna(0)
+
+    # 1. Hyperparameter tuning
+    best_model = tune_hyperparameters(X, y, cv)
+
+    # 2. ประเมินโมเดล
+    average_scores, importance_df = evaluate_features_with_importance(X, y, best_model, cv, scoring)
+
+    # 3. เก็บผลลัพธ์ใน DataFrame
+    df_results = pd.DataFrame([average_scores])
+    df_results['features'] = [list(X.columns)]
+
+    # 4. เก็บ feature importances
+    importance_df['feature_set'] = str(list(X.columns))
+
+    # 5. เก็บ Best Model Parameters
+    best_params = {'params': best_model.get_params(), 'features': list(X.columns)}
+
+    del X  # ลบตัวแปร
+    gc.collect()
+
+    return df_results, importance_df, best_params
 
 
 if __name__ == "__main__":
-    file_significant = "../../output/seatunnel_all_status_significant.pkl"
-    file_group_smell = "../../output/seatunnel_rdf_quantile_all.pkl"
-    file_each_smell = "../../output/seatunnel_rdf_quantile_each_smell.pkl"
-    file_main_group = "../../output/seatunnel_correlation_main_group_4.pkl"
+    # โหลดข้อมูล
+    data, feature_groups = load_data()
+    # feature_groups = feature_groups[:3]
+    data = preprocess_time_category(data)
 
-    data_qr1 = pd.read_pickle(file_significant)
-    data_group_smell = pd.read_pickle(file_group_smell)
-    data_each_smell = pd.read_pickle(file_each_smell)
-    data_mian_group = pd.read_pickle(file_main_group)
-    data_original = pd.read_pickle("../../output/seatunnel_compare.pkl")
+    # กำหนดตัวแปรสำคัญ
+    y = data['time_category']
+    scoring = {
+        'accuracy': make_scorer(accuracy_score),
+        'precision': make_scorer(precision_score, average='macro', zero_division=1),
+        'recall': make_scorer(recall_score, average='macro'),
+        'f1': make_scorer(f1_score, average='macro'),
+        'roc_auc': make_scorer(roc_auc_score)
+    }
 
-    data_each_smell['rank'] = data_each_smell['test_f1'].rank(ascending=False)
-    groups = [data_each_smell[data_each_smell["features"].isin(data_mian_group[i])] for i in range(4)]
-    groups = [group.merge(data_qr1, left_on='features', right_on='metric', how='left') for group in groups]
-    group1, group2, group3, group4 = groups
+    # เตรียม Cross-validation
+    min_samples_per_class = min(Counter(y).values())
+    n_splits = min(10, min_samples_per_class)
+    cv = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
 
+    # รัน GridSearchCV และประเมินฟีเจอร์แต่ละชุดแบบ Parallel Processing
+    num_cores = 14  # ใช้ทุกคอร์ที่มีอยู่
 
-    for group in [group1, group2, group3, group4]:
-        group['rank_f1'] = group['test_f1'].rank(ascending=False)
-        group['rank_roc'] = group['test_roc_auc'].rank(ascending=False)
-        group['rank_d'] = group['d_value'].rank(ascending=False)
+    results = Parallel(n_jobs=num_cores, backend="loky")(
+        delayed(process_feature_set)(feature_set, data, y, cv, scoring) for feature_set in feature_groups
+    )
 
+    # แยกผลลัพธ์ออกมา
+    list_results, list_importances, list_best_model = zip(*results)
 
-    group1 = group1[['features', 'rank_f1', 'rank_roc', 'rank_d']]
-    group2 = group2[['features', 'rank_f1', 'rank_roc', 'rank_d']]
-    group3 = group3[['features', 'rank_f1', 'rank_roc', 'rank_d']]
-    group4 = group4[['features', 'rank_f1', 'rank_roc', 'rank_d']]
+    # รวมผลลัพธ์ทั้งหมด
+    final_results_df = pd.concat(list_results, ignore_index=True)
+    feature_importances_df = pd.concat(list_importances, ignore_index=True)
+    best_params_df = pd.DataFrame(list_best_model)
 
-    group_join = pd.concat([group1, group2, group3, group4], axis=0)
-
-    grop_80_percen = data_group_smell.loc[data_group_smell['test_f1'] >= 0.8]
-    grop_less_80_percen = data_group_smell.loc[data_group_smell['test_f1'] < 0.8]
-
-    data_rank_all_group = data_group_smell['features'].apply(lambda s: [group_join.set_index('features').loc[x, 'rank_f1'] for x in s])
-
-    data_rank_all_group = pd.concat([data_group_smell['features'], data_group_smell['test_f1'], data_rank_all_group], axis=1)
-    df_split_less_80_percen = pd.DataFrame(data_rank_all_group.iloc[:, 2].tolist(), columns=["G1", "G2", "G3", "G4"], index=data_rank_all_group.index)
-
-    data_rank_all_group = pd.concat([data_rank_all_group, df_split_less_80_percen], axis=1)
-    data_rank_all_group['sum'] = data_rank_all_group[['G1', 'G2', 'G3', 'G4']].sum(axis=1)
-
-    filtered_less = data_rank_all_group[data_rank_all_group['sum'] < []]
-    filtered_more_80_percen_f1 = filtered_less.loc[filtered_less['test_f1'] >= 0.8]
-
-
-
-    # stage 2 by ROC
-
-    data_rank_group_auc = grop_80_percen['features'].apply(lambda s: [group_join.set_index('features').loc[x, 'rank_roc'] for x in s])
-    data_rank_group_auc = pd.concat([grop_80_percen['features'],grop_80_percen['test_roc_auc'] ,data_rank_group_auc], axis=1)
-    df_split_auc = pd.DataFrame(data_rank_group_auc.iloc[:, 2].tolist(), columns=["G1", "G2", "G3", "G4"],
-                                index=data_rank_group_auc.index)
-    data_rank_group_auc = pd.concat([data_rank_group_auc, df_split_auc], axis=1)
-    data_rank_group_auc['sum'] = data_rank_group_auc[['G1', 'G2', 'G3', 'G4']].sum(axis=1)
-
-    filtered_auc = data_rank_group_auc[data_rank_group_auc['sum'] < 16]
-    filtered_more_80_percen_auc = filtered_auc.loc[filtered_auc['test_roc_auc'] >= 0.8]
-
-
-    # stage 3 by D-values
-
-    data_rank_group_d = grop_80_percen['features'].apply(lambda s: [group_join.set_index('features').loc[x, 'rank_d'] for x in s])
-    data_rank_group_d = pd.concat([grop_80_percen['features'] ,data_rank_group_d], axis=1)
-    df_split_d = pd.DataFrame(data_rank_group_d.iloc[:, 1].tolist(), columns=["G1", "G2", "G3", "G4"],
-                              index=data_rank_group_d.index)
-    data_rank_group_d = pd.concat([data_rank_group_d, df_split_d], axis=1)
-    data_rank_group_d['sum'] = data_rank_group_d[['G1', 'G2', 'G3', 'G4']].sum(axis=1)
-
-    filtered_d = data_rank_group_d[data_rank_group_d['sum'] <= 20]
-    filtered_more_80_percen_d = filtered_d.loc[filtered_d['test_f1'] >= 0.8]
+    logging.info("Parallel processing complete. Saving results...")
+    final_results_df.to_pickle(f"{OUTPUT_DIR}/seatunnel_rdf_quantile_all_{timestamp}.pkl")
+    feature_importances_df.to_pickle(f"{OUTPUT_DIR}/seatunnel_feature_importances_{timestamp}.pkl")
+    best_params_df.to_pickle(f"{OUTPUT_DIR}/seatunnel_best_params_{timestamp}.pkl")
+    logging.info("Results and feature importances saved successfully.")

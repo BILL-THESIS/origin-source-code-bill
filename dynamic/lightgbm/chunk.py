@@ -3,8 +3,6 @@ import logging
 import os
 import pickle
 from datetime import datetime
-import random
-
 from joblib import Parallel, delayed
 import joblib
 import pandas as pd
@@ -17,15 +15,14 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 project_name = "seatunnel"
 
-INPUT_DIR = os.path.join("/Users/bill/origin-source-code-bill/dynamic/output/output")
-OUTPUT_DIR = os.path.join("/Users/bill/origin-source-code-bill/dynamic/output/resample_data")
-os.makedirs(INPUT_DIR, exist_ok=True)
+OUTPUT_DIR = os.path.join("/Users/bill/origin-source-code-bill/dynamic/output/output")
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 logging.info(f"Running on project: {project_name}")
 
 # File paths
-INPUT_FILEPATH = os.path.join(INPUT_DIR, f"{project_name}_compare.pkl")
-GROUP_FILEPATH = os.path.join(INPUT_DIR, f"{project_name}_correlation_group_13360.pkl")
+INPUT_FILEPATH = os.path.join(OUTPUT_DIR, f"{project_name}_compare.pkl")
+GROUP_FILEPATH = os.path.join(OUTPUT_DIR, f"{project_name}_correlation_group_13360.pkl")
 
 
 def load_data(input_filepath=INPUT_FILEPATH, group_filepath=GROUP_FILEPATH):
@@ -137,13 +134,10 @@ if __name__ == "__main__":
     data_perpa_x, feature_groups = load_data()
 
     # Limit to first 10,000 feature groups for efficiency
-    # Randomly select 10 elements
-    random_sample = random.sample(feature_groups, 10)
-
-    # feature_groups = feature_groups[:]
+    feature_groups = feature_groups[:10]
 
     data_perpa_x = preprocess_time_category(data_perpa_x)
 
     logging.info("Starting parallel processing over feature groups...")
-    resampled_data = parallel_resampling(data_perpa_x, random_sample, num_cores=2)
+    resampled_data = parallel_resampling(data_perpa_x, feature_groups, num_cores=2)
     logging.info("Parallel processing completed.")

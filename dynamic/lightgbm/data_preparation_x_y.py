@@ -25,18 +25,19 @@ logging.info(f"Running on project: {project_name}")
 
 # File paths
 INPUT_FILEPATH = os.path.join(INPUT_DIR, f"{project_name}_compare.pkl")
-GROUP_FILEPATH = os.path.join(INPUT_DIR, f"{project_name}_correlation_group_13360.pkl")
+# GROUP_FILEPATH = os.path.join(INPUT_DIR, f"{project_name}_correlation_group_13360.pkl")
+GROUP_FILEPATH = os.path.join(INPUT_DIR, f"/Users/bill/origin-source-code-bill/dynamic/output/data_rank_all_group_sum_20.pkl")
 
 
 def load_data(input_filepath=INPUT_FILEPATH, group_filepath=GROUP_FILEPATH):
-    """Load dataset and feature groups."""
     logging.info("Loading data...")
 
-    # Load feature groups
+    # # Load feature groups
+    # feature_groups = joblib.load(group_filepath)
+    # # Load dataset
+    # data = joblib.load(input_filepath)
     with open(group_filepath, 'rb') as f:
         feature_groups = pickle.load(f)
-
-    # Load dataset
     data = pd.read_pickle(input_filepath)
 
     # Reduce memory usage
@@ -44,13 +45,12 @@ def load_data(input_filepath=INPUT_FILEPATH, group_filepath=GROUP_FILEPATH):
         data[col] = pd.to_numeric(data[col], downcast='integer')
     for col in data.select_dtypes(include=['float64']):
         data[col] = pd.to_numeric(data[col], downcast='float')
-
     logging.info(f"Loaded dataset with {len(data)} rows and {len(feature_groups)} feature groups.")
     return data, feature_groups
 
 
 def preprocess_time_category(data):
-    """Add time category column based on quantiles of total_hours."""
+    #Add time category column based on quantiles of total_hours
     logging.info("Processing time category...")
 
     data['total_time'] = pd.to_timedelta(data['total_time']).fillna(pd.Timedelta(0))
@@ -73,22 +73,17 @@ def preprocess_time_category(data):
 
 
 def chunk_list(lst, n_chunks):
-    """Split a list into n roughly equal-sized chunks."""
+    #Split a list into n roughly equal-sized chunks
     chunk_size = int(np.ceil(len(lst) / n_chunks))
     return [lst[i * chunk_size:(i + 1) * chunk_size] for i in range(n_chunks)]
 
 
 def resample_feature_group(feature_group, data_perpa_x, feature_group_idx):
-    """Resample data for a given feature group using SMOTE."""
+    #Resample data for a given feature group using SMOTE
     logging.info(f"Processing feature group {feature_group_idx + 1}")
 
     X = data_perpa_x[data_perpa_x.columns.intersection(feature_group)].fillna(0)
     y = data_perpa_x['time_category']
-
-    # Skip feature groups with insufficient class variety for SMOTE
-    if len(y.unique()) < 2:
-        logging.warning(f"Skipping feature group {feature_group_idx} due to class imbalance.")
-        return None
 
     smote = SMOTE()
     X_resampled, y_resampled = smote.fit_resample(X, y)
@@ -100,11 +95,13 @@ def resample_feature_group(feature_group, data_perpa_x, feature_group_idx):
     return resampled_data
 
 
-def parallel_resampling(data_perpa_x, feature_groups, num_cores=4):
-    """Parallelize SMOTE resampling across feature groups."""
-    logging.info(f"Splitting {len(feature_groups)} feature groups into {num_cores} chunks for parallel processing...")
-    feature_group_chunks = chunk_list(feature_groups, num_cores)
+def parallel_resampling(data_perpa_x, feature_groups, num_cores=2):
 
+    #Parallelize SMOTE resampling across feature groups
+    logging.info(f"Splitting {len(feature_groups)} feature groups into {num_cores} chunks for parallel processing...")
+    # Split feature groups into chunks
+    feature_group_chunks = chunk_list(feature_groups, num_cores)
+    # Process each chunk in parallel
     results = Parallel(n_jobs=num_cores)(
         delayed(process_feature_group_chunk)(chunk, data_perpa_x, chunk_id)
         for chunk_id, chunk in enumerate(feature_group_chunks)
@@ -122,12 +119,11 @@ def parallel_resampling(data_perpa_x, feature_groups, num_cores=4):
 
 
 def process_feature_group_chunk(feature_group_chunk, data_perpa_x, chunk_id):
-    """Process a chunk of feature groups."""
     logging.info(f"Processing feature group chunk {chunk_id + 1}")
-
     chunk_results = []
     for idx, feature_group in enumerate(feature_group_chunk):
         resampled_data = resample_feature_group(feature_group, data_perpa_x, idx)
+        # resampled_data = dict(features=resampled_data.drop(columns=["time_category"]), target=resampled_data["time_category"])
         if resampled_data is not None:
             chunk_results.append(resampled_data)
 
@@ -135,15 +131,10 @@ def process_feature_group_chunk(feature_group_chunk, data_perpa_x, chunk_id):
 
 if __name__ == "__main__":
     data_perpa_x, feature_groups = load_data()
-
-    # Limit to first 10,000 feature groups for efficiency
-    # Randomly select 10 elements
-    random_sample = random.sample(feature_groups, 10)
-
-    # feature_groups = feature_groups[:]
-
+    # test with a random sample of 10 feature groups
+    random_sample_feature_groups = random.sample(feature_groups, 10 )
     data_perpa_x = preprocess_time_category(data_perpa_x)
 
     logging.info("Starting parallel processing over feature groups...")
-    resampled_data = parallel_resampling(data_perpa_x, random_sample, num_cores=2)
+    resampled_data = parallel_resampling(data_perpa_x, random_sample_feature_groups, num_cores=2)
     logging.info("Parallel processing completed.")

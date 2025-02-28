@@ -35,6 +35,7 @@ def objective(trial, x, y):
     n_estimators = trial.suggest_int('n_estimators', 100, 5000)
     learning_rate = trial.suggest_float('learning_rate', 0.01, 1)
     max_depth = trial.suggest_int('max_depth', 1, 8)
+    # ดูจากแถวของข้อมูลที่มีอยู่
     min_child_samples = trial.suggest_int('min_child_samples', 2, 32)
     min_child_weight = trial.suggest_int('min_child_weight', 2, 32)
     subsample = trial.suggest_float('subsample', 0.1, 1.0)
@@ -118,6 +119,6 @@ def process_group_chunk(datasets_chunk):
 if __name__ == '__main__':
     # Load the data
     datasets = joblib.load(
-        '/Users/bill/origin-source-code-bill/dynamic/output/resample_data/seatunnel_resampled_data_20250227_055810.pkl')
+        '/Users/bill/origin-source-code-bill/dynamic/output/resample_data/seatunnel_resampled_data_20250227_104730.pkl')
 
     find_best_para = parallel_optuna(datasets)

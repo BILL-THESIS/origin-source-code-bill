@@ -1,14 +1,11 @@
 import pandas as pd
-
 # Modelling
-from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score,\
-    f1_score, roc_auc_score, roc_curve, auc
 from scipy.stats import mannwhitneyu
-from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
-from sklearn.model_selection import train_test_split
 from cliffs_delta import cliffs_delta
-from sklearn.metrics import mean_squared_error
-import itertools
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 
 # Tree Visualisation
 
@@ -81,7 +78,7 @@ def map_categories(results_df, rule_smell_bug, rule_smell_vulnerability, rule_sm
     results_df['category'] = results_df['key'].map(category_mapping).fillna('nan')
 
     results_df['significant'] = results_df['p_value'].apply(
-        lambda i: 'significant' if i < 0.01 else 'not significant')
+        lambda i: 'significant' if i < 0.05 else 'not significant')
 
     return results_df
 
@@ -108,7 +105,24 @@ if __name__ == "__main__":
 
     # Create results DataFrame
     results_df = pd.DataFrame(results)
-    results_df.to_pickle("../../output/seatunnel_all_status_significant.pkl")
+    seatunnel_metrics_mann = results_df[['metric', 'u_statistic', 'p_value',
+                                         'd_value',
+                                         'smell_count_q1','smell_count_q3',
+                                         'smell_sum_q1', 'smell_sum_q3',
+                                         # 'time_modify_smell_q1', 'time_modify_smell_min_q1', 'time_modify_smell_max_q1',
+                                         # 'time_modify_smell_q3', 'time_modify_smell_min_q3', 'time_modify_smell_max_q3',
+                                         'eff_size',
+                                         'key', 'category', 'significant']]
+
+    seatunnel_metrics_Cliff_Delta = results_df[['metric', 'u_statistic', 'p_value',
+                                         'smell_count_q1', 'smell_count_q3',
+                                         'smell_sum_q1', 'smell_sum_q3',
+                                         'key', 'category', 'significant',
+                                         'd_value', 'eff_size',]]
+
+    seatunnel_metrics = seatunnel_metrics_Cliff_Delta[seatunnel_metrics_Cliff_Delta['significant'] == 'significant']
+
+    # results_df.to_pickle("../../output/seatunnel_all_status_significant.pkl")
 
     # Map categories and classify results
     results_df = map_categories(results_df, rule_smell_bug, rule_smell_vulnerability, rule_smell_normal)
@@ -117,78 +131,15 @@ if __name__ == "__main__":
     # Get significant and large effect size data
     s_data = results_df[(results_df['significant'] == 'significant') & (results_df['eff_size'] == 'large')]
     s_data_singifcant = results_df[results_df['significant'] == 'significant']
-    s_data_singifcant.to_pickle("../../output/seatunnel_significant.pkl")
+    # s_data_singifcant.to_pickle("../../output/seatunnel_significant.pkl")
+
+    # Print the number of significant results
+    print(f"Number of significant results: {len(s_data)}")
+
 
     # Get category counts and percentages
     category_counts = s_data_singifcant['eff_size'].value_counts()
     category_percentages_s = (category_counts / len(s_data_singifcant)) * 100
     category_percentages_a = (category_counts / len(results_df)) * 100
 
-    # QR 2 What are the important factors that affect the time to modify a smell in the lower and upper quantiles?
-    # Data collection q1_data, q3_data
-    # Tag label 0 for q1_data and 1 for q3_data
-    q1_data['time_class'] = 0
-    q3_data['time_class'] = 1
-    data_prepare = pd.concat([q1_data, q3_data])
-    hours = pd.to_timedelta(data_prepare['total_time']).dt.total_seconds() / 3600
 
-    #Select the factors that affect significant
-    data_prepare_significant = data_prepare[data_prepare.columns.intersection(s_data_singifcant['metric'])].fillna(0)
-
-    X = data_prepare_significant.astype(int)
-    y = data_prepare['time_class']
-
-    # trian the model
-    # Split the data into training and test sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
-    print('y train:', y_train.value_counts().to_markdown())
-
-    model = RandomForestClassifier()
-    model.fit(X_train, y_train)
-
-    y_pred = model.predict(X_test)
-    print('y test:', y_test.value_counts().to_markdown())
-
-
-    # Evaluate the model all factors
-    results_evaluated_all =  []
-    results_evaluated_all.append({
-        'accuracy': accuracy_score(y_test, y_pred),
-        'precision': precision_score(y_test, y_pred,average='macro'),
-        'recall': recall_score(y_test, y_pred,average='macro'),
-        'f1_score': f1_score(y_test, y_pred,average='macro'),
-        'confusion': confusion_matrix(y_test, y_pred)
-    })
-
-    results_evaluated_all = pd.DataFrame(results_evaluated_all)
-
-
-    # Evaluate the model one factor at a time
-    results_metrics_list = []
-
-    # Loop through each feature (column) in X to calculate the metrics
-    for column in X.columns:
-        # For each feature, consider it as a target and calculate the metrics
-        X_train_column = X_train[[column]]
-        X_test_column = X_test[[column]]
-
-        # Fit the model and predict
-        model.fit(X_train_column, y_train)
-        y_pred_column = model.predict(X_test_column)
-
-        # Evaluate performance for this feature
-        results_metrics_list.append({
-            'metric': column,
-            'accuracy': accuracy_score(y_test, y_pred_column),
-            'precision': precision_score(y_test, y_pred_column,average='macro'),
-            'recall': recall_score(y_test, y_pred_column,average='macro'),
-            'f1_score': f1_score(y_test, y_pred_column,average='macro'),
-            'confusion': confusion_matrix(y_test, y_pred_column)
-        })
-
-    # Convert the results into a DataFrame for easy inspection
-    results_metrics_list = pd.DataFrame(results_metrics_list)
-    print("The results for all feature:")
-    print(results_evaluated_all.describe().to_markdown())
-    print("The results for each feature:")
-    print(results_metrics_list.describe().to_markdown())

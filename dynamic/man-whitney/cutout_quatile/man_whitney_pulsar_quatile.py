@@ -100,18 +100,18 @@ if __name__ == "__main__":
     # Split data into quantiles
     q1_data, q3_data = split_data_by_quantiles(df, 'total_time', 0.25, 0.75)
 
-    # Analyze combinations
-    results = analyze_quartile(q1_data, q3_data)
+    # # Analyze combinations
+    # results = analyze_quartile(q1_data, q3_data)
+    #
+    # # Create results DataFrame
+    # results_df = pd.DataFrame(results)
 
-    # Create results DataFrame
-    results_df = pd.DataFrame(results)
-
-    # Map categories and classify results
-    results_df = map_categories(results_df, rule_smell_bug, rule_smell_vulnerability, rule_smell_normal)
-    results_df.to_pickle("../../output/pulsar_all_status_significant.pkl")
-
-    print(results_df.head())
-
-    # s_data = results_df[(results_df['significant'] == 'significant') & (results_df['eff_size'] == 'large')]
-    s_data_singifcant = results_df[results_df['significant'] == 'significant']
-    s_data_singifcant.to_pickle('../../output/pulsar_quatile_significant.pkl')
+    # # Map categories and classify results
+    # results_df = map_categories(results_df, rule_smell_bug, rule_smell_vulnerability, rule_smell_normal)
+    # results_df.to_pickle("../../output/pulsar_all_status_significant.pkl")
+    #
+    # print(results_df.head())
+    #
+    # # s_data = results_df[(results_df['significant'] == 'significant') & (results_df['eff_size'] == 'large')]
+    # s_data_singifcant = results_df[results_df['significant'] == 'significant']
+    # s_data_singifcant.to_pickle('../../output/pulsar_quatile_significant.pkl')

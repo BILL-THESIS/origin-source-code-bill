@@ -14,13 +14,17 @@ if __name__ == "__main__":
     p_significant = pulsar['significant'].value_counts()
     o_significant = ozone['significant'].value_counts()
 
-    seatannel_importance = verify_importance(seatannel)
-    # seatannel_importance.to_pickle("../output_man/seatannel_importance.pkl")
-    pulsar_importance = verify_importance(pulsar)
+    df_significant = pd.concat([s_significant, p_significant, o_significant], axis=1)
+    df_significant.columns = ['seatannel', 'pulsar', 'ozone']
 
-    # pulsar_importance.to_pickle("../output_man/pulsar_importance.pkl")
+    seatannel_importance = verify_importance(seatannel)
+    seatannel_importance.to_pickle("../output_man/seatannel_importance.pkl")
+
+    pulsar_importance = verify_importance(pulsar)
+    pulsar_importance.to_pickle("../output_man/pulsar_importance.pkl")
+
     ozone_importance = verify_importance(ozone)
-    # pulsar_importance.to_pickle("../output_man/ozone_importance.pkl")
+    ozone_importance.to_pickle("../output_man/ozone_importance.pkl")
 
     seatannel_importance_conut = seatannel_importance['eff_size'].value_counts()
     pulsar_importance_conut = pulsar_importance['eff_size'].value_counts()

@@ -17,16 +17,17 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 project_name = "ozone"
 
-INPUT_DF = os.path.join("../output/output")
-INPUT_CORRE = os.path.join("../output")
+INPUT_DF = os.path.join("../output/")
+INPUT_CORRE = os.path.join("../01.variable_clustering/output_variable")
+OUTPUT_DF = os.path.join("output/")
 os.makedirs(INPUT_DF, exist_ok=True)
 os.makedirs(INPUT_CORRE, exist_ok=True)
 
 logging.info(f"Running on project: {project_name}")
 
 # File paths
-INPUT_FILEPATH = os.path.join(INPUT_DF, f"{project_name}_compare.pkl")
-GROUP_FILEPATH = os.path.join(INPUT_CORRE, f"{project_name}_correlation_main_group.pkl")
+INPUT_FILEPATH = os.path.join(INPUT_DF, f"{project_name}_cut_time.pkl")
+GROUP_FILEPATH = os.path.join(INPUT_CORRE, f"{project_name}_combinations.pkl")
 
 
 def load_data(input_filepath=INPUT_FILEPATH, group_filepath=GROUP_FILEPATH):
@@ -93,10 +94,16 @@ if __name__ == "__main__":
     data_perpa_x, feature_groups = load_data()
     data_perpa_x = preprocess_time_category(data_perpa_x)
 
+    list_df = []
     for i, feature_group in enumerate(feature_groups):
-        logging.info(f"Processing feature group {i + 1}")
-        resampled_data = resample_feature_group(feature_group, data_perpa_x)
+        X = data_perpa_x[data_perpa_x.columns.intersection(feature_group)].fillna(0)
+        y = data_perpa_x['time_category']
+
+        smote = SMOTE()
+        X_resampled, y_resampled = smote.fit_resample(X, y)
+        resampled_data = pd.concat([X_resampled, y_resampled], axis=1)
+        list_df.append(resampled_data)
 
         # Save the resampled data
-        output_file = os.path.join(INPUT_CORRE, f"{project_name}_resampled_data_2may.pkl")
-        joblib.dump(resampled_data, output_file)
+        output_file = os.path.join(OUTPUT_DF, f"{project_name}_resampled_data.pkl")
+        joblib.dump(list_df, output_file)

@@ -15,18 +15,19 @@ import numpy as np
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-project_name = "seatunnel"
+project_name = "seatunnal"
 
-INPUT_DF = os.path.join("../output/output")
-INPUT_CORRE = os.path.join("../output")
+INPUT_DF = os.path.join("../output/")
+INPUT_CORRE = os.path.join("../01.variable_clustering/output_variable")
+OUTPUT_DF = os.path.join("output/")
 os.makedirs(INPUT_DF, exist_ok=True)
 os.makedirs(INPUT_CORRE, exist_ok=True)
 
 logging.info(f"Running on project: {project_name}")
 
 # File paths
-INPUT_FILEPATH = os.path.join(INPUT_DF, f"{project_name}_compare.pkl")
-GROUP_FILEPATH = os.path.join(INPUT_CORRE, f"{project_name}_combinations.pkl")
+INPUT_FILEPATH = os.path.join(INPUT_DF, f"{project_name}_cut_time.pkl")
+GROUP_FILEPATH = os.path.join(INPUT_CORRE, f"seatunnel_combinations.pkl")
 
 
 def load_data(input_filepath=INPUT_FILEPATH, group_filepath=GROUP_FILEPATH):
@@ -87,5 +88,5 @@ if __name__ == "__main__":
         list_df.append(resampled_data)
 
         # Save the resampled data
-        output_file = os.path.join(INPUT_CORRE, f"{project_name}_resampled_data_2may.pkl")
+        output_file = os.path.join(OUTPUT_DF, f"{project_name}_resampled.pkl")
         joblib.dump(list_df, output_file)

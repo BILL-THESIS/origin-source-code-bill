@@ -19,7 +19,7 @@ project_name = "ozone"
 
 INPUT_DF = os.path.join("../output/")
 INPUT_CORRE = os.path.join("../01.variable_clustering/output_variable")
-OUTPUT_DF = os.path.join("output/")
+OUTPUT_DF = os.path.join("output_resample/")
 os.makedirs(INPUT_DF, exist_ok=True)
 os.makedirs(INPUT_CORRE, exist_ok=True)
 

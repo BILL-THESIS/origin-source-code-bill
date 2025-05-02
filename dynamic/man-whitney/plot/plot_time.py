@@ -3,12 +3,12 @@ import matplotlib.pyplot as plt
 
 
 def load_data():
-    input_ozone = "../../output/output/ozone_compare.pkl"
-    input_pulsar = "../../output/output/pulsar_compare.pkl"
-    input_setannel = "../../output/output/seatunnel_compare.pkl"
-    data_group_ozone = pd.read_pickle("../../output/output/ozone_correlation_main_group.pkl")
-    data_group_pulsar = pd.read_pickle("../../output/output/pulsar_correlation_main_group_7.pkl")
-    data_group_setannel = pd.read_pickle("../../output/output/seatunnel_correlation_main_group_4.pkl")
+    input_ozone = "../../output_resample/output_resample/ozone_compare.pkl"
+    input_pulsar = "../../output_resample/output_resample/pulsar_compare.pkl"
+    input_setannel = "../../output_resample/output_resample/seatunnel_compare.pkl"
+    data_group_ozone = pd.read_pickle("../../output/output_resample/ozone_correlation_main_group.pkl")
+    data_group_pulsar = pd.read_pickle("../../output/output_resample/pulsar_correlation_main_group_7.pkl")
+    data_group_setannel = pd.read_pickle("../../output/output_resample/seatunnel_correlation_main_group_4.pkl")
     data_ozone = pd.read_pickle(input_ozone)
     data_pulsar = pd.read_pickle(input_pulsar)
     data_setannel = pd.read_pickle(input_setannel)

@@ -111,8 +111,8 @@ def parallel_optuna(datasets: list):
 if __name__ == '__main__':
     project_name = "ozone"
 
-    INPUT_DIR = os.path.join("../02.resample_data/output")
-    OUTPUT_DIR = os.path.join("output/")
+    INPUT_DIR = os.path.join("../02.resample_data/output_resample")
+    OUTPUT_DIR = os.path.join("output_randomforest/")
     os.makedirs(INPUT_DIR, exist_ok=True)
 
     logging.info(f"Running on project: {project_name}")

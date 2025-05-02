@@ -98,9 +98,9 @@ if __name__ == "__main__":
     print(sonar_issues_smell_vulnerability['project'].duplicated().sum())
 
     # Load Projects with Tags bugs in Pull Request
-    pulsar = pd.read_pickle("../Github/output/pulsar_filtered_issue_bug.pkl")
-    seatunnel = pd.read_pickle('../Github/output/seatunnel_filtered_issue_bug.pkl')
-    ozone = pd.read_pickle('../Github/output/ozone_filtered_issue_bug.pkl')
+    pulsar = pd.read_pickle("../Github/output_resample/pulsar_filtered_issue_bug.pkl")
+    seatunnel = pd.read_pickle('../Github/output_resample/seatunnel_filtered_issue_bug.pkl')
+    ozone = pd.read_pickle('../Github/output_resample/ozone_filtered_issue_bug.pkl')
 
     # Remove duplicates
     drop_sonar_issues_name = sonar_issues_name.drop_duplicates(subset=['key'])

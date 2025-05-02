@@ -19,8 +19,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 project_name = "pulsar"
 
-INPUT_DIR = os.path.join("/home/bill/origin-source-code-bill/dynamic/output/resample_data")
-OUTPUT_DIR = os.path.join("/home/bill/origin-source-code-bill/dynamic/output/pulsar")
+INPUT_DIR = os.path.join("/home/bill/origin-source-code-bill/dynamic/output_resample/resample_data")
+OUTPUT_DIR = os.path.join("/home/bill/origin-source-code-bill/dynamic/output_resample/pulsar")
 os.makedirs(INPUT_DIR, exist_ok=True)
 
 CHECKPOINT_FILE = os.path.join(OUTPUT_DIR, f"{project_name}_processed_log.json")
@@ -157,7 +157,7 @@ def save_results(results):
     feature_group_str = "".join(map(str, df['feature_group'][0]))
     file_name = os.path.join(OUTPUT_DIR, f"{project_name}_{feature_group_str}_optuna_results_{timestamp}.pkl")
 
-    os.makedirs(OUTPUT_DIR, exist_ok=True)  # Ensure output directory exists
+    os.makedirs(OUTPUT_DIR, exist_ok=True)  # Ensure output_resample directory exists
     df.to_pickle(file_name)
 
     # Update checkpoint log

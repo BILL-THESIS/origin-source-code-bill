@@ -4,11 +4,11 @@ import pickle
 import pandas as pd
 
 # ระบุโฟลเดอร์ที่มีไฟล์
-folder_path = "/Users/bill/origin-source-code-bill/dynamic/output/seatunnel"
+folder_path = "/Users/bill/origin-source-code-bill/dynamic/output_resample/seatunnel"
 
-file_significant = "../../output/output/seatunnel_all_status_significant.pkl"
-file_each_smell = "../../output/output/seatunnel_rdf_quantile_each_smell.pkl"
-file_main_group = "../../output/output/seatunnel_correlation_main_group_4.pkl"
+file_significant = "../../output/output_resample/seatunnel_all_status_significant.pkl"
+file_each_smell = "../../output/output_resample/seatunnel_rdf_quantile_each_smell.pkl"
+file_main_group = "../../output/output_resample/seatunnel_correlation_main_group_4.pkl"
 
 data_each_smell = pd.read_pickle(file_each_smell)
 data_mian_group = pd.read_pickle(file_main_group)

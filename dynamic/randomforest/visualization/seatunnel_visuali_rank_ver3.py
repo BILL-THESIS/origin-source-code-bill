@@ -16,7 +16,7 @@ import gc
 # ตั้งค่าการทำงานของ logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-OUTPUT_DIR = "/workspaces/origin-source-code-bill-1/dynamic/output"
+OUTPUT_DIR = "/workspaces/origin-source-code-bill-1/dynamic/output_resample"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

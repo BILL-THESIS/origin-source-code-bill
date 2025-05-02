@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 project_name = "seatunnel"
 
-OUTPUT_DIR = os.path.join("/Users/bill/origin-source-code-bill/dynamic/output/output")
+OUTPUT_DIR = os.path.join("/Users/bill/origin-source-code-bill/dynamic/output_resample/output_resample")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 logging.info(f"Running on project: {project_name}")

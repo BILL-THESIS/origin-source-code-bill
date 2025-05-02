@@ -14,8 +14,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 project_name = "pulsar"
 
-INPUT_DIR = os.path.join("../lightgbm/output")
-OUTPUT_DIR = os.path.join("../lightgbm/output")
+INPUT_DIR = os.path.join("../lightgbm/output_lightgbm")
+OUTPUT_DIR = os.path.join("../lightgbm/output_lightgbm")
 os.makedirs(INPUT_DIR, exist_ok=True)
 
 CHECKPOINT_FILE = os.path.join(OUTPUT_DIR, f"{project_name}_processed_log.json")

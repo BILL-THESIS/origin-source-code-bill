@@ -18,6 +18,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
+
 # set up objective for using optuna
 def objective(trial, x, y):
     n_estimators = trial.suggest_int('n_estimators', 100, 5000)
@@ -63,9 +64,9 @@ def early_stopping_callback(study, trial, early_stopping_rounds):
 
 def find_best_parameter(datasets: list):
     data = []
+    time_start = time.time()
 
     for i, dataset in enumerate(datasets):
-        logging.info(f"Processing dataset {i + 1}/{len(datasets)}")
         x = dataset.drop(columns=["time_category"])
         x_fit = x.to_numpy()
         y_fit = dataset['time_category'].to_numpy()
@@ -99,27 +100,42 @@ def find_best_parameter(datasets: list):
         })
 
     # Clear memory
-    del x, x_fit, y_fit, study, completed_trials, trial, result, resultState,best_params
+    del x, x_fit, y_fit, study, completed_trials, trial, result, resultState, best_params
     gc.collect()
     return data
 
 
+def parallel_optuna(datasets: list):
+    logging.info(f"Starting Optuna for {len(datasets)} datasets...")
+
+    # Using Pool for parallel execution
+    with Pool(processes=18) as pool:
+        results = pool.map(find_best_parameter, [[dataset] for dataset in datasets])
+    return results
+
+
 # main execution
 if __name__ == '__main__':
+    # Load the data
+    time_start = time.time()
     project_name = "seatunnel"
 
-    INPUT_DIR = os.path.join("../output/")
-    OUTPUT_DIR = os.path.join("")
+    INPUT_DIR = os.path.join("../02.resample_data/output")
+    OUTPUT_DIR = os.path.join("output/")
     os.makedirs(INPUT_DIR, exist_ok=True)
 
     logging.info(f"Running on project: {project_name}")
 
-    # Load the data
-    time_start = time.time()
-    datasets = joblib.load((f'{INPUT_DIR}/seatunnel_resampled_data_2may.pkl'))
+    datasets = joblib.load((f'{INPUT_DIR}/seatunnal_resampled.pkl'))
 
+    find = parallel_optuna(datasets)
+    list_l = []
+    for data_list in find:
+        for dataset in data_list:
+            list_l.append(dataset)
+    df = pd.DataFrame(list_l)
 
-    find = find_best_parameter(datasets)
+    joblib.dump(df, f'{OUTPUT_DIR}seatunnel_optuna_result.pkl')
 
     time_end = time.time()
     time_sec = (time_end - time_start)

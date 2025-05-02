@@ -17,9 +17,9 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 project_name = "pulsar"
 
-INPUT_DIR = os.path.join("/dynamic/output/")
-INPUT_DIR2 = os.path.join("/dynamic/output/output/")
-OUTPUT_DIR = os.path.join("/dynamic/output/output")
+INPUT_DIR = os.path.join("/dynamic/output_resample/")
+INPUT_DIR2 = os.path.join("/dynamic/output_resample/output_resample/")
+OUTPUT_DIR = os.path.join("/dynamic/output_resample/output_resample")
 os.makedirs(INPUT_DIR, exist_ok=True)
 
 logging.info(f"Running on project: {project_name}")

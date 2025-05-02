@@ -11,11 +11,11 @@ def get_status(df):
 
 
 if __name__ == "__main__":
-    ozone = pd.read_pickle("/Users/bill/origin-source-code-bill/dynamic/output/output/ozone_all_status_significant.pkl")
+    ozone = pd.read_pickle("/Users/bill/origin-source-code-bill/dynamic/output_resample/output_resample/ozone_all_status_significant.pkl")
     seatunnel = pd.read_pickle(
-        "/Users/bill/origin-source-code-bill/dynamic/output/output/seatunnel_all_status_significant.pkl")
+        "/Users/bill/origin-source-code-bill/dynamic/output_resample/output_resample/seatunnel_all_status_significant.pkl")
     pulsar = pd.read_pickle(
-        "/Users/bill/origin-source-code-bill/dynamic/output/output/pulsar_all_status_significant.pkl")
+        "/Users/bill/origin-source-code-bill/dynamic/output_resample/output_resample/pulsar_all_status_significant.pkl")
 
     sea_man = seatunnel[seatunnel["p_value"] < 0.05]
     pulsar_man = pulsar[pulsar["p_value"] < 0.05]

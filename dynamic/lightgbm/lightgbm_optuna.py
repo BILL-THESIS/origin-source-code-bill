@@ -22,8 +22,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 project_name = "seatunnel"
 
-INPUT_DIR = os.path.join("/Users/bill/origin-source-code-bill/dynamic/output/output")
-OUTPUT_DIR = os.path.join("/Users/bill/origin-source-code-bill/dynamic/output/resample_data")
+INPUT_DIR = os.path.join("/Users/bill/origin-source-code-bill/dynamic/output_resample/output_resample")
+OUTPUT_DIR = os.path.join("/Users/bill/origin-source-code-bill/dynamic/output_resample/resample_data")
 os.makedirs(INPUT_DIR, exist_ok=True)
 
 logging.info(f"Running on project: {project_name}")
@@ -119,6 +119,6 @@ def process_group_chunk(datasets_chunk):
 if __name__ == '__main__':
     # Load the data
     datasets = joblib.load(
-        '/Users/bill/origin-source-code-bill/dynamic/output/resample_data/seatunnel_resampled_data_20250227_104730.pkl')
+        '/Users/bill/origin-source-code-bill/dynamic/output_resample/resample_data/seatunnel_resampled_data_20250227_104730.pkl')
 
     find_best_para = parallel_optuna(datasets)

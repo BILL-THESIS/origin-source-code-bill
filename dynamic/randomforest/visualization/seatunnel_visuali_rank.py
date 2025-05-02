@@ -7,27 +7,27 @@ from ast import literal_eval
 
 def load_data():
     files = {
-        "significant": "../../output/seatunnel_all_status_significant.pkl",
-        "group_smell": "../../output/seatunnel_rdf_quantile_all.pkl",
-        "each_smell": "../../output/seatunnel_rdf_quantile_each_smell.pkl",
-        "main_group": "../../output/seatunnel_correlation_main_group_4.pkl",
-        "original": "../../output/seatunnel_compare.pkl"
+        "significant": "../../output_resample/seatunnel_all_status_significant.pkl",
+        "group_smell": "../../output_resample/seatunnel_rdf_quantile_all.pkl",
+        "each_smell": "../../output_resample/seatunnel_rdf_quantile_each_smell.pkl",
+        "main_group": "../../output_resample/seatunnel_correlation_main_group_4.pkl",
+        "original": "../../output_resample/seatunnel_compare.pkl"
     }
     return {key: pd.read_pickle(path) for key, path in files.items()}
 
 
 
 if __name__ == "__main__":
-    file_significant = "../../output/output/seatunnel_all_status_significant.pkl"
-    file_group_smell = "../../output/output/seatunnel_rdf_quantile_all.pkl"
-    file_each_smell = "../../output/output/seatunnel_rdf_quantile_each_smell.pkl"
-    file_main_group = "../../output/output/seatunnel_correlation_main_group_4.pkl"
+    file_significant = "../../output/output_resample/seatunnel_all_status_significant.pkl"
+    file_group_smell = "../../output/output_resample/seatunnel_rdf_quantile_all.pkl"
+    file_each_smell = "../../output/output_resample/seatunnel_rdf_quantile_each_smell.pkl"
+    file_main_group = "../../output/output_resample/seatunnel_correlation_main_group_4.pkl"
 
     data_qr1 = pd.read_pickle(file_significant)
     data_group_smell = pd.read_pickle(file_group_smell)
     data_each_smell = pd.read_pickle(file_each_smell)
     data_mian_group = pd.read_pickle(file_main_group)
-    data_original = pd.read_pickle("../../output/output/seatunnel_compare.pkl")
+    data_original = pd.read_pickle("../../output/output_resample/seatunnel_compare.pkl")
 
     data_each_smell['rank'] = data_each_smell['test_f1'].rank(ascending=False)
     groups = [data_each_smell[data_each_smell["features"].isin(data_mian_group[i])] for i in range(4)]

@@ -16,7 +16,7 @@ from sklearn import model_selection
 
 
 class OptunaRFOptimizer:
-    def __init__(self, project_name="seatunnel", input_dir="output", output_dir="output/seatunnel-2", n_jobs_x=18):
+    def __init__(self, project_name="seatunnel", input_dir="output_resample", output_dir="output_resample/seatunnel-2", n_jobs_x=18):
         self.project_name = project_name
         self.INPUT_DIR = input_dir
         self.OUTPUT_DIR = output_dir
@@ -28,7 +28,7 @@ class OptunaRFOptimizer:
         logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
         logging.info(f"Running on project: {self.project_name}")
 
-        # Ensure output directory exists
+        # Ensure output_resample directory exists
         os.makedirs(self.INPUT_DIR, exist_ok=True)
         os.makedirs(self.OUTPUT_DIR, exist_ok=True)
 

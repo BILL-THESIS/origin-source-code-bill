@@ -17,8 +17,8 @@ if __name__ == '__main__':
     seatunnal = pd.read_pickle("../output/seatunnel_compare.pkl")
 
     ozone_cut_time = time(ozone)
-    ozone_cut_time.to_pickle("../output/ozone_cut_time.pkl")
+    ozone_cut_time.to_pickle("../output_resample/ozone_cut_time.pkl")
     pulsar_cut_time = time(pulsar)
-    pulsar_cut_time.to_pickle("../output/pulsar_cut_time.pkl")
+    pulsar_cut_time.to_pickle("../output_resample/pulsar_cut_time.pkl")
     seatunnal_cut_time = time(seatunnal)
-    seatunnal_cut_time.to_pickle("../output/seatunnal_cut_time.pkl")
+    seatunnal_cut_time.to_pickle("../output_resample/seatunnal_cut_time.pkl")

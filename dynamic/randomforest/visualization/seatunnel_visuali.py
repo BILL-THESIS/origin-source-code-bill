@@ -18,7 +18,7 @@ def scatter_plot(data, name):
     plt.ylabel('f1 score')
     plt.colorbar(label='f1 score')
     plt.tight_layout()
-    plt.savefig(f'../../output/seatunnel_f1_score_scatter{name}.png')
+    plt.savefig(f'../../output_resample/seatunnel_f1_score_scatter{name}.png')
     plt.show()
 
 
@@ -43,7 +43,7 @@ def plot_bar(data, title):
     plt.legend()
     plt.tight_layout()
     plt.grid()
-    plt.savefig(f'../../output/seatunnel_f1_score_bar{title}.png')
+    plt.savefig(f'../../output_resample/seatunnel_f1_score_bar{title}.png')
     plt.show()
 
 
@@ -106,18 +106,18 @@ def plot_scatter(data_compare, important_factures):
         plt.legend(['Max Value"', "Important feature", "others"])
         plt.grid(True)
         plt.tight_layout()
-        plt.savefig(f'../../output/seatunnel_scatter_group{idx + 1}.png')
+        plt.savefig(f'../../output_resample/seatunnel_scatter_group{idx + 1}.png')
         # plt.show()
 
         time.sleep(2)
 
 
 if __name__ == "__main__":
-    file_significant = "../../output/output/seatunnel_all_status_significant.pkl"
-    file_feature_importances = '../../output/output/seatunnel_feature_importances.pkl'
-    file_group_smell = "../../output/output/seatunnel_rdf_quantile_all.pkl"
-    file_each_smell = "../../output/output/seatunnel_rdf_quantile_each_smell.pkl"
-    file_main_group = "../../output/output/seatunnel_correlation_main_group_4.pkl"
+    file_significant = "../../output/output_resample/seatunnel_all_status_significant.pkl"
+    file_feature_importances = '../../output/output_resample/seatunnel_feature_importances.pkl'
+    file_group_smell = "../../output/output_resample/seatunnel_rdf_quantile_all.pkl"
+    file_each_smell = "../../output/output_resample/seatunnel_rdf_quantile_each_smell.pkl"
+    file_main_group = "../../output/output_resample/seatunnel_correlation_main_group_4.pkl"
 
     data_qr1 = pd.read_pickle(file_significant)
     data_feature_importances = pd.read_pickle(file_feature_importances)
@@ -125,7 +125,7 @@ if __name__ == "__main__":
     data_group_smell = pd.read_pickle(file_group_smell)
     data_each_smell = pd.read_pickle(file_each_smell)
     data_mian_group = pd.read_pickle(file_main_group)
-    data_original = pd.read_pickle("../../output/output/seatunnel_compare.pkl")
+    data_original = pd.read_pickle("../../output/output_resample/seatunnel_compare.pkl")
 
     grop_80_percen = data_group_smell.loc[data_group_smell['test_f1'] >= 0.8]
     grop_70_percen = data_group_smell.loc[(data_group_smell['test_f1'] >= 0.7) & (data_group_smell['test_f1'] < 0.8)]

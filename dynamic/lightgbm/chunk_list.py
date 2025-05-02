@@ -7,6 +7,6 @@ def chunk_list(lst, n_chunks):
     return [lst[i * chunk_size:(i + 1) * chunk_size] for i in range(n_chunks)]
 
 if __name__ == '__main__':
-    lst = joblib.load('../02.resample_data/output/pulsar_resampled_data.pkl')
+    lst = joblib.load('../02.resample_data/output_resample/pulsar_resampled_data.pkl')
 
     pulsar = chunk_list(lst, 18)

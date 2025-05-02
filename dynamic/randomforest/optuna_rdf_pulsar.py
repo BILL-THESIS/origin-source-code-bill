@@ -1,4 +1,3 @@
-import json
 import time
 from functools import partial
 import os
@@ -8,7 +7,7 @@ import optuna
 import pandas as pd
 import logging
 import gc
-import lightgbm as lgb
+from sklearn.ensemble import RandomForestClassifier
 from datetime import datetime
 from multiprocessing import Pool
 from sklearn import model_selection
@@ -22,27 +21,22 @@ timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 # set up objective for using optuna
 def objective(trial, x, y):
     n_estimators = trial.suggest_int('n_estimators', 100, 5000)
-    learning_rate = trial.suggest_float('learning_rate', 0.01, 1)
     max_depth = trial.suggest_int('max_depth', 1, 8)
-    min_child_samples = trial.suggest_int('min_child_samples', 2, 32)
-    min_child_weight = trial.suggest_int('min_child_weight', 2, 32)
-    subsample = trial.suggest_float('subsample', 0.1, 1.0)
+    min_samples_split = trial.suggest_int('min_samples_split', 2, 32)
+    min_samples_leaf = trial.suggest_int('min_samples_leaf', 2, 32)
 
-    gbm = lgb.LGBMClassifier(n_estimators=n_estimators,
-                             learning_rate=learning_rate,
-                             max_depth=max_depth,
-                             min_child_samples=min_child_samples,
-                             min_child_weight=min_child_weight,
-                             subsample=subsample,
-                             random_state=42,
-                             num_threads=1,
-                             verbosity=-1)
+    rf = RandomForestClassifier(n_estimators=n_estimators,
+                                max_depth=max_depth,
+                                min_samples_split=min_samples_split,
+                                min_samples_leaf=min_samples_leaf,
+                                random_state=42)
 
-    result = model_selection.cross_validate(gbm, x, y, cv=5, n_jobs=18, scoring='f1')
+    result = model_selection.cross_validate(rf, x, y, cv=5, n_jobs=18, scoring='f1')
     print(result)
     scores = result['test_score']
     score = np.mean(scores)
     return score
+
 
 
 def early_stopping_callback(study, trial, early_stopping_rounds):
@@ -120,6 +114,7 @@ def parallel_optuna(datasets: list):
     return results
 
 
+# main execution
 if __name__ == '__main__':
     project_name = "pulsar"
 
@@ -142,7 +137,7 @@ if __name__ == '__main__':
             list_l.append(dataset)
     df = pd.DataFrame(list_l)
 
-    joblib.dump(df, f'{OUTPUT_DIR}{project_name}_optuna_result.pkl')
+    joblib.dump(df, f'{OUTPUT_DIR}{project_name}_optuna_result_rdf.pkl')
 
     time_end = time.time()
     time_sec = (time_end - time_start)

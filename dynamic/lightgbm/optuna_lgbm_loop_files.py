@@ -27,9 +27,6 @@ CHECKPOINT_FILE = os.path.join(OUTPUT_DIR, f"{project_name}_processed_log.json")
 
 logging.info(f"Running on project: {project_name}")
 
-n_jobs_x = 6
-
-
 
 # set up objective for using optuna
 def objective(trial, x, y):
@@ -50,7 +47,7 @@ def objective(trial, x, y):
                              num_threads=1,
                              verbosity=-1)
 
-    result = model_selection.cross_validate(gbm, x, y, cv=5, n_jobs=n_jobs_x, scoring='f1')
+    result = model_selection.cross_validate(gbm, x, y, cv=5, n_jobs=18, scoring='f1')
     print(result)
     scores = result['test_score']
     score = np.mean(scores)
@@ -196,7 +193,7 @@ def parallel_optuna(datasets: list):
     logging.info(f"Starting Optuna for {len(datasets)} datasets...")
 
     # Using Pool for parallel execution
-    with Pool(processes=n_jobs_x) as pool:
+    with Pool(processes=18) as pool:
         results = pool.map(process_chunk, datasets)
     return results
 

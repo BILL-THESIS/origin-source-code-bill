@@ -61,60 +61,80 @@ def early_stopping_callback(study, trial, early_stopping_rounds):
         return {"state": optuna.trial.TrialState.COMPLETE, "value": study.best_value, "params": study.best_params}
 
 
-def find_best_parameter(dataset: list):
+def find_best_parameter(datasets: list):
     data = []
+    time_start = time.time()
 
-    x = dataset.drop(columns=["time_category"])
-    x_fit = x.to_numpy()
-    y_fit = dataset['time_category'].to_numpy()
+    for i, dataset in enumerate(datasets):
+        x = dataset.drop(columns=["time_category"])
+        x_fit = x.to_numpy()
+        y_fit = dataset['time_category'].to_numpy()
 
-    study = optuna.create_study(direction="maximize", pruner=optuna.pruners.MedianPruner(n_warmup_steps=5))
-    study.optimize(
-        lambda trial: objective(trial, x_fit, y_fit),
-        n_trials=200,
-        timeout=60,
-        callbacks=[partial(early_stopping_callback, early_stopping_rounds=50)]
-    )
+        study = optuna.create_study(direction="maximize", pruner=optuna.pruners.MedianPruner(n_warmup_steps=5))
+        study.optimize(
+            lambda trial: objective(trial, x_fit, y_fit),
+            n_trials=200,
+            timeout=60,
+            callbacks=[partial(early_stopping_callback, early_stopping_rounds=50)]
+        )
 
-    completed_trials = [t for t in study.trials if t.state == optuna.trial.TrialState.COMPLETE]
+        completed_trials = [t for t in study.trials if t.state == optuna.trial.TrialState.COMPLETE]
 
-    trial = study.best_trial
-    result = trial.value
-    resultState = trial.state
-    best_params = trial.params
+        trial = study.best_trial
+        result = trial.value
+        resultState = trial.state
+        best_params = trial.params
 
-    time_end = time.time()
-    time_min = (time_end - time_start) / 60
+        time_end = time.time()
+        time_min = (time_end - time_start) / 60
 
-    data.append({
-        "feature_group": x.columns.tolist(),
-        "best_params": best_params,
-        "result": result,
-        "total_trials": len(completed_trials),
-        "result_state": resultState,
-        'best_trial': trial.number,
-        'time_min': time_min
-    })
+        data.append({
+            "feature_group": x.columns.tolist(),
+            "best_params": best_params,
+            "result": result,
+            "total_trials": len(completed_trials),
+            "result_state": resultState,
+            'best_trial': trial.number,
+            'time_min': time_min
+        })
+
     # Clear memory
-    del x, x_fit, y_fit, study, completed_trials, trial, result, resultState,best_params
+    del x, x_fit, y_fit, study, completed_trials, trial, result, resultState, best_params
     gc.collect()
     return data
+
+
+def parallel_optuna(datasets: list):
+    logging.info(f"Starting Optuna for {len(datasets)} datasets...")
+
+    # Using Pool for parallel execution
+    with Pool(processes=18) as pool:
+        results = pool.map(find_best_parameter, [[dataset] for dataset in datasets])
+    return results
 
 
 # main execution
 if __name__ == '__main__':
     project_name = "ozone"
 
-    INPUT_DIR = os.path.join("../output/")
-    OUTPUT_DIR = os.path.join("/home/bill/origin-source-code-bill/dynamic/lightgbm/output/")
+    INPUT_DIR = os.path.join("../02.resample_data/output")
+    OUTPUT_DIR = os.path.join("output/")
     os.makedirs(INPUT_DIR, exist_ok=True)
+
+    logging.info(f"Running on project: {project_name}")
 
     # Load the data
     time_start = time.time()
-    datasets = joblib.load((f'{INPUT_DIR}/ozone_resampled_data_2may.pkl'))
-    datasets = datasets[0]
+    datasets = joblib.load((f'{INPUT_DIR}/{project_name}_resampled_data.pkl'))
 
-    find = find_best_parameter(datasets)
+    find = parallel_optuna(datasets)
+    list_l = []
+    for data_list in find:
+        for dataset in data_list:
+            list_l.append(dataset)
+    df = pd.DataFrame(list_l)
+
+    joblib.dump(df, f'{OUTPUT_DIR}{project_name}_optuna_result.pkl')
 
 
     time_end = time.time()

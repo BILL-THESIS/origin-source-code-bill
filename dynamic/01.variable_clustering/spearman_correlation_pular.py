@@ -1,11 +1,5 @@
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from scipy import stats
-from itertools import combinations
 
 import pickle
-
 import numpy as np
 import pandas as pd
 from itertools import product
@@ -99,10 +93,10 @@ def group_coordinates_from_df(df):
 
 if __name__ == "__main__":
     # significant level
-    data_significant = pd.read_pickle('../output/pulsar_all_status_significant.pkl')
+    data_significant = pd.read_pickle('../man-whitney/output_man/pulsar_importance.pkl')
 
     # File paths
-    input_filepath = "../output/output/pulsar_compare.pkl"
+    input_filepath = "../output/pulsar_cut_time.pkl"
     data = pd.read_pickle(input_filepath)
 
     selected_cols = select_cols(data)
@@ -115,15 +109,16 @@ if __name__ == "__main__":
 
     column_pairs = filter_cols(selected_cols)
     df_corr = calculate_corr(column_pairs)
-    #
+    df_corr.to_pickle("output_variable/pulsar_spearman_rank_all_case.pkl")
+
     df_corr_high = df_corr[df_corr['group_r'] == 'very high correlation']
 
     # Apply the function
     result_group = group_coordinates_from_df(df_corr_high[['col1', 'col2']])
-    with open('../output/pulsar_correlation_main_group.pkl', 'wb') as f:
+    with open('output_variable/pulsar_correlation_main_group.pkl', 'wb') as f:
         pickle.dump(result_group, f)
 
-    # สร้าง combinations ของคอลัมน์ที่มี correlation สูง
-    combinations = list(product(data[result_group[0]]))
-    with open('../output/pulsar_combinations.pkl', 'wb') as f:
+    # # สร้าง combinations ของคอลัมน์ที่มี correlation สูง
+    combinations = list(product(data[result_group[0]], data[result_group[1]], data[result_group[2]]))
+    with open('output_variable/pulsar_combinations.pkl', 'wb') as f:
         pickle.dump(combinations, f)

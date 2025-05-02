@@ -80,7 +80,8 @@ def map_categories(results_df, rule_smell_bug, rule_smell_vulnerability, rule_sm
 if __name__ == "__main__":
     # Test the functions
     # Define file paths
-    file_path = "../../output/output/ozone_compare.pkl"
+    # Define file paths
+    file_path = "../../output/ozone_cut_time.pkl"
     rule_paths = {
         'bug': '../../../Sonar/output/sonar_rules_bug_version9.9.6.pkl',
         'vulnerability': '../../../Sonar/output/sonar_rules_VULNERABILITY_version9.9.6.pkl',
@@ -92,18 +93,14 @@ if __name__ == "__main__":
 
     # Split data into quantiles
     q1_data, q3_data = split_data_by_quantiles(df, 'total_time', 0.25, 0.75)
-    #
-    # # Analyze combinations
-    # results = analyze_quartile(q1_data, q3_data)
-    #
-    # # Create results DataFrame
-    # results_df = pd.DataFrame(results)
-    #
-    # # Map categories and classify results
-    # results_df = map_categories(results_df, rule_smell_bug, rule_smell_vulnerability, rule_smell_normal)
-    # results_df.to_pickle("../../output/ozone_all_status_significant.pkl")
-    #
-    # print(results_df.head())
-    #
-    # # s_data = results_df[(results_df['significant'] == 'significant') & (results_df['eff_size'] == 'large')]
-    # s_data_singifcant = results_df[results_df['significant'] == 'significant']
+
+    # Analyze combinations
+    results = analyze_quartile(q1_data, q3_data)
+
+    results_df = pd.DataFrame(results)
+
+    # Map categories and classify results
+    results_df = map_categories(results_df, rule_smell_bug, rule_smell_vulnerability, rule_smell_normal)
+    print(results_df.head())
+
+    results_df.to_pickle("../output_man/ozone_man_whitney.pkl")

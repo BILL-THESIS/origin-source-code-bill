@@ -1,13 +1,6 @@
-import pandas as pd
-# Modelling
 from scipy.stats import mannwhitneyu
 from cliffs_delta import cliffs_delta
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-
-# Tree Visualisation
 
 def load_data(file_path, rule_paths):
     df = pd.read_pickle(file_path)
@@ -86,13 +79,12 @@ def map_categories(results_df, rule_smell_bug, rule_smell_vulnerability, rule_sm
 if __name__ == "__main__":
     # Test the functions
     # Define file paths
-    file_path = "../../output/output/seatunnel_compare.pkl"
+    file_path = "../../output/seatunnal_cut_time.pkl"
     rule_paths = {
         'bug': '../../../Sonar/output/sonar_rules_bug_version9.9.6.pkl',
         'vulnerability': '../../../Sonar/output/sonar_rules_VULNERABILITY_version9.9.6.pkl',
         'normal': '../../../Sonar/output/sonar_rules_version9.9.6.pkl'
     }
-    f = pd.read_pickle('../../output/output/seatunnel_compare.pkl')
 
     # Load data
     df, rule_smell_bug, rule_smell_vulnerability, rule_smell_normal = load_data(file_path, rule_paths)
@@ -103,43 +95,10 @@ if __name__ == "__main__":
     # Analyze combinations
     results = analyze_quartile(q1_data, q3_data)
 
-    # Create results DataFrame
     results_df = pd.DataFrame(results)
-    seatunnel_metrics_mann = results_df[['metric', 'u_statistic', 'p_value',
-                                         'd_value',
-                                         'smell_count_q1','smell_count_q3',
-                                         'smell_sum_q1', 'smell_sum_q3',
-                                         # 'time_modify_smell_q1', 'time_modify_smell_min_q1', 'time_modify_smell_max_q1',
-                                         # 'time_modify_smell_q3', 'time_modify_smell_min_q3', 'time_modify_smell_max_q3',
-                                         'eff_size',
-                                         'key', 'category', 'significant']]
-
-    seatunnel_metrics_Cliff_Delta = results_df[['metric', 'u_statistic', 'p_value',
-                                         'smell_count_q1', 'smell_count_q3',
-                                         'smell_sum_q1', 'smell_sum_q3',
-                                         'key', 'category', 'significant',
-                                         'd_value', 'eff_size',]]
-
-    seatunnel_metrics = seatunnel_metrics_Cliff_Delta[seatunnel_metrics_Cliff_Delta['significant'] == 'significant']
-
-    # results_df.to_pickle("../../output/seatunnel_all_status_significant.pkl")
 
     # Map categories and classify results
     results_df = map_categories(results_df, rule_smell_bug, rule_smell_vulnerability, rule_smell_normal)
     print(results_df.head())
 
-    # Get significant and large effect size data
-    s_data = results_df[(results_df['significant'] == 'significant') & (results_df['eff_size'] == 'large')]
-    s_data_singifcant = results_df[results_df['significant'] == 'significant']
-    # s_data_singifcant.to_pickle("../../output/seatunnel_significant.pkl")
-
-    # Print the number of significant results
-    print(f"Number of significant results: {len(s_data)}")
-
-
-    # Get category counts and percentages
-    category_counts = s_data_singifcant['eff_size'].value_counts()
-    category_percentages_s = (category_counts / len(s_data_singifcant)) * 100
-    category_percentages_a = (category_counts / len(results_df)) * 100
-
-
+    results_df.to_pickle("../output_man/seatunnal_man_whitney.pkl")

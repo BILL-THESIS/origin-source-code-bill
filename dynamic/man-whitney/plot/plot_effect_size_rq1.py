@@ -1,75 +1,51 @@
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# โหลดไฟล์
-file_path = '../../output/seatunnel_all_status_significant.pkl'
-df = pd.read_pickle(file_path)
 
-# สร้าง scatter plot
-plt.figure(figsize=(12, 10))
-scatter = sns.scatterplot(
-    data=df,
-    x='smell_sum_q1',
-    y='smell_sum_q3',
-    hue='eff_size',        # สีตาม effect size
-    size='d_value',         # ขนาดตาม d_value
-    sizes=(50, 300),        # กำหนดช่วงขนาดจุด
-    palette='viridis',
-    alpha=0.8,
-    edgecolor='black'
-)
+def fill_col(df: pd.DataFrame):
+    cols_to_fill = [col for col in df.columns if 'java:' in col and '_created' in col]
+    return cols_to_fill
 
-# วาดเส้น y = x (ไม่เปลี่ยนแปลง)
-max_val = max(df['smell_sum_q1'].max(), df['smell_sum_q3'].max())
-plt.plot([0, max_val], [0, max_val], ls="--", c="red", label="y=x (no change)")
+if __name__ == "__main__":
+    # โหลดไฟล์
+    # project_name = "seatunnal"
+    # project_name = "pulsar"
+    project_name = "ozone"
+    file_path = f'../../output/{project_name}_cut_time.pkl'
+    df = pd.read_pickle(file_path)
+    time_delta = pd.to_timedelta(df['total_time'])
+    df['hours'] = time_delta.dt.total_seconds() / 3600
 
-# # ใส่ label ชื่อ metric เฉพาะที่ eff_size เป็น large
-# for _, row in df[df['eff_size'] == 'large'].iterrows():
-#     plt.text(
-#         row['smell_sum_q1'] + 2,   # ขยับ x ไปขวานิดนึง
-#         row['smell_sum_q3'] + 2,   # ขยับ y ขึ้นนิดนึง
-#         row['metric'],
-#         fontsize=8,
-#         color='black'
-#     )
+    se_col = fill_col(df)
+    df_se = df[se_col]
+    df_se = pd.concat([df_se, df['hours'] ], axis=1)
+    df_se.fillna("0")
+    df_se_drop = df_se.dropna(axis=1, how='all')
 
-# ตั้งชื่อแกน และหัวข้อ
-plt.xlabel('จำนวนโคดสเมล Q1')
-plt.ylabel('จำนวนโคดสเมลQ3')
-plt.title('เปรียบเทียบความแตกต่างโคดสเมล (Q1 vs Q3) กับขนาดผลกระทบของ คลิฟฟ์ส เดลต้า')
+    data = df_se_drop['hours']
 
-# จัด legend ไปไว้ข้างนอกเพื่อไม่บังข้อมูล
-plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', title='Effect Size')
+    # คำนวณ Q1 และ Q3
+    q1 = np.percentile(data, 25)
+    q3 = np.percentile(data, 75)
 
-plt.grid(True)
-plt.tight_layout()
-plt.show()
+    # แบ่งข้อมูล
+    group1 = data[data < q1]
+    group2 = data[data > q3]
+
+    # สร้าง box plot
+    plt.boxplot([group1, group2],
+                labels=['Time Modification < Q1', 'Time Modification > Q3'],
+                showfliers=False)
+    plt.title(f'Boxplot of {project_name} \n Time Modification < Q1 and  Time Modification > Q3')
+    plt.ylabel('Total Time Modifications (hours)')
+    plt.tight_layout()
+    plt.savefig(f'{project_name}_cut_time_boxplot_outliner.png')
+    plt.show()
 
 
 
-# สร้าง FacetGrid โดยแยกแต่ละกราฟตาม effect size
-g = sns.relplot(
-    data=df,
-    x='smell_sum_q1',
-    y='smell_sum_q3',
-    col='eff_size',          # แยกกราฟตามกลุ่ม effect size
-    hue='eff_size',          # ยังคงสีตาม effect size (optional)
-    size='d_value',
-    sizes=(50, 300),
-    kind='scatter',
-    palette='viridis',
-    height=5,
-    aspect=1
-)
 
-# ใส่เส้น y = x ในแต่ละกราฟ
-for ax in g.axes.flat:
-    limits = [0, max(df['smell_sum_q1'].max(), df['smell_sum_q3'].max())]
-    ax.plot(limits, limits, ls='--', c='red')
 
-g.set_titles(col_template="{col_name} effect")
-g.set_axis_labels("Smell Sum Q1", "Smell Sum Q3")
-plt.tight_layout()
-plt.show()
 

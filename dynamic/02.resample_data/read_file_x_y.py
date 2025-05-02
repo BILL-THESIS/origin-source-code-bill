@@ -1,6 +1,6 @@
 import joblib
 import pandas as pd
 
-seat = joblib.load("../output/seatunnel_resampled_data_2may.pkl")
-ozone = joblib.load("../output/ozone_resampled_data_2may.pkl")
-pulsar = joblib.load("../output/ozone_resampled_data_2may.pkl")
+seat = joblib.load("output/seatunnal_resampled.pkl")
+ozone = joblib.load("output/ozone_resampled_data.pkl")
+pulsar = joblib.load("output/pulsar_resampled_data.pkl")

@@ -81,9 +81,9 @@ if __name__ == "__main__":
     # Define file paths
     file_path = "../../output/seatunnal_cut_time.pkl"
     rule_paths = {
-        'bug': '../../../Sonar/output_resample/sonar_rules_bug_version9.9.6.pkl',
-        'vulnerability': '../../../Sonar/output_resample/sonar_rules_VULNERABILITY_version9.9.6.pkl',
-        'normal': '../../../Sonar/output_resample/sonar_rules_version9.9.6.pkl'
+        'bug': '../../../Sonar/output/sonar_rules_bug_version9.9.6.pkl',
+        'vulnerability': '../../../Sonar/output/sonar_rules_VULNERABILITY_version9.9.6.pkl',
+        'normal': '../../../Sonar/output/sonar_rules_version9.9.6.pkl'
     }
 
     # Load data
@@ -101,4 +101,4 @@ if __name__ == "__main__":
     results_df = map_categories(results_df, rule_smell_bug, rule_smell_vulnerability, rule_smell_normal)
     print(results_df.head())
 
-    results_df.to_pickle("../output_man/seatunnal_man_whitney.pkl")
+    # results_df.to_pickle("../output_man/seatunnal_man_whitney.pkl")

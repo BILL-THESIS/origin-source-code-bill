@@ -82,9 +82,9 @@ if __name__ == "__main__":
     # Define file paths
     file_path = "../../output/pulsar_cut_time.pkl"
     rule_paths = {
-        'bug': '../../../Sonar/output_resample/sonar_rules_bug_version9.9.6.pkl',
-        'vulnerability': '../../../Sonar/output_resample/sonar_rules_VULNERABILITY_version9.9.6.pkl',
-        'normal': '../../../Sonar/output_resample/sonar_rules_version9.9.6.pkl'
+        'bug': '../../../Sonar/output/sonar_rules_bug_version9.9.6.pkl',
+        'vulnerability': '../../../Sonar/output/sonar_rules_VULNERABILITY_version9.9.6.pkl',
+        'normal': '../../../Sonar/output/sonar_rules_version9.9.6.pkl'
     }
 
     # Load data

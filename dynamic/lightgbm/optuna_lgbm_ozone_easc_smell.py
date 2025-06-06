@@ -45,6 +45,7 @@ def objective(trial, x, y):
     return score
 
 
+
 def early_stopping_callback(study, trial, early_stopping_rounds):
     current_trial = trial.number
 
@@ -105,23 +106,18 @@ def find_best_parameter(datasets: list):
     return data
 
 
-def chunk_list(lst, n_chunks):
-    # Split a list into n roughly equal-sized chunks
-    chunk_size = int(np.ceil(len(lst) / n_chunks))
-    return [lst[i * chunk_size:(i + 1) * chunk_size] for i in range(n_chunks)]
-
-
 def parallel_optuna(datasets: list):
     logging.info(f"Starting Optuna for {len(datasets)} datasets...")
 
     # Using Pool for parallel execution
     with Pool(processes=18) as pool:
-        results = pool.map(find_best_parameter, datasets)
+        results = pool.map(find_best_parameter, [[dataset] for dataset in datasets])
     return results
 
 
+
 if __name__ == '__main__':
-    project_name = "pulsar"
+    project_name = "ozone"
 
     INPUT_DIR = os.path.join("../02.resample_data/output_resample")
     OUTPUT_DIR = os.path.join("output_lightgbm/")
@@ -131,9 +127,9 @@ if __name__ == '__main__':
 
     # Load the data
     time_start = time.time()
-    datasets = joblib.load((f'{INPUT_DIR}/pulsar_resampled_combinations_new.pkl'))
+    datasets = joblib.load((f'{INPUT_DIR}/{project_name}_resampled_data_each_smell.pkl'))
 
-    datasets = chunk_list(datasets, 18)
+    # datasets = chunk_list(datasets, n_chunks=8)
 
     find = parallel_optuna(datasets)
     list_l = []
@@ -142,7 +138,7 @@ if __name__ == '__main__':
             list_l.append(dataset)
     df = pd.DataFrame(list_l)
 
-    joblib.dump(df, f'{OUTPUT_DIR}{project_name}_optuna_result_combinations_new.pkl')
+    joblib.dump(df, f'{OUTPUT_DIR}{project_name}_optuna_result_each_smell.pkl')
 
     time_end = time.time()
     time_sec = (time_end - time_start)

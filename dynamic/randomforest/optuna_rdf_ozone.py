@@ -31,7 +31,7 @@ def objective(trial, x, y):
                                 min_samples_leaf=min_samples_leaf,
                                 random_state=42)
 
-    result = model_selection.cross_validate(rf, x, y, cv=5, n_jobs=18, scoring='f1')
+    result = model_selection.cross_validate(rf, x, y, cv=5, n_jobs=6, scoring='f1')
     print(result)
     scores = result['test_score']
     score = np.mean(scores)
@@ -102,7 +102,7 @@ def parallel_optuna(datasets: list):
     logging.info(f"Starting Optuna for {len(datasets)} datasets...")
 
     # Using Pool for parallel execution
-    with Pool(processes=18) as pool:
+    with Pool(processes=6) as pool:
         results = pool.map(find_best_parameter, [[dataset] for dataset in datasets])
     return results
 
@@ -119,7 +119,7 @@ if __name__ == '__main__':
 
     # Load the data
     time_start = time.time()
-    datasets = joblib.load((f'{INPUT_DIR}/{project_name}_resampled_data.pkl'))
+    datasets = joblib.load((f'{INPUT_DIR}/{project_name}_resampled_combinations_new.pkl'))
 
     find = parallel_optuna(datasets)
     list_l = []
@@ -128,7 +128,7 @@ if __name__ == '__main__':
             list_l.append(dataset)
     df = pd.DataFrame(list_l)
 
-    joblib.dump(df, f'{OUTPUT_DIR}{project_name}_optuna_result_rdf.pkl')
+    joblib.dump(df, f'{OUTPUT_DIR}{project_name}_optuna_rf_combinations_new.pkl')
 
     time_end = time.time()
     time_sec = (time_end - time_start)

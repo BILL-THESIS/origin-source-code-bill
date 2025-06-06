@@ -121,7 +121,7 @@ if __name__ == '__main__':
 
     # Load the data
     time_start = time.time()
-    datasets = joblib.load((f'{INPUT_DIR}/{project_name}_resampled.pkl'))
+    datasets = joblib.load((f'{INPUT_DIR}/seatunnal_resampled_group1.pkl'))
 
     find = parallel_optuna(datasets)
     list_l = []
@@ -130,7 +130,7 @@ if __name__ == '__main__':
             list_l.append(dataset)
     df = pd.DataFrame(list_l)
 
-    joblib.dump(df, f'{OUTPUT_DIR}{project_name}_optuna_result_rdf.pkl')
+    joblib.dump(df, f'{OUTPUT_DIR}{project_name}_optuna_result_rdf_group1.pkl')
 
     time_end = time.time()
     time_sec = (time_end - time_start)

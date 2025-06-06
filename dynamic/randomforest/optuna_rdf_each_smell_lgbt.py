@@ -14,11 +14,10 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 project_name = "pulsar"
 
-INPUT_DIR = os.path.join("../lightgbm/output_lightgbm")
-OUTPUT_DIR = os.path.join("../lightgbm/output_lightgbm")
+INPUT_DIR = os.path.join("../02.resample_data/output_resample")
+OUTPUT_DIR = os.path.join("../02.resample_data/output_resample")
 os.makedirs(INPUT_DIR, exist_ok=True)
 
-CHECKPOINT_FILE = os.path.join(OUTPUT_DIR, f"{project_name}_processed_log.json")
 
 logging.info(f"Running on project: {project_name}")
 
@@ -112,9 +111,7 @@ if __name__ == '__main__':
     # Load the data
     time_start = time.time()
 
-    datasets = joblib.load((f'{INPUT_DIR}/seatunnel_resamples_each_smell.pkl'))
-    # datasets = joblib.load((f'{INPUT_DIR}/pulsar_resamples_each_smell.pkl'))
-    # datasets = joblib.load((f'{INPUT_DIR}/ozone_resamples_each_smell.pkl'))
+    datasets = joblib.load((f'{INPUT_DIR}/pulsar_resampled_data_each_smell.pkl'))
 
     # Find best parameter
     data = find_best_parameter(datasets, "seatunnel")

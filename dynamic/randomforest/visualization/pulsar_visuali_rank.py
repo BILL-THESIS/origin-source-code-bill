@@ -1,6 +1,5 @@
 import pandas as pd
 import seaborn as sns
-import plotly.express as px
 from math import pi
 import matplotlib.pyplot as plt
 import numpy as np
@@ -113,11 +112,11 @@ def plot_scatter(data_compare, important_factures):
 
 
 if __name__ == "__main__":
-    file_significant = "../../output/output_resample/pulsar_all_status_significant.pkl"
-    file_feature_importances = '../../output/pulsar_feature_importances_20250131_140603.pkl.pkl'
-    file_group_smell = "../../output/pulsar_rdf_quantile_all_20250131_140603.pkl.pkl"
-    file_each_smell = "../../output/output_resample/pulsar_rdf_quantile_each_smell.pkl"
-    file_main_group = "../../output/output_resample/pulsar_correlation_main_group_7.pkl"
+    file_significant = "../../output/output/pulsar_all_status_significant.pkl"
+    file_feature_importances = '../../output/pulsar/pulsar_feature_importances_20250206_114535.pkl'
+    file_group_smell = "../../output/output/pulsar_rdf_quantile_all_20250131_140603.pkl"
+    file_each_smell = "../../output/output/pulsar_rdf_quantile_each_smell.pkl"
+    file_main_group = "../../output/output/pulsar_correlation_main_group_7.pkl"
 
     # pulsar_feature_importances_20250131_140603.pkl
     # pulsar_rdf_quantile_all_20250131_140603.pkl
@@ -160,19 +159,19 @@ if __name__ == "__main__":
 
     grop_70_percen = data_group_smell.loc[data_group_smell['test_f1'] >= 0.7]
 
-grop_80_percen = data_group_smell.loc[data_group_smell['test_f1'] >= 0.8]
-grop_less_80_percen = data_group_smell.loc[data_group_smell['test_f1'] < 0.8]
+    grop_80_percen = data_group_smell.loc[data_group_smell['test_f1'] >= 0.8]
+    grop_less_80_percen = data_group_smell.loc[data_group_smell['test_f1'] < 0.8]
 
-data_rank_all_group = data_group_smell['features'].apply(
-    lambda s: [group_join.set_index('features').loc[x, 'rank_f1'] for x in s])
+    data_rank_all_group = data_group_smell['features'].apply(
+        lambda s: [group_join.set_index('features').loc[x, 'rank_f1'] for x in s])
 
-data_rank_all_group = pd.concat([data_group_smell['features'], data_group_smell['test_f1'], data_rank_all_group],
-                                axis=1)
-df_split_less_80_percen = pd.DataFrame(data_rank_all_group.iloc[:, 2].tolist(), columns=["G1", "G2", "G3", "G4"],
-                                       index=data_rank_all_group.index)
+    data_rank_all_group = pd.concat([data_group_smell['features'], data_group_smell['test_f1'], data_rank_all_group],
+                                    axis=1)
+    df_split_less_80_percen = pd.DataFrame(data_rank_all_group.iloc[:, 2].tolist(), columns=["G1", "G2", "G3", "G4"],
+                                           index=data_rank_all_group.index)
 
-data_rank_all_group = pd.concat([data_rank_all_group, df_split_less_80_percen], axis=1)
-data_rank_all_group['sum'] = data_rank_all_group[['G1', 'G2', 'G3', 'G4']].sum(axis=1)
+    data_rank_all_group = pd.concat([data_rank_all_group, df_split_less_80_percen], axis=1)
+    data_rank_all_group['sum'] = data_rank_all_group[['G1', 'G2', 'G3', 'G4']].sum(axis=1)
 
-filtered_less = data_rank_all_group[data_rank_all_group['sum'] < []]
-filtered_more_80_percen_f1 = filtered_less.loc[filtered_less['test_f1'] >= 0.8]
+    filtered_less = data_rank_all_group[data_rank_all_group['sum'] < []]
+    filtered_more_80_percen_f1 = filtered_less.loc[filtered_less['test_f1'] >= 0.8]

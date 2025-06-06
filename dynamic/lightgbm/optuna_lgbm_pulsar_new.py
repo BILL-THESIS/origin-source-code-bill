@@ -18,7 +18,6 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-
 # set up objective for using optuna
 def objective(trial, x, y):
     n_estimators = trial.suggest_int('n_estimators', 100, 5000)
@@ -38,7 +37,7 @@ def objective(trial, x, y):
                              num_threads=1,
                              verbosity=-1)
 
-    result = model_selection.cross_validate(gbm, x, y, cv=5, n_jobs=18, scoring='f1')
+    result = model_selection.cross_validate(gbm, x, y, cv=5, n_jobs=4, scoring='f1')
     print(result)
     scores = result['test_score']
     score = np.mean(scores)
@@ -105,21 +104,16 @@ def find_best_parameter(datasets: list):
     return data
 
 
-def chunk_list(lst, n_chunks):
-    # Split a list into n roughly equal-sized chunks
-    chunk_size = int(np.ceil(len(lst) / n_chunks))
-    return [lst[i * chunk_size:(i + 1) * chunk_size] for i in range(n_chunks)]
-
-
 def parallel_optuna(datasets: list):
     logging.info(f"Starting Optuna for {len(datasets)} datasets...")
 
     # Using Pool for parallel execution
     with Pool(processes=18) as pool:
-        results = pool.map(find_best_parameter, datasets)
+        results = pool.map(find_best_parameter, [[dataset] for dataset in datasets])
     return results
 
 
+# main execution
 if __name__ == '__main__':
     project_name = "pulsar"
 
@@ -131,9 +125,7 @@ if __name__ == '__main__':
 
     # Load the data
     time_start = time.time()
-    datasets = joblib.load((f'{INPUT_DIR}/pulsar_resampled_combinations_new.pkl'))
-
-    datasets = chunk_list(datasets, 18)
+    datasets = joblib.load((f'{INPUT_DIR}/{project_name}_resampled_combinations_new.pkl'))
 
     find = parallel_optuna(datasets)
     list_l = []
@@ -143,6 +135,7 @@ if __name__ == '__main__':
     df = pd.DataFrame(list_l)
 
     joblib.dump(df, f'{OUTPUT_DIR}{project_name}_optuna_result_combinations_new.pkl')
+
 
     time_end = time.time()
     time_sec = (time_end - time_start)

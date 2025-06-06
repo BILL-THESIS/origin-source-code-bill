@@ -126,7 +126,7 @@ if __name__ == '__main__':
 
     logging.info(f"Running on project: {project_name}")
 
-    datasets = joblib.load((f'{INPUT_DIR}/seatunnal_resampled.pkl'))
+    datasets = joblib.load((f'{INPUT_DIR}/seatunnal_resampled_group1.pkl'))
 
     find = parallel_optuna(datasets)
     list_l = []
@@ -135,7 +135,7 @@ if __name__ == '__main__':
             list_l.append(dataset)
     df = pd.DataFrame(list_l)
 
-    joblib.dump(df, f'{OUTPUT_DIR}seatunnel_optuna_result.pkl')
+    joblib.dump(df, f'{OUTPUT_DIR}seatunnel_optuna_result_group1.pkl')
 
     time_end = time.time()
     time_sec = (time_end - time_start)

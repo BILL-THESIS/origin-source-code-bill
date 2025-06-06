@@ -27,7 +27,7 @@ logging.info(f"Running on project: {project_name}")
 
 # File paths
 INPUT_FILEPATH = os.path.join(INPUT_DF, f"{project_name}_cut_time.pkl")
-GROUP_FILEPATH = os.path.join(INPUT_CORRE, f"{project_name}_combinations.pkl")
+GROUP_FILEPATH = os.path.join(INPUT_CORRE, f"{project_name}_combinations_new.pkl")
 
 
 def load_data(input_filepath=INPUT_FILEPATH, group_filepath=GROUP_FILEPATH):
@@ -106,5 +106,5 @@ if __name__ == "__main__":
         list_df.append(resampled_data)
 
         # Save the resampled data
-        output_file = os.path.join(OUTPUT_DF, f"{project_name}_resampled_data.pkl")
+        output_file = os.path.join(OUTPUT_DF, f"{project_name}_resampled_combinations_new.pkl")
         joblib.dump(list_df, output_file)

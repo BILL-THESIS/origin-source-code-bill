@@ -15,7 +15,7 @@ import numpy as np
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-project_name = "seatunnal"
+project_name = "pulsar"
 
 INPUT_DF = os.path.join("../output/")
 INPUT_CORRE = os.path.join("../01.variable_clustering/output_variable")
@@ -27,7 +27,9 @@ logging.info(f"Running on project: {project_name}")
 
 # File paths
 INPUT_FILEPATH = os.path.join(INPUT_DF, f"{project_name}_cut_time.pkl")
-GROUP_FILEPATH = os.path.join(INPUT_CORRE, f"seatunnel_combinations_new.pkl")
+# GROUP_FILEPATH = os.path.join(INPUT_CORRE, f"{project_name}_correlation_main_group.pkl")
+GROUP_FILEPATH = os.path.join(INPUT_CORRE, f"{project_name}_all_feature_each_smell.pkl")
+
 
 
 def load_data(input_filepath=INPUT_FILEPATH, group_filepath=GROUP_FILEPATH):
@@ -75,18 +77,27 @@ def preprocess_time_category(data):
 
 if __name__ == "__main__":
     data_perpa_x, feature_groups = load_data()
+    # feature_groups = feature_groups[0] + feature_groups[1] + feature_groups[2]
+    # feature_groups = list(feature_groups)
     data_perpa_x = preprocess_time_category(data_perpa_x)
 
     list_df = []
-    for i, feature_group in enumerate(feature_groups):
-        X = data_perpa_x[data_perpa_x.columns.intersection(feature_group)].fillna(0)
-        y = data_perpa_x['time_category']
+
+    for feature_group in feature_groups:
+        # Select features
+        X = data_perpa_x[feature_group].fillna(0)
+        y = data_perpa_x['time_category'].fillna(0)
 
         smote = SMOTE()
         X_resampled, y_resampled = smote.fit_resample(X, y)
         resampled_data = pd.concat([X_resampled, y_resampled], axis=1)
         list_df.append(resampled_data)
 
-        # Save the resampled data
-        output_file = os.path.join(OUTPUT_DF, f"{project_name}_resampled_combinations_new.pkl")
-        joblib.dump(list_df, output_file)
+    df = pd.concat(list_df, axis=0)
+    value = df.columns.difference(['time_category'])
+
+    list_of_df = [df[[col, 'time_category']] for col in value]
+
+    # Save the resampled data
+    output_file = os.path.join(OUTPUT_DF, f"{project_name}_resampled_data_each_smell.pkl")
+    joblib.dump(list_of_df, output_file)

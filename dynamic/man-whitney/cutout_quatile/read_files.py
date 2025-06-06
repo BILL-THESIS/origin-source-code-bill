@@ -21,6 +21,7 @@ if __name__ == "__main__":
     seatannel_importance.to_pickle("../output_man/seatannel_importance.pkl")
 
     pulsar_importance = verify_importance(pulsar)
+    pulsar_importance = pulsar_importance[pulsar_importance['eff_size'] == 'small']
     pulsar_importance.to_pickle("../output_man/pulsar_importance.pkl")
 
     ozone_importance = verify_importance(ozone)
@@ -29,6 +30,16 @@ if __name__ == "__main__":
     seatannel_importance_conut = seatannel_importance['eff_size'].value_counts()
     pulsar_importance_conut = pulsar_importance['eff_size'].value_counts()
     ozone_importance_conut = ozone_importance['eff_size'].value_counts()
+
+
+    max_len = max(len(seatannel_importance['metric']), len(pulsar_importance['metric']),
+                  len(ozone_importance['metric']))
+    df = pd.DataFrame({
+        'seatannel': seatannel_importance['metric'].tolist() + [""] * (max_len - len(seatannel_importance['metric'])),
+        'pulsar': pulsar_importance['metric'].tolist() + [""] * (max_len - len(pulsar_importance['metric'])),
+        'ozone': ozone_importance['metric'].tolist() + [""] * (max_len - len(ozone_importance['metric']))
+    })
+
 
     df_importance_conut = pd.concat([seatannel_importance_conut, pulsar_importance_conut, ozone_importance_conut], axis=1)
     df_importance_conut.columns = ['seatannel', 'pulsar', 'ozone']

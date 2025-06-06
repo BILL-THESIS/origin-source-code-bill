@@ -102,6 +102,7 @@ if __name__ == "__main__":
     selected_cols = select_cols(data)
 
     metric_column = data_significant['metric']
+    metric_column.to_pickle("output_variable/pulsar_metric_column.pkl")
     selected_columns = selected_cols.columns
     col = set(metric_column).intersection(selected_columns)
 
@@ -112,13 +113,14 @@ if __name__ == "__main__":
     df_corr.to_pickle("output_variable/pulsar_spearman_rank_all_case.pkl")
 
     df_corr_high = df_corr[df_corr['group_r'] == 'very high correlation']
+    df_corr_high.to_pickle("output_variable/pulsar_spearman_high_case.pkl")
 
-    # Apply the function
-    result_group = group_coordinates_from_df(df_corr_high[['col1', 'col2']])
-    with open('output_variable/pulsar_correlation_main_group.pkl', 'wb') as f:
-        pickle.dump(result_group, f)
-
-    # # สร้าง combinations ของคอลัมน์ที่มี correlation สูง
-    combinations = list(product(data[result_group[0]], data[result_group[1]], data[result_group[2]]))
-    with open('output_variable/pulsar_combinations.pkl', 'wb') as f:
-        pickle.dump(combinations, f)
+    # # Apply the function
+    # result_group = group_coordinates_from_df(df_corr_high[['col1', 'col2']])
+    # with open('output_variable/pulsar_correlation_main_group.pkl', 'wb') as f:
+    #     pickle.dump(result_group, f)
+    #
+    # # # สร้าง combinations ของคอลัมน์ที่มี correlation สูง
+    # combinations = list(product(data[result_group[0]], data[result_group[1]]))
+    # with open('output_variable/pulsar_combinations.pkl', 'wb') as f:
+    #     pickle.dump(combinations, f)

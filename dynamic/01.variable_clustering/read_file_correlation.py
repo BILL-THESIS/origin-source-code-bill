@@ -13,3 +13,11 @@ if __name__ == "__main__":
     seatunnel_combinations = pd.read_pickle("output_variable/seatunnel_combinations.pkl")
     pulsar_combinations = pd.read_pickle("output_variable/pulsar_combinations.pkl")
     ozone_combinations =  pd.read_pickle("output_variable/ozone_combinations.pkl")
+
+    seatunnel_combinations_new = pd.read_pickle("output_variable/seatunnel_combinations_new.pkl")
+    pulsar_combinations_new = pd.read_pickle("output_variable/pulsar_combinations_new.pkl")
+    ozone_combinations_new = pd.read_pickle("output_variable/ozone_combinations_new.pkl")
+
+
+    # se_new = se[['url', 'base.sha', 'created_at', 'merged_at', 'java:S100_created',
+    #          'java:S101_created','java:S106_created','total_time']].head(4)

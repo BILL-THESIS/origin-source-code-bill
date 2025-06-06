@@ -6,6 +6,8 @@ from itertools import product
 from scipy import stats
 from itertools import combinations
 
+from scipy.stats import spearmanr
+
 
 # Union-Find class to handle grouping
 class UnionFind:
@@ -100,28 +102,26 @@ if __name__ == "__main__":
     input_filepath = "../output/seatunnal_cut_time.pkl"
     data = pd.read_pickle(input_filepath)
 
-
     selected_cols = select_cols(data)
+    selected_cols = selected_cols[['java:S2209_created', 'java:S1659_created',
+                                   'java:S1181_created', 'java:S100_created',
+                                   'java:S101_created', 'java:S3329_created']]
+    d = selected_cols.head(5)
+
+    corr_matrix, _ = spearmanr(d)
 
     metric_column = data_significant['metric']
     selected_columns = selected_cols.columns
     col = set(metric_column).intersection(selected_columns)
 
     selected_cols = selected_cols[list(col)]
+    selected_cols = selected_cols.head(5)
 
     column_pairs = filter_cols(selected_cols)
     df_corr = calculate_corr(column_pairs)
-    df_corr.to_pickle("output_variable/seatunnal_spearman_rank_all_case.pkl")
+    df1 = df_corr.iloc[:,:2]
+    df_corr = df_corr.round(4)
+    # df_corr.to_pickle("output_variable/seatunnal_spearman_rank_all_case.pkl")
     #
     df_corr_high = df_corr[df_corr['group_r'] == 'very high correlation']
-    #
-    # # Apply the function
-    result_group = group_coordinates_from_df(df_corr_high[['col1', 'col2']])
-    with open('output_variable/seatunnel_correlation_main_group.pkl', 'wb') as f:
-        pickle.dump(result_group, f)
-
-    # สร้าง combinations ของคอลัมน์ที่มี correlation สูง
-    combinations = list(product(data[result_group[0]]))
-    with open('output_variable/seatunnel_combinations.pkl', 'wb') as f:
-        pickle.dump(combinations, f)
-
+    # df_corr_high.to_pickle("output_variable/seatunnel_spearman_rank_high_case.pkl")

@@ -1,6 +1,9 @@
-# 📊 The Source Code Maintenance Time Classifications from Code Smell
+# The Source Code Maintenance Time Classifications from Code Smell
 
-This project aims to classify the **source code maintenance time** based on **code smells** identified from Java-based open-source projects. By analyzing GitHub commit histories and static code analysis results from SonarQube, we explore how specific code smells relate to the time spent maintaining software components.
+## 📌 Project Objective
+
+This project aims to analyze and classify the **maintenance time** of source code based on detected **code smells**. By using actively maintained **open-source Java projects** (Java 11+), it extracts commit histories from GitHub and integrates **SonarQube** static code analysis to evaluate how code complexity and quality influence maintenance duration.
+
 
 ---
 
@@ -10,48 +13,59 @@ Understanding the time required to maintain code is crucial for software project
 
 ---
 
-## ⚙️ Tech Stack
+## 🛠️ Tools and Technologies Used
 
-- **Programming Language:** Python 3.11+
-- **Environment:** Conda
-- **Source Repositories:** Java (version 11+)
+- **Programming Language:** Python (version 3.11+)
+- **Environment:** Conda Virtual Environment
+- **IDE:** PyCharm (with support for Remote IDE via Coder)
+- **Operating System:** Linux (Ubuntu), Mac
 - **Data Collection:** GitHub REST API
-- **Static Analysis:** [SonarQube](https://www.sonarsource.com/products/sonarqube/)
-- **Modeling Pipeline:** [SMOET](https://github.com/software-design-lab/SMOET)
-- **Hyperparameter Optimization:** [Optuna](https://optuna.org/)
+- **Code Analysis:** [SonarQube](https://www.sonarsource.com/products/sonarqube/) (code smells, cyclomatic complexity, duplications, maintainability index)
+- **Model Evaluation Pipeline:** [SMOET](https://github.com/pchongs/SMOET) – Software Maintenance Optimization Evaluation Tool
+- **Hyperparameter Tuning:** [Optuna](https://optuna.org/)
+- **Source Projects:** Java-based repositories (version 11+)
 
 ---
 
 ## 📈 Workflow
 
-### 1. Data Collection  
-- Select open-source Java repositories from GitHub.  
-- Use GitHub API to collect commit histories, authorship, and file-level changes.  
-- Store the data in a structured DataFrame format.
+### 1 Data Collection
+- Select actively maintained open-source Java projects from GitHub
+- Extract commit data, pull request metadata, contributors, file diffs, and timestamps
+- Structure data into clean DataFrames for downstream processing
 
-### 2. Code Smell Detection  
-- Analyze source code with SonarQube to extract:
-  - Code Smells
-  - Complexity Metrics
-  - Maintainability Index
+### 2 Code Smell Detection
+- Analyze source code using SonarQube to detect:
+  - Code smells
+  - Cyclomatic complexity
+  - Duplications
+  - Maintainability metrics
+- Integrate SonarQube results with GitHub metadata
 
-### 3. Data Cleaning & Preprocessing  
-- Remove irrelevant and duplicate features.  
-- Transform and normalize selected metrics.  
-- Apply clustering to group similar maintenance profiles.
+### 3 Data Cleaning & Preprocessing
+- Filter relevant features: severity of code smells, size of changes, affected files, commit intervals
+- Apply clustering before classification:
+  - **K-Means Clustering**
+  - **Percentile-based Binning**
+  - **Hierarchical Clustering**
+  - **Quartile-based Grouping**
 
-### 4. Classification & Model Evaluation  
-- Use SMOET for model training and evaluation.  
-- Apply Optuna for hyperparameter tuning.  
-- Classify code into maintenance time categories (e.g., short, medium, long).
+### 4 Classification & Model Evaluation
+- Train classification models to predict maintenance time groupings:
+  - **Random Forest Classifier**
+  - **LightGBM**
+- Manage pipeline using **SMOET**
+- Use **Optuna** for hyperparameter optimization
 
 ---
 
-## 📊 Expected Outcomes
+## 🎯 Expected Outcomes and Impact
 
-- A trained model that predicts maintenance time based on code quality metrics.  
-- Analysis of code smell patterns that correlate with high maintenance cost.  
-- Insights to support technical debt management and refactoring decisions.
+- A machine learning model that classifies Java source code based on expected **maintenance time**
+- Potential applications:
+  - Assist in **development cycle planning**
+  - Detect **high-maintenance components** early
+  - Enhance **DevOps/QA decision-making**
+  - Inform **refactoring and long-term sustainability** strategies
 
----
 

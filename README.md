@@ -9,7 +9,17 @@ This project aims to analyze and classify the **maintenance time** of source cod
 
 ## 🔍 Project Overview
 
-Understanding the time required to maintain code is crucial for software project planning. This project integrates GitHub history data and SonarQube analysis to build predictive models for estimating maintenance time based on code quality issues (e.g., code smells, complexity, duplications).
+Code Smells and Their Impact on Source Code Maintenance Time
+
+A code smell refers to a characteristic in the source code that may indicate potential structural issues or quality concerns. Such issues can lead to software errors or make the codebase more difficult to read and maintain.
+
+This research focuses on evaluating the quality of source code during the development process by measuring the occurrence of code smells. The collected data will be used to develop predictive models using LightGBM and Random Forest. These models aim to determine whether specific types of code smells have a measurable impact on the maintenance time required for source code.
+
+The research is guided by two key questions:
+
+1. Do different types of code smells correlate with the maintenance time required to fix source code?
+
+2. Which types of code smells have the most significant impact on maintenance time?
 
 ---
 
